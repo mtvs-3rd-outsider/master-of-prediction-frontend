@@ -46,11 +46,11 @@ export function WindowContextProvider({
   );
 }
 
-// export function useWindow(): WindowContext {
-//   const context = useContext(WindowContext);
+export function useWindow(): WindowContext {
+  const context = useContext(WindowContext);
 
-//   if (!context)
-//     throw new Error('useWindow must be used within an WindowContextProvider');
+  if (!context)
+    throw new Error('useWindow must be used within an WindowContextProvider');
 
-//   return context;
-// }
+  return context;
+}

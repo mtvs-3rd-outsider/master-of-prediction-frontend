@@ -1,5 +1,5 @@
-
-// import { SWRConfig } from 'swr';
+"use client";
+import { SWRConfig } from 'swr';
 import { Toaster } from 'react-hot-toast';
 import { fetchJSON } from '@lib/fetch';
 import { WindowContextProvider } from '@lib/context/window-context';
@@ -19,10 +19,10 @@ const toastOptions: DefaultToastOptions = {
 export function MainLayout({ children }: LayoutProps): JSX.Element {
   return (
     <div className='flex w-full justify-center gap-0 lg:gap-4'>
-      {/* <WindowContextProvider> */}
+      <WindowContextProvider>
         <Sidebar />
-        {/* <SWRConfig value={{ fetcher: fetchJSON }}>{children}</SWRConfig> */}
-      {/* </WindowContextProvider> */}
+        <SWRConfig value={{ fetcher: fetchJSON }}>{children}</SWRConfig>
+      </WindowContextProvider>
       <Toaster
         position='bottom-center'
         toastOptions={toastOptions}

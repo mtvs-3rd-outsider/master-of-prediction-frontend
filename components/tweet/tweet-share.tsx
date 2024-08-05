@@ -39,7 +39,7 @@ export function TweetShare({
           ? (): JSX.Element => (
               <span className='flex gap-2'>
                 Tweet added to your Bookmarks
-                <Link href='/bookmarks'>
+                <Link href='/bookmarks' legacyBehavior>
                   <a className='custom-underline font-bold'>View</a>
                 </Link>
               </span>

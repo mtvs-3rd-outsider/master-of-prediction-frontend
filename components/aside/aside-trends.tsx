@@ -47,7 +47,7 @@ export function AsideTrends({ inTrendsPage }: AsideTrendsProps): JSX.Element {
             <h2 className='text-xl font-extrabold'>Trends for you</h2>
           )}
           {trends.map(({ name, query, tweet_volume, url }) => (
-            <Link href={url} key={query}>
+            <Link href={url} key={query} legacyBehavior>
               <a
                 className='hover-animation accent-tab hover-card relative 
                            flex cursor-not-allowed flex-col gap-0.5'
@@ -82,7 +82,7 @@ export function AsideTrends({ inTrendsPage }: AsideTrendsProps): JSX.Element {
             </Link>
           ))}
           {!inTrendsPage && (
-            <Link href='/trends'>
+            <Link href='/trends' legacyBehavior>
               <a
                 className='custom-button accent-tab hover-card block w-full rounded-2xl
                            rounded-t-none text-center text-main-accent'

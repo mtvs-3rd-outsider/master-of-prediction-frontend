@@ -117,7 +117,7 @@ export function Input({
       () => (
         <span className='flex gap-2'>
           Your Tweet was sent
-          <Link href={`/tweet/${tweetId}`}>
+          <Link href={`/tweet/${tweetId}`} legacyBehavior>
             <a className='custom-underline font-bold'>View</a>
           </Link>
         </span>
@@ -223,7 +223,7 @@ export function Input({
           {...fromTop}
         >
           Replying to{' '}
-          <Link href={`/user/${parent?.username as string}`}>
+          <Link href={`/user/${parent?.username as string}`} legacyBehavior>
             <a className='custom-underline text-main-accent'>
               {parent?.username as string}
             </a>

@@ -18,7 +18,7 @@ export function TweetDate({
     <div className={cn('flex gap-1', viewTweet && 'py-4')}>
       {!viewTweet && <i>·</i>}
       <div className='group relative'>
-        <Link href={tweetLink}>
+        <Link href={tweetLink} legacyBehavior>
           <a
             className={cn(
               'custom-underline peer whitespace-nowrap',
