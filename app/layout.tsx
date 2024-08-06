@@ -1,6 +1,4 @@
 import '@styles/globals.scss';
-import { AuthContextProvider } from '@lib/context/auth-context';
-import { ThemeContextProvider } from '@lib/context/theme-context';
 import { MainLayout } from '@components/layout/main-layout';
 import { AppHead } from '@components/common/app-head';
 import { ReactNode } from 'react';
@@ -22,8 +20,6 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
         <AppHead />
       </head>
       <body>
-        <AuthContextProvider>
-          <ThemeContextProvider>
             {/* <MainLayout> */}
             <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
         <Nav />
@@ -32,8 +28,6 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
       </div>
 
             {/* </MainLayout> */}
-          </ThemeContextProvider>
-        </AuthContextProvider>
       </body>
     </html>
   );

@@ -11,6 +11,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@material-tailwind/react": "^2.1.9",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-avatar": "^1.1.0",
@@ -26,7 +27,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
-    "sass": "^1.77.8"
+    "sass": "^1.77.8",
+    "v0": "^2.2.5"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.6.1",
