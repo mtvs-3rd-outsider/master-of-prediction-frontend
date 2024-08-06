@@ -1,9 +1,10 @@
-import '@styles/globals.scss';
-import { MainLayout } from '@components/layout/main-layout';
+import '@styles/styles.css';
 import { AppHead } from '@components/common/app-head';
 import { ReactNode } from 'react';
 import Nav from '@ui/Nav';
 import Footer from '@ui/Footer';
+import ScrollHandler from '@/handler/ScrollHandler';
+import ViewHandler from '@/handler/ViewHandler';
 type LayoutProps = {
   children: ReactNode;
 };
@@ -15,7 +16,10 @@ export const metadata = {
 
 export default function RootLayout({ children }: LayoutProps): ReactNode {
   return (
+
     <html lang="en">
+    <ScrollHandler />
+    <ViewHandler />
       <head>
         <AppHead />
       </head>

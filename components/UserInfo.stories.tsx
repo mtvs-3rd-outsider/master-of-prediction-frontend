@@ -1,37 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import UserInfo from '@ui/UserInfo';
+// src/TierBadge.stories.tsx
+import type { Meta, Story } from '@storybook/react';
+import TierBadge from './TierBadge';
 
-const meta: Meta<typeof UserInfo> = {
-  title: 'Components/UserInfo',
-  component: UserInfo,
-  parameters: {
-    layout: 'centered',
-  },
+const meta: Meta<typeof TierBadge> = {
+  title: 'Components/TierBadge',
+  component: TierBadge,
+  tags: ['autodocs'],
   argTypes: {
-    name: { control: 'text' },
-    username: { control: 'text' },
-    date: { control: 'text' },
-    tierName: {
-      control: {
-        type: 'select',
-        options: ['novice', 'nostradamus', 'oracle', 'prophet', 'seer'], // 필요한 티어 이름을 추가
-      },
+    name: {
+      control: 'select',
+      options: ['nostradamus', 'novice', 'oracle', 'prophet', 'seer'], // 사전에 정의한 등급을 옵션으로 추가합니다.
     },
-    tierLabel: { control: 'text' },
   },
 };
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+const Template: Story<typeof TierBadge> = (args) => <TierBadge {...args} />;
 
-const Template: Story = (args) => <UserInfo {...args} />;
-
-export const Default: Story = Template.bind({});
+export const Default = Template.bind({});
 Default.args = {
-  name: 'John Doe',
-  username: 'johndoe',
-  date: '2023-01-01',
-  tierName: 'novice',
-  tierLabel: '견습생',
+  name: 'nostradamus'
 };

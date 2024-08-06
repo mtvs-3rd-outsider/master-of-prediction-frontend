@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import Nav from '@ui/Nav';
 
 const meta: Meta<typeof Nav> = {
-  title: 'Components/Nav',
+  title: 'Components/Nav/List',
   component: Nav,
   parameters: {
     layout: 'centered',

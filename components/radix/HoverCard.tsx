@@ -15,7 +15,7 @@ interface Props {
 	followers: string;
 }
 
-const HoverCardDemo = ({
+const HoverCard = ({
 	src,
 	alt,
 	initials,
@@ -69,4 +69,4 @@ const HoverCardDemo = ({
 	</HoverCardPrimitive.Root>
 );
 
-export default HoverCardDemo;
+export default HoverCard;

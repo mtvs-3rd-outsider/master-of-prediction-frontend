@@ -1,18 +1,50 @@
+// src/TierBadge.tsx
+"use client";
 import React from 'react';
 import TierIcon from '@ui/TierIcon';
+import { Chip, Avatar, Typography } from "@material-tailwind/react";
+ 
+ const TierBadge: React.FC<TierBadgeProps> = ({ name = "" })  =>   {
+  const tier = tierLabels[name] || { name: "Unknown Tier", label: "" };
+  return (
+    <Chip size="sm" value="chip small"  variant="ghost" 
+      icon={
+        <TierIcon name={tier.label} size={15} className="mr-1 px-2" />
+      }
+      value={
+        <Typography
+        
+          color="black"
+          className="text-xs"
+        >
+          Tania Andrew
+        </Typography>
+      }
+      className="rounded-full py-0.1 px-0.1"
+    />
+  );
+}
+const tierLabels: { [key: string]: { name: string; label: string } } = {
+  nostradamus: { name: "노스트라다무스", label: "nostradamus" },
+  novice: { name: "견습생", label: "novice" },
+  oracle: { name: "오라클", label: "oracle" },
+  prophet: { name: "예언자", label: "prophet" },
+  seer: { name: "초보자", label: "seer" },
+};
 
 interface TierBadgeProps {
   name: string;
-  label: string;
 }
 
-const TierBadge: React.FC<TierBadgeProps> = ({ name, label }) => {
+const TierBadge2: React.FC<TierBadgeProps> = ({ name = "" }) => {
+  const tier = tierLabels[name] || { name: "Unknown Tier", label: "" };
+
   return (
     <span className="text-xs bg-slate-200 rounded-full py-0 px-2 cursor-pointer inline-flex items-center justify-center hover:bg-slate-300">
-      <TierIcon name={name} size={15} className="mr-1 px-2" />
-      {label}
+      <TierIcon name={tier.label} size={15} className="mr-1 px-2" />
+      {tier.name}
     </span>
   );
 };
 
-export default TierBadge;
+export default  TierBadge2;

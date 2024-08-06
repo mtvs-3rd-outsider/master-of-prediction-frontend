@@ -1,7 +1,7 @@
 import PanelItemTrends from '@ui/PanelItemTrends';
 
 export default {
-	title: 'Components/PanelItemTrends',
+	title: 'Components/Panel/ItemTrends',
 	component: PanelItemTrends,
 };
 

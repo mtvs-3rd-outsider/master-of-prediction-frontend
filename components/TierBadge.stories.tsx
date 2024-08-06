@@ -1,33 +1,41 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import TierBadge from '@ui/TierBadge';
+// src/TierBadge.stories.tsx
+import React from 'react';
+import { Meta, Story } from '@storybook/react';
+import TierBadge from './TierBadge';
 
-const meta: Meta<typeof TierBadge> = {
+export default {
   title: 'Components/TierBadge',
   component: TierBadge,
-  parameters: {
-    layout: 'centered',
-  },
-  argTypes: {
-    name: {
-      control: {
-        type: 'select',
-        options: ['nostradamus', 'novice', 'oracle', 'prophet', 'seer'], // 필요한 티어 이름을 추가
-      },
-    },
-    label: {
-      control: 'text',
-    },
-  },
+} as Meta;
+
+const Template: Story<{ name: string }> = (args) => <TierBadge {...args} />;
+
+export const Nostradamus = Template.bind({});
+Nostradamus.args = {
+  name: 'nostradamus',
 };
 
-export default meta;
+export const Novice = Template.bind({});
+Novice.args = {
+  name: 'novice',
+};
 
-type Story = StoryObj<typeof meta>;
+export const Oracle = Template.bind({});
+Oracle.args = {
+  name: 'oracle',
+};
 
-const Template: Story = (args) => <TierBadge {...args} />;
+export const Prophet = Template.bind({});
+Prophet.args = {
+  name: 'prophet',
+};
 
-export const Default: Story = Template.bind({});
-Default.args = {
-  name: 'nostradamus',
-  label: '노스트라다무스',
+export const Seer = Template.bind({});
+Seer.args = {
+  name: 'seer',
+};
+
+export const Unknown = Template.bind({});
+Unknown.args = {
+  name: 'unknown',
 };

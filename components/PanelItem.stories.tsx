@@ -1,7 +1,7 @@
 import PanelItem from '@ui/PanelItem';
 
 export default {
-	title: 'Components/PanelItem',
+	title: 'Components/Panel/Item',
 	component: PanelItem,
 };
 

@@ -11,6 +11,9 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@material-tailwind/react": "^2.1.9",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -21,14 +24,20 @@
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.13",
+    "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
+    "lodash": "^4.17.21",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
     "sass": "^1.77.8",
-    "v0": "^2.2.5"
+    "v0": "^2.2.5",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.6.1",
@@ -53,7 +62,7 @@
     "firebase": "^10.12.5",
     "framer-motion": "^11.3.21",
     "next": "14.2.5",
-    "postcss": "^8",
+    "postcss": "^8.4.41",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",

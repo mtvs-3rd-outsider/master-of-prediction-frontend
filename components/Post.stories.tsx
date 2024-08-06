@@ -2,7 +2,7 @@ import Post from '@ui/Post';
 import Image from 'next/image';
 
 export default {
-	title: 'Components/Post',
+	title: 'Components/Post/Post',
 	component: Post,
 };
 

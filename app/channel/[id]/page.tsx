@@ -7,12 +7,17 @@ import PanelItem from '@ui/PanelItem';
 import PanelItemTrends from '@ui/PanelItemTrends';
 import Footer from '@ui/Footer';
 import MyChannel from '@/components/MyChannel';
-
+import IconButton from '@components/IconButton';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import UserBanner from '@/components/user/UserBanner';
+import StickyHeader from '@/components/StickyHeader';
 const HomePage: React.FC = () => {
   return (
     <>
+    
       <main className="col-span-5 w-full border-x border-slate-200">
-        <Header title="Home" />
+      <StickyHeader/>
+      <Tabs/>
         <MyChannel /> {/* Adding the Component here */}
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">

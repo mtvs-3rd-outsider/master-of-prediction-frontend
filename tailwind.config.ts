@@ -1,8 +1,10 @@
 import type { Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
+/** @type {import('tailwindcss').Config} */
+const { fontFamily } = require("tailwindcss/defaultTheme");
+const defaultTheme = require('tailwindcss/defaultTheme');
+const withMT = require("@material-tailwind/react/utils/withMT");
 
-const config: Config = {
-  darkMode: 'class',
+const config: Config =  withMT({
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
@@ -11,52 +13,38 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    screens: {
-      xs: '500px',
-      ...defaultTheme.screens,
-    },
     extend: {
       fontFamily: {
-        'twitter-chirp': ['TwitterChirp', 'sans-serif'],
-        'twitter-chirp-extended': ['TwitterChirpExtendedHeavy', 'sans-serif'],
+        default: ["var(--font-mona-sans)", ...fontFamily.sans],
+        sans: ["var(--font-mona-sans)", ...fontFamily.sans],
       },
       colors: {
-        'main-primary': 'rgb(var(--main-primary) / <alpha-value>)',
-        'main-secondary': 'rgb(var(--main-secondary) / <alpha-value>)',
-        'main-background': 'rgb(var(--main-background) / <alpha-value>)',
-        'main-search-background': 'rgb(var(--main-search-background) / <alpha-value>)',
-        'main-sidebar-background': 'rgb(var(--main-sidebar-background) / <alpha-value>)',
-        'main-accent': 'rgb(var(--main-accent) / <alpha-value>)',
-        'accent-yellow': 'rgb(var(--accent-yellow) / <alpha-value>)',
-        'accent-blue': 'rgb(var(--accent-blue) / <alpha-value>)',
-        'accent-pink': 'rgb(var(--accent-pink) / <alpha-value>)',
-        'accent-purple': 'rgb(var(--accent-purple) / <alpha-value>)',
-        'accent-orange': 'rgb(var(--accent-orange) / <alpha-value>)',
-        'accent-green': 'rgb(var(--accent-green) / <alpha-value>)',
-        'accent-red': '#F4212E',
-        'dark-primary': '#E7E9EA',
-        'dark-secondary': '#71767B',
-        'light-primary': '#0F1419',
-        'light-secondary': '#536471',
-        'dark-border': '#2F3336',
-        'light-border': '#EFF3F4',
-        'dark-line-reply': '#333639',
-        'light-line-reply': '#CFD9DE',
-        'twitter-icon': '#D6D9DB',
-        'image-preview-hover': '#272C30',
-      },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        slate: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          ...defaultTheme.colors.slate},
       },
     },
   },
-  
+  corePlugins: {
+    aspectRatio: false,
+  },
   plugins: [
-    ({ addVariant }) => {
-      addVariant('inner', '& > *');
-    },
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
   ],
-};
+});
 
 export default config;
+
+ 
+ 

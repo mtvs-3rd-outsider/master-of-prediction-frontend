@@ -2,7 +2,7 @@ import NavItem from '@ui/NavItem';
 import { HiOutlineHome } from 'react-icons/hi2';
 
 export default {
-	title: 'Components/NavItem',
+	title: 'Components/Nav/Item',
 	component: NavItem,
 };
 

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import DropdownMenuDemo from '@rd/DropdownMenu';
-import HoverCardDemo from '@rd/HoverCard';
+import HoverCard from '@rd/HoverCard';
 
 import {
 	HiOutlineHeart,
@@ -40,7 +40,7 @@ const Post = ({
 }: Props) => (
 	<div className="flex flex-1 gap-x-4">
 		<div className="flex-shrink-0">
-			<HoverCardDemo
+			<HoverCard
 				src={src}
 				alt={name}
 				initials={initials}
@@ -58,7 +58,6 @@ const Post = ({
 			 username={username}
 			 date={date}
 			 tierName="novice"
-			 tierLabel="견습생"
 			 />
 				<div className="">
 					<DropdownMenuDemo />
