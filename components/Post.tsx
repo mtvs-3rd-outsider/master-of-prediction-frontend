@@ -9,6 +9,8 @@ import {
 	HiOutlineArrowPath,
 	HiOutlineChartBarSquare,
 } from 'react-icons/hi2';
+import TierIcon from '@components/TierIcon';
+import Userinfo from '@components/UserInfo';
 
 interface Props {
 	content: string;
@@ -51,11 +53,13 @@ const Post = ({
 		</div>
 		<div className="flex flex-col flex-1">
 			<div className="flex flex-1">
-				<div className="flex flex-1 gap-x-1 text-sm">
-					<span className="text-slate-900 font-bold">{name}</span>
-					<span className="text-slate-600 font-medium">@{username}</span>·
-					<span className="text-slate-600 font-medium">{date}</span>
-				</div>
+			<Userinfo
+			 name={name}
+			 username={username}
+			 date={date}
+			 tierName="novice"
+			 tierLabel="견습생"
+			 />
 				<div className="">
 					<DropdownMenuDemo />
 				</div>

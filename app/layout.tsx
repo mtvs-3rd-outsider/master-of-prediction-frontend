@@ -1,14 +1,11 @@
 import '@styles/globals.scss';
-
 import { AuthContextProvider } from '@lib/context/auth-context';
 import { ThemeContextProvider } from '@lib/context/theme-context';
+import { MainLayout } from '@components/layout/main-layout';
 import { AppHead } from '@components/common/app-head';
 import { ReactNode } from 'react';
-import { Inter } from 'next/font/google';
-
-// 구글 폰트를 사용하는 경우, 필요에 따라 설정하세요
-const inter = Inter({ subsets: ["latin"] });
-
+import Nav from '@ui/Nav';
+import Footer from '@ui/Footer';
 type LayoutProps = {
   children: ReactNode;
 };
@@ -24,10 +21,17 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
       <head>
         <AppHead />
       </head>
-      <body className={inter.className}>
+      <body>
         <AuthContextProvider>
           <ThemeContextProvider>
-            {children}
+            {/* <MainLayout> */}
+            <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
+        <Nav />
+        {children}
+
+      </div>
+
+            {/* </MainLayout> */}
           </ThemeContextProvider>
         </AuthContextProvider>
       </body>

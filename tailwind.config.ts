@@ -51,6 +51,7 @@ const config: Config = {
       },
     },
   },
+  
   plugins: [
     ({ addVariant }) => {
       addVariant('inner', '& > *');

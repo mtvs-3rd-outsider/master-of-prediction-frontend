@@ -22,13 +22,13 @@ interface NavLinkItem {
 
 const items: NavLinkItem[] = [
 	{
-		href: '/home',
-		text: 'Home',
+		href: '/bettings',
+		text: 'Bettings',
 		icon: <HiOutlineHome className="w-6 h-6" />,
 	},
 	{
 		href: '/explore',
-		text: 'Explore',
+		text: 'Hot Topic',
 		icon: <HiHashtag className="w-6 h-6" />,
 	},
 	{
@@ -43,12 +43,12 @@ const items: NavLinkItem[] = [
 	},
 	{
 		href: '/bookmarks',
-		text: 'Bookmarks',
+		text: 'Category Channel',
 		icon: <HiOutlineBookmark className="w-6 h-6" />,
 	},
 	{
-		href: '/profile',
-		text: 'Profile',
+		href: '/channel/1',
+		text: 'My Channel',
 		icon: <HiOutlineUser className="w-6 h-6" />,
 	},
 ];

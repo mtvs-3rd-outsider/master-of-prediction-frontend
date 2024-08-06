@@ -1,10 +1,20 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import AccountNavItem from '@ui/AccountNavItem';
 
-export default {
-	title: 'Components/AccountNavItem',
-	component: AccountNavItem,
+const meta: Meta<typeof AccountNavItem> = {
+  title: 'Components/AccountNavItem',
+  component: AccountNavItem,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
 };
 
-const Template = () => <AccountNavItem />;
+export default meta;
 
-export const Default = Template.bind({});
+type Story = StoryObj<typeof meta>;
+
+const Template: Story = (args) => <AccountNavItem {...args} />;
+
+export const Default: Story = Template.bind({});
+Default.args = {};

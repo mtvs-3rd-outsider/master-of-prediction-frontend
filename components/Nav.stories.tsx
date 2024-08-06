@@ -1,10 +1,20 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import Nav from '@ui/Nav';
 
-export default {
-	title: 'Components/Nav',
-	component: Nav,
+const meta: Meta<typeof Nav> = {
+  title: 'Components/Nav',
+  component: Nav,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
 };
 
-const Template = () => <Nav />;
+export default meta;
 
-export const Default = Template.bind({});
+type Story = StoryObj<typeof meta>;
+
+const Template: Story = (args) => <Nav {...args} />;
+
+export const Default: Story = Template.bind({});
+Default.args = {};

@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 import { getDoc, doc, onSnapshot } from 'firebase/firestore';
 import { usersCollection } from '@lib/firebase/collections';

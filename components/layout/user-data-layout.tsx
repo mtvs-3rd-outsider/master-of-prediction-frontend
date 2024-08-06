@@ -1,4 +1,5 @@
-import { useRouter } from 'next/router';
+"use client";
+import { useRouter } from 'next/navigation';
 import { query, where, limit } from 'firebase/firestore';
 import { UserContextProvider } from '@lib/context/user-context';
 import { useCollection } from '@lib/hooks/useCollection';

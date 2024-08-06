@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { Popover } from '@headlessui/react';
 import { AnimatePresence, motion } from 'framer-motion';
