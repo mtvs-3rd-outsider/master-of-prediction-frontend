@@ -3,8 +3,9 @@ import { AppHead } from '@components/common/app-head';
 import { ReactNode } from 'react';
 import Nav from '@ui/Nav';
 import Footer from '@ui/Footer';
-import ScrollHandler from '@/handler/ScrollHandler';
 import ViewHandler from '@/handler/ViewHandler';
+import {NextUIProvider} from "@nextui-org/react";
+
 type LayoutProps = {
   children: ReactNode;
 };
@@ -18,12 +19,15 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
   return (
 
     <html lang="en">
-    <ScrollHandler />
+
     <ViewHandler />
       <head>
         <AppHead />
       </head>
       <body>
+    <NextUIProvider>
+
+
             {/* <MainLayout> */}
             <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
         <Nav />
@@ -32,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
       </div>
 
             {/* </MainLayout> */}
+    </NextUIProvider>
+
       </body>
+
     </html>
   );
 }

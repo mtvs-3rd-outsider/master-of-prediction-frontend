@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '@ui/Header';
 import Tabs from '@rd/Tabs';
+import Tabs2 from '@components/StickyTabs';
 import Search from '@ui/Search';
 import Panel from '@ui/Panel';
 import PanelItem from '@ui/PanelItem';
@@ -16,9 +17,9 @@ const HomePage: React.FC = () => {
     <>
     
       <main className="col-span-5 w-full border-x border-slate-200">
-      <StickyHeader/>
+      <MyChannel /> {/* Adding the Component here */}
+      <Tabs2/>
       <Tabs/>
-        <MyChannel /> {/* Adding the Component here */}
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
         <div className="sticky top-0">

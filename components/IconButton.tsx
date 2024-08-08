@@ -14,7 +14,7 @@ const IconButtonDefault: FC<IconButtonDefaultProps> = ({ icon, onClick }) => {
     <IconButton size="sm" variant="text" onClick={onClick} className="rounded-full">
       <FontAwesomeIcon icon={icon} />
     </IconButton>
-  );l
+  );
 };
 
 export default IconButtonDefault;

@@ -6,7 +6,7 @@ interface TierIconProps {
 }
 
 const TierIcon: React.FC<TierIconProps> = ({ name, size = 24 }) => {
-  const src = `/images/tier/${name}.png`; // 상대 경로 사용
+  const src = `/images/tier/${name}.svg`; // 상대 경로 사용
   return (
     <Image
       src={src} // 동적 임포트

@@ -25,11 +25,11 @@ import { Chip, Avatar, Typography } from "@material-tailwind/react";
   );
 }
 const tierLabels: { [key: string]: { name: string; label: string } } = {
-  nostradamus: { name: "노스트라다무스", label: "nostradamus" },
-  novice: { name: "견습생", label: "novice" },
-  oracle: { name: "오라클", label: "oracle" },
-  prophet: { name: "예언자", label: "prophet" },
-  seer: { name: "초보자", label: "seer" },
+  nostradamus: { name: "노스트라다무스", label: "노스트라다무스" },
+  novice: { name: "견습생", label: "견습생" },
+  oracle: { name: "오라클", label: "오라클" },
+  prophet: { name: "예언자", label: "예언자" },
+  seer: { name: "초보자", label: "초보자" },
 };
 
 interface TierBadgeProps {

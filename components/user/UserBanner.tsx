@@ -1,14 +1,21 @@
 import React, { FC } from 'react';
+import Image from 'next/image';
 
 interface UserBannerProps {
   imageUrl: string;
   caption?: string;
 }
 
-const UserBanner: FC<UserBannerProps> = ({ imageUrl, caption }) => {
+const UserBanner: FC<UserBannerProps> = ({ imageUrl }) => {
   return (
-    <div className="text-center mb-4">
-      <img src={imageUrl} alt="User Banner" className="w-full max-h-64" />
+    <div className="relative text-center mb-4 h-32"> {/* h-64 for setting height, adjust as needed */}
+      <Image
+        src={imageUrl}
+        alt="User Banner"
+        layout="fill"
+        objectFit="cover"
+        className="rounded-lg"
+      />
     </div>
   );
 };
