@@ -1,6 +1,6 @@
 // src/TierBadge.stories.tsx
 import type { Meta, Story } from '@storybook/react';
-import TierBadge from './TierBadge';
+import TierBadge from '@components/TierBadge';
 
 const meta: Meta<typeof TierBadge> = {
   title: 'Components/TierBadge',

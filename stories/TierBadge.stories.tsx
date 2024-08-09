@@ -1,7 +1,7 @@
 // src/TierBadge.stories.tsx
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import TierBadge from './TierBadge';
+import TierBadge from '@components/TierBadge';
 
 export default {
   title: 'Components/TierBadge',

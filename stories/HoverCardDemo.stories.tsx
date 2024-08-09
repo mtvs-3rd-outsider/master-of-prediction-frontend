@@ -1,6 +1,6 @@
 // src/HoverCard.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import HoverCard, { Props } from './HoverCard';
+import HoverCard, { Props } from '@components/radix/HoverCard';
 
 const meta: Meta<typeof HoverCard> = {
   title: 'Components/HoverCard',

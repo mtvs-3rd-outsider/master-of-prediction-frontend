@@ -2,17 +2,16 @@ import type { Config } from "tailwindcss";
 /** @type {import('tailwindcss').Config} */
 const { fontFamily } = require("tailwindcss/defaultTheme");
 const defaultTheme = require('tailwindcss/defaultTheme');
-const withMT = require("@material-tailwind/react/utils/withMT");
+// const withMT = require("@material-tailwind/react/utils/withMT");
 const {nextui} = require("@nextui-org/react");
 
-const config: Config =  withMT({
+const config: Config =  ({
+  mode: 'jit',
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx}",
-    "./src/components/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    
   ],
   theme: {
     extend: {
@@ -40,9 +39,9 @@ const config: Config =  withMT({
     aspectRatio: false,
   },
   plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/aspect-ratio"),
+    // require("@tailwindcss/typography"),
+    // require("@tailwindcss/forms"),
+    // require("@tailwindcss/aspect-ratio"),
     nextui()
   ],
 });

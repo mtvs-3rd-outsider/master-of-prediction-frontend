@@ -1,6 +1,6 @@
 // src/HeroIcon.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { HeroIcon } from './HeroIcon';
+import { HeroIcon } from '@components/HeroIcon';
 import * as SolidIcons from '@heroicons/react/24/solid';
 import * as OutlineIcons from '@heroicons/react/24/outline';
 

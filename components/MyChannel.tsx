@@ -26,7 +26,6 @@ const MyChannel: React.FC = () => {
           }}
         >
           <Avatar
-            src="https://your-avatar-url.com/avatar.jpg"
             alt="User Avatar"
             initials="RQ"
             size={90} // 아바타 크기를 동적으로 설정
@@ -42,7 +41,7 @@ const MyChannel: React.FC = () => {
       </div>
       <div className="mt-4">
         <p className="text-gray-800">
-          This is a short bio about the user. It gives some information about the user's interests, background, and other relevant details.
+          This is a short bio about the user. It gives some information about the user&apos;s interests, background, and other relevant details.
         </p>
         <div className="mt-4 flex space-x-4">
           <div>

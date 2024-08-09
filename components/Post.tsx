@@ -9,7 +9,6 @@ import {
 	HiOutlineArrowPath,
 	HiOutlineChartBarSquare,
 } from 'react-icons/hi2';
-import TierIcon from '@components/TierIcon';
 import Userinfo from '@components/UserInfo';
 
 interface Props {

@@ -1,10 +1,6 @@
-'use client';
 import { ReactNode } from 'react';
-import DialogDemo from '@rd/Dialog';
-import PopoverDemo from '@rd/PopoverDemo';
 import NavItem from '@ui/NavItem';
 import AccountNavItem from '@ui/AccountNavItem';
-
 import { SiTwitter } from 'react-icons/si';
 import {
   HiOutlineHome,
@@ -14,7 +10,6 @@ import {
   HiOutlineBookmark,
   HiOutlineUser,
 } from 'react-icons/hi2';
-import { useViewStore } from '@store/useViewStore';
 
 interface NavLinkItem {
   href: string;
@@ -56,45 +51,39 @@ const items: NavLinkItem[] = [
 ];
 
 const Nav: React.FC = () => {
-  const isMobileView = useViewStore((state) => state.isMobileView);
+  return (
+    <>
+      <header className="hidden sm:flex w-24 xl:col-span-2">
+        <div className="flex flex-1 xl:w-60 flex-col fixed h-full">
+          <div className="flex flex-col flex-1">
+            <NavItem href="/home" width="inline" size="default">
+              <SiTwitter className="w-6 h-6" />
+            </NavItem>
+            {items.map(({ href, text, icon }, i) => (
+              <div key={`header-${i}`} className="rounded-lg focus:outline-none overflow-hidden">
+                <NavItem href={href} width="inline" size="default">
+                  {icon}
+                  <div className="hidden xl:inline-flex flex-none text-lg font-medium">
+                    {text}
+                  </div>
+                </NavItem>
+              </div>
+            ))}
+          </div>
+          <div>
+            <AccountNavItem />
+          </div>
+        </div>
+      </header>
 
-  if (isMobileView) {
-    return (
-      <footer className="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around">
+      <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around">
         {items.map(({ href, icon }, i) => (
           <NavItem key={`footer-${i}`} href={href} width="inline" size="default">
             {icon}
           </NavItem>
         ))}
       </footer>
-    );
-  }
-
-  return (
-    <header className="hidden sm:flex w-24 xl:col-span-2">
-      <div className="flex flex-1 xl:w-60 flex-col fixed h-full">
-        <div className="flex flex-col flex-1">
-          <NavItem href="/home" width="inline" size="default">
-            <SiTwitter className="w-6 h-6" />
-          </NavItem>
-          {items.map(({ href, text, icon }, i) => (
-            <div key={`header-${i}`} className="rounded-lg focus:outline-none overflow-hidden">
-              <NavItem href={href} width="inline" size="default">
-                {icon}
-                <div className="hidden xl:inline-flex flex-none text-lg font-medium">
-                  {text}
-                </div>
-              </NavItem>
-            </div>
-          ))}
-          <PopoverDemo />
-          <DialogDemo />
-        </div>
-        <div>
-          <AccountNavItem />
-        </div>
-      </div>
-    </header>
+    </>
   );
 };
 

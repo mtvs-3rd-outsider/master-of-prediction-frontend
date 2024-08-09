@@ -1,19 +1,26 @@
 "use client";
-import { IconButton } from "@material-tailwind/react";
-import { FC } from "react";
+import React, { FC } from "react";
+import { Button } from "@nextui-org/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 interface IconButtonDefaultProps {
   icon: IconDefinition;
   onClick: () => void;
+  ariaLabel: string; // 접근성을 위한 aria-label 추가
 }
 
-const IconButtonDefault: FC<IconButtonDefaultProps> = ({ icon, onClick }) => {
+const IconButtonDefault: FC<IconButtonDefaultProps> = ({ icon, onClick, ariaLabel }) => {
   return (
-    <IconButton size="sm" variant="text" onClick={onClick} className="rounded-full">
+    <Button
+      isIconOnly
+      size="sm"
+      onClick={onClick}
+      className="rounded-full"
+      aria-label={ariaLabel} // 접근성을 위한 aria-label 설정
+    >
       <FontAwesomeIcon icon={icon} />
-    </IconButton>
+    </Button>
   );
 };
 

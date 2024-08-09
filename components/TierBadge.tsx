@@ -1,29 +1,7 @@
-// src/TierBadge.tsx
-"use client";
 import React from 'react';
 import TierIcon from '@ui/TierIcon';
-import { Chip, Avatar, Typography } from "@material-tailwind/react";
- 
- const TierBadge: React.FC<TierBadgeProps> = ({ name = "" })  =>   {
-  const tier = tierLabels[name] || { name: "Unknown Tier", label: "" };
-  return (
-    <Chip size="sm" value="chip small"  variant="ghost" 
-      icon={
-        <TierIcon name={tier.label} size={15} className="mr-1 px-2" />
-      }
-      value={
-        <Typography
-        
-          color="black"
-          className="text-xs"
-        >
-          Tania Andrew
-        </Typography>
-      }
-      className="rounded-full py-0.1 px-0.1"
-    />
-  );
-}
+
+
 const tierLabels: { [key: string]: { name: string; label: string } } = {
   nostradamus: { name: "노스트라다무스", label: "노스트라다무스" },
   novice: { name: "견습생", label: "견습생" },
@@ -47,4 +25,4 @@ const TierBadge2: React.FC<TierBadgeProps> = ({ name = "" }) => {
   );
 };
 
-export default  TierBadge2;
+export default TierBadge2;

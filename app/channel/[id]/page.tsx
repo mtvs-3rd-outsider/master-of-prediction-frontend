@@ -1,6 +1,4 @@
 import React from 'react';
-import Header from '@ui/Header';
-import Tabs from '@rd/Tabs';
 import Tabs2 from '@components/StickyTabs';
 import Search from '@ui/Search';
 import Panel from '@ui/Panel';
@@ -8,10 +6,6 @@ import PanelItem from '@ui/PanelItem';
 import PanelItemTrends from '@ui/PanelItemTrends';
 import Footer from '@ui/Footer';
 import MyChannel from '@/components/MyChannel';
-import IconButton from '@components/IconButton';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import UserBanner from '@/components/user/UserBanner';
-import StickyHeader from '@/components/StickyHeader';
 const HomePage: React.FC = () => {
   return (
     <>
@@ -19,7 +13,7 @@ const HomePage: React.FC = () => {
       <main className="col-span-5 w-full border-x border-slate-200">
       <MyChannel /> {/* Adding the Component here */}
       <Tabs2/>
-      <Tabs/>
+      {/* <Tabs/> */}
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
         <div className="sticky top-0">

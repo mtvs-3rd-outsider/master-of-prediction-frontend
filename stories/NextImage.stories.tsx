@@ -1,6 +1,6 @@
 // src/NextImage.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { NextImage } from './NextImage';
+import { NextImage } from '@components/ui/NextImage';
 
 const meta: Meta<typeof NextImage> = {
   title: 'Components/NextImage',

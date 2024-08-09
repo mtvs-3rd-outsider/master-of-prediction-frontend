@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import TierIcon from '../components/TierIcon';
+import TierIcon from '@components/TierIcon';
 
 const meta: Meta<typeof TierIcon> = {
   title: 'Components/TierIcon',

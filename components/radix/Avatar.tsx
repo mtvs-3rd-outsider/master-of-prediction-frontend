@@ -1,9 +1,7 @@
-'use client';
-import * as AvatarPrimitive from '@radix-ui/react-avatar';
-import cn from 'clsx';
+import { Avatar as NextUIAvatar } from '@nextui-org/avatar';
 
 type AvatarProps = {
-  src: string;
+  src?: string; // src is now optional
   alt: string;
   initials: string;
   size?: number; // size now directly accepts a numeric value
@@ -15,25 +13,22 @@ const Avatar = ({
   initials,
   size = 48, // default size is set to 48 pixels
 }: AvatarProps) => {
+  const showInitials = !src;
+
   return (
-    <AvatarPrimitive.Root
-      className={cn(
-        'AvatarRoot inline-flex items-center justify-center overflow-hidden rounded-full bg-slate-900',
-      )}
-      style={{ width: size, height: size }} // Inline style for width and height
+    <NextUIAvatar
+      classNames={{
+        base: "bg-gradient-to-br from-[#5C4747] to-[#000000] z-0",
+        icon: "text-black/80",
+        name:"text-white"
+      }}
+      style={{ width: size, height: size }} // Use style instead of css
+      src={src}
+      alt={alt}
+      name={initials}
     >
-      <AvatarPrimitive.Image
-        className="AvatarImage w-full h-full object-cover"
-        src={src}
-        alt={alt}
-      />
-      <AvatarPrimitive.Fallback
-        className="AvatarFallback w-full h-full flex items-center justify-center text-base text-white leading-none font-semibold"
-        delayMs={600}
-      >
-        {initials}
-      </AvatarPrimitive.Fallback>
-    </AvatarPrimitive.Root>
+      {showInitials && initials}
+    </NextUIAvatar>
   );
 };
 

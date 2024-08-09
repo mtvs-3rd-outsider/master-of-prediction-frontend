@@ -3,9 +3,10 @@ import Image from 'next/image';
 interface TierIconProps {
   name: string;
   size?: number;
+  className?: string; // className 속성 추가
 }
 
-const TierIcon: React.FC<TierIconProps> = ({ name, size = 24 }) => {
+const TierIcon: React.FC<TierIconProps> = ({ name, size = 24 , className  }) => {
   const src = `/images/tier/${name}.svg`; // 상대 경로 사용
   return (
     <Image

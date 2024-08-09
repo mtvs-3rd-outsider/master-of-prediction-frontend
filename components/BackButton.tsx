@@ -12,7 +12,7 @@ const BackButtonContainer: FC = () => {
   };
 
   return (
-      <IconButtonDefault icon={faArrowLeft} onClick={handleBackClick} />
+      <IconButtonDefault icon={faArrowLeft} onClick={handleBackClick}   ariaLabel="Go back" />
   );
 };
 

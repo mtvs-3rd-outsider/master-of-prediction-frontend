@@ -1,5 +1,5 @@
 import TierBadge from "./TierBadge";
-import { Nostradamus } from "./TierIcon.stories";
+import { Nostradamus } from "../stories/TierIcon.stories";
 
 
 const UserCard = ({
@@ -16,7 +16,6 @@ const UserCard = ({
 	followers: string;
 }) => (
 	<>
-	<TierBadge name={name}  ></TierBadge>
 		<div className="mb-2">
 			<div className="text-base font-semibold leading-none">{name}</div>
 			<div className="text-sm text-slate-500 font-medium">@{username}</div>

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Post from '@ui/Post';
 import { ReactNode } from 'react';
 import { Suspense } from 'react';
-
+import {Skeleton} from "@nextui-org/skeleton";
 interface PostItem {
 	name: string;
 	username: string;
@@ -174,5 +174,7 @@ const Feed = () => (
 export default Feed;
 
 function Loading() {
-	return <h2>Loading...</h2>;
+	return	<Skeleton className="rounded-lg">
+	<div className="h-24 rounded-lg bg-default-300"></div>
+  </Skeleton>;
 }
