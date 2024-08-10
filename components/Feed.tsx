@@ -1,22 +1,32 @@
+"use client";
+import React, { ReactNode, useState, useRef, useCallback, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import Post from '@ui/Post';
-import { ReactNode } from 'react';
-import { Suspense } from 'react';
-import {Skeleton} from "@nextui-org/skeleton";
+
+// 동적 임포트로 Post 컴포넌트 로드
+const Post = dynamic(() => import('@ui/Post'), {
+  suspense: true,
+});
+
+// 동적 임포트로 Skeleton 컴포넌트 로드
+const Skeleton = dynamic(() => import('@nextui-org/skeleton'), {
+  suspense: true,
+});
+
 interface PostItem {
-	name: string;
-	username: string;
-	content: string;
-	description: string;
-	date: string;
-	src: string;
-	following: string;
-	followers: string;
-	initials: string;
-	image?: ReactNode;
+  name: string;
+  username: string;
+  content: string;
+  description: string;
+  date: string;
+  src: string;
+  following: string;
+  followers: string;
+  initials: string;
+  image?: ReactNode;
 }
 
-const items: PostItem[] = [
+const initialItems: PostItem[] = [
 	{
 		name: 'Jane Doe',
 		username: 'janedoe',
@@ -29,13 +39,16 @@ const items: PostItem[] = [
 		src: 'https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80',
 		initials: 'JD',
 		image: (
-			<div className="w-full relative z-10 h-80 mb-4">
+			<div className="w-full relative  h-80 mb-4">
 				<Image
-					fill={true}
-					style={{ objectFit: 'cover' }}
+					layout='fill'
+					// fill={true}
+					objectFit='cover'
+					// style={{ objectFit: 'cover' }}
 					className="rounded-3xl"
 					src="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80"
 					alt="Gradient"
+					priority
 				/>
 			</div>
 		),
@@ -131,50 +144,91 @@ const items: PostItem[] = [
 	},
 ];
 
-const Feed = () => (
-	<Suspense fallback={<Loading />}>
-		<ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
-			{items.map(
-				(
-					{
-						name,
-						username,
-						content,
-						date,
-						src,
-						initials,
-						image,
-						following,
-						followers,
-						description,
-					},
-					i,
-				) => (
-					<li key={`username-${i}`} className="p-4">
-						<Post
-							name={name}
-							username={username}
-							content={content}
-							date={date}
-							src={src}
-							initials={initials}
-							description={description}
-							followers={followers}
-							following={following}
-						>
-							{image}
-						</Post>
-					</li>
-				),
-			)}
-		</ul>
-	</Suspense>
-);
+const fetchMoreItems = (currentPage: number): PostItem[] => {
+  return initialItems.map((item, index) => ({
+    ...item,
+    name: `${item.name} ${currentPage}-${index}`,
+  }));
+};
+
+const Feed = () => {
+  const [items, setItems] = useState<PostItem[]>(initialItems);
+  const [page, setPage] = useState(1);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const lastItemRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+
+      if (node) observerRef.current.observe(node);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const newItems = fetchMoreItems(page);
+    setItems((prevItems) => [...prevItems, ...newItems]);
+  }, [page]);
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
+        {items.map(
+          (
+            {
+              name,
+              username,
+              content,
+              date,
+              src,
+              initials,
+              image,
+              following,
+              followers,
+              description,
+            },
+            i,
+          ) => (
+            <li
+              key={`username-${i}`}
+              className="p-4"
+              ref={i === items.length - 1 ? lastItemRef : null}
+            >
+              <Post
+                name={name}
+                username={username}
+                content={content}
+                date={date}
+                src={src}
+                initials={initials}
+                description={description}
+                followers={followers}
+                following={following}
+              >
+                {image}
+              </Post>
+            </li>
+          ),
+        )}
+      </ul>
+    </Suspense>
+  );
+};
 
 export default Feed;
 
-function Loading() {
-	return	<Skeleton className="rounded-lg">
-	<div className="h-24 rounded-lg bg-default-300"></div>
-  </Skeleton>;
-}
+const Loading = () => {
+  return (
+    <Suspense fallback={<div>Loading skeleton...</div>}>
+      <Skeleton className="rounded-lg">
+        <div className="h-24 rounded-lg bg-default-300"></div>
+      </Skeleton>
+    </Suspense>
+  );
+};
