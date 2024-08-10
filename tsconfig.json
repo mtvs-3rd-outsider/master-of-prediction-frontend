@@ -22,7 +22,7 @@
       "@/*": ["./*"],
       "@ui/*": ["components/*"],
 			"@rd/*": ["components/radix/*"],
-			"@styles/*": ["styles/*"],
+			"@styles/*": ["public/styles/*"],
 			"@components/*": ["components/*"],
       "@lib/*": ["lib/*"],
       "@store/*": ["store/*"],
