@@ -8,13 +8,14 @@ interface UserBannerProps {
 
 const UserBanner: FC<UserBannerProps> = ({ imageUrl }) => {
   return (
-    <div className="relative text-center mb-4 h-32"> {/* h-64 for setting height, adjust as needed */}
+    <div className="relative text-center h-28"> {/* h-64 for setting height, adjust as needed */}
       <Image
         src={imageUrl}
         alt="User Banner"
         layout="fill"
         objectFit="cover"
-        className="rounded-lg"
+        className="rounded-3xl"
+        priority
       />
     </div>
   );
