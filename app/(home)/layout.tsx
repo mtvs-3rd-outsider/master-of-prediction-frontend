@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import Nav from '@ui/Nav';
 import type { Metadata, Viewport } from "next";
 import Head from 'next/head';
+import { NextUIProvider } from "@nextui-org/system";
 
 type LayoutProps = {
   children: ReactNode;
@@ -62,15 +63,15 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <title>{APP_DEFAULT_TITLE}</title>
-     
       </Head>
-      <body >
-        {/* <MainLayout> */}
-        <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
-          <Nav />
-          {children}
-        </div>
-        {/* </MainLayout> */}
+      <body>
+        <NextUIProvider>
+          <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
+            {/* Nav 컴포넌트가 로드되기 전에 공간을 확보하여 레이아웃 이동 방지 */}
+              <Nav />
+              {children}
+          </div>
+        </NextUIProvider>
       </body>
     </html>
   );
