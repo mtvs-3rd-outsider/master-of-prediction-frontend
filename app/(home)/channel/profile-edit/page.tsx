@@ -8,8 +8,9 @@ import { RadioGroup, Radio } from "@nextui-org/radio";
 import { DatePicker } from "@nextui-org/date-picker";
 import UserBanner from "@/components/user/UserBanner";
 import {locations} from "./location";
-
-import Avatar from "@/components/radix/Avatar";
+import { CameraIcon } from '@heroicons/react/24/outline'; // 또는 '@heroicons/react/outline'
+import Avatar from "@/components/AvatarWithIcon";
+import BackButton from "@components/BackButton"
 const ProfileEditPage: React.FC = () => {
   const router = useRouter();
   const [name, setName] = useState("John Doe");
@@ -38,22 +39,31 @@ const ProfileEditPage: React.FC = () => {
             저장
           </Button>
         </div>
+        <div className="absolute top-0 left-0 mb-4 p-4 flex justify-start w-full">
+          <BackButton/>
+        </div>
         <div className="sticky  overflow-hidden ">
-          <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" />
+          <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" >
+          <CameraIcon   className="w-12 h-12" color="white"  />
+          </UserBanner>
         </div>
         <div
-          className="relative left-4 top-[-40px] mb-1 h-10"
-          style={{
-            transformOrigin: "bottom center",
-          }}
-        >
-          <Avatar
-            alt="User Avatar"
-            initials="RQ"
-            size={80} // 아바타 크기를 동적으로 설정
-          />
-        </div>
-
+  className="relative left-4 top-[-40px] mb-1 h-10"
+  style={{
+    transformOrigin: "bottom center",
+  }}
+>
+  <div className="relative">
+    <Avatar
+      alt="User Avatar"
+      initials="RQ"
+      size={80} // 아바타 크기를 동적으로 설정
+    >
+       <CameraIcon   className="w-12 h-12" color="white"  />
+    </Avatar>
+   
+  </div>
+</div>
         <form className="space-y-4">
           <Input
             type="text"
