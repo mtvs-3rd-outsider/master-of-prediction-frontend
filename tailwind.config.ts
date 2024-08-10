@@ -3,7 +3,7 @@ import type { Config } from "tailwindcss";
 const { fontFamily } = require("tailwindcss/defaultTheme");
 const defaultTheme = require('tailwindcss/defaultTheme');
 // const withMT = require("@material-tailwind/react/utils/withMT");
-const {nextui} = require("@nextui-org/react");
+const {nextui} = require("@nextui-org/theme");
 
 const config: Config =  ({
   mode: 'jit',
