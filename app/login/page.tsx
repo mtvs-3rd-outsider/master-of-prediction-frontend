@@ -3,13 +3,19 @@ import Head from 'next/head';
 import {Input} from "@nextui-org/input"
 import {Button} from "@nextui-org/button"
 import Link from 'next/link';
+import Image from 'next/image';
 export default function LoginPage() {
   return (
     <main className=" w-full border-x border-slate-200">
      
       <section className="flex flex-col md:flex-row h-screen items-center w-full">
-        <div className="bg-blue-600 hidden lg:block lg:w-1/2 xl:w-2/3 h-full">
-          <img src="bg.jpg" alt="Background Image" className="w-full h-full object-cover" />
+      <div className="bg-blue-600 hidden lg:block lg:w-1/2 xl:w-2/3 h-full relative">
+          <Image
+            src="/images/login-bg.webp"
+            alt="Background Image"
+            className="w-full h-full object-cover"
+            layout="fill" // 또는 width와 height를 지정하세요.
+          />
         </div>
 
         <div className="bg-white w-full md:w-1/2 xl:w-1/3 h-full flex items-center justify-center px-6 lg:px-16 xl:px-12">
