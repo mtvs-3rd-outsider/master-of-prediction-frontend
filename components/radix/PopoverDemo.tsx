@@ -5,11 +5,11 @@ import Accordion from '@rd/Accordion';
 import { ReactNode } from 'react';
 
 import {
-  HiOutlineEllipsisHorizontalCircle,
-  HiOutlineChatBubbleBottomCenterText,
-  HiListBullet,
-  HiOutlineUserGroup,
-} from 'react-icons/hi2';
+  EllipsisHorizontalCircleIcon,
+  ChatBubbleBottomCenterTextIcon,
+  ListBulletIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 interface NavLinkItem {
   href: string;
@@ -21,17 +21,17 @@ const items: NavLinkItem[] = [
   {
     href: '/topics',
     text: 'Topics',
-    icon: <HiOutlineChatBubbleBottomCenterText className="w-6 h-6" />,
+    icon: <ChatBubbleBottomCenterTextIcon className="w-6 h-6" />,
   },
   {
     href: '/lists',
     text: 'Lists',
-    icon: <HiListBullet className="w-6 h-6" />,
+    icon: <ListBulletIcon className="w-6 h-6" />,
   },
   {
     href: '/twitter-circle',
     text: 'Twitter Circle',
-    icon: <HiOutlineUserGroup className="w-6 h-6" />,
+    icon: <UserGroupIcon className="w-6 h-6" />,
   },
 ];
 
@@ -42,7 +42,7 @@ const PopoverDemo = () => (
         className="flex flex-row max-w-fit px-4 py-3 hover:bg-slate-100 focus:outline-none items-center gap-x-4 text-slate-900 my-1 rounded-full"
         aria-label="More options"
       >
-        <HiOutlineEllipsisHorizontalCircle className="w-6 h-6" />
+        <EllipsisHorizontalCircleIcon className="w-6 h-6" /> {/* Heroicons 아이콘 사용 */}
         <div className="hidden xl:inline-flex flex-none text-lg font-medium">
           More
         </div>
@@ -65,7 +65,6 @@ const PopoverDemo = () => (
             </NavItem>
           ))}
         </div>
-
 
         <Accordion />
       </div>

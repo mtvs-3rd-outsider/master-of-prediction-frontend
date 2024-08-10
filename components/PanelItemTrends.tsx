@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { HiOutlineEllipsisHorizontal } from 'react-icons/hi2';
+import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 interface Props {
 	category: string;
@@ -18,7 +18,7 @@ const PanelItemTrends = ({ category, title, stat }: Props) => (
 		</div>
 		<div className="">
 			<Link href="/">
-				<HiOutlineEllipsisHorizontal className="w-6 h-6" />
+				<EllipsisHorizontalIcon className="w-6 h-6" /> {/* Heroicons 아이콘 사용 */}
 			</Link>
 		</div>
 	</div>

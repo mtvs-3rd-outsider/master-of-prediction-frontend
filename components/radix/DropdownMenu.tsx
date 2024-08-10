@@ -5,15 +5,16 @@ import { ReactNode } from 'react';
 import NavItem from '@ui/NavItem';
 
 import {
-	HiOutlineEllipsisHorizontal,
-	HiOutlineFaceFrown,
-	HiOutlineUserPlus,
-	HiOutlineQueueList,
-	HiOutlineSpeakerXMark,
-	HiOutlineNoSymbol,
-	HiCodeBracket,
-	HiOutlineFlag,
-} from 'react-icons/hi2';
+	// Importing directly from @heroicons/react/outline
+	EllipsisHorizontalIcon,
+	FaceFrownIcon,
+	UserPlusIcon,
+	QueueListIcon,
+	SpeakerXMarkIcon,
+	NoSymbolIcon,
+	CodeBracketIcon,
+	FlagIcon,
+} from '@heroicons/react/24/outline';
 
 interface AccordionItem {
 	href: string;
@@ -31,49 +32,49 @@ const items: AccordionItem[] = [
 		text: "This Tweet's not helpful",
 		width: 'full',
 		size: 'small',
-		icon: <HiOutlineFaceFrown className="w-4 h-4" />,
+		icon: <FaceFrownIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
 		text: `Follow @${username}`,
 		width: 'full',
 		size: 'small',
-		icon: <HiOutlineUserPlus className="w-4 h-4" />,
+		icon: <UserPlusIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
 		text: `Add/remove @${username} from Lists`,
 		width: 'full',
 		size: 'small',
-		icon: <HiOutlineQueueList className="w-4 h-4" />,
+		icon: <QueueListIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
 		text: `Mute @${username}`,
 		width: 'full',
 		size: 'small',
-		icon: <HiOutlineSpeakerXMark className="w-4 h-4" />,
+		icon: <SpeakerXMarkIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
 		text: `Block @${username}`,
 		width: 'full',
 		size: 'small',
-		icon: <HiOutlineNoSymbol className="w-4 h-4" />,
+		icon: <NoSymbolIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
 		text: 'Embed Tweet',
 		width: 'full',
 		size: 'small',
-		icon: <HiCodeBracket className="w-4 h-4" />,
+		icon: <CodeBracketIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
 		text: 'Report Tweet',
 		width: 'full',
 		size: 'small',
-		icon: <HiOutlineFlag className="w-4 h-4" />,
+		icon: <FlagIcon className="w-4 h-4" />,
 	},
 ];
 
@@ -84,7 +85,7 @@ const DropdownMenuDemo = () => (
 				className="IconButton hover:bg-slate-200 rounded-full"
 				aria-label="Customize options"
 			>
-				<HiOutlineEllipsisHorizontal className="h-6 w-6" />
+				<EllipsisHorizontalIcon className="h-6 w-6" />
 			</button>
 		</DropdownMenuPrimitive.Trigger>
 
@@ -102,7 +103,6 @@ const DropdownMenuDemo = () => (
 				{items.map(({ href, text, width, size, icon }, i) => (
 					<DropdownMenuPrimitive.Item
 						key={`header-${i}`}
-						// value={`item-${i + 1}`}
 						className="focus:outline-none overflow-hidden"
 					>
 						<NavItem href="{href}" width={width} size={size}>

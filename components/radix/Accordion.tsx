@@ -4,15 +4,15 @@ import NavItem from '@ui/NavItem';
 import { ReactNode } from 'react';
 
 import {
-  HiChevronDown,
-  HiOutlineChartBarSquare,
-  HiOutlineIdentification,
-  HiOutlineFilm,
-  HiOutlineBanknotes,
-  HiOutlineCog8Tooth,
-  HiOutlineLifebuoy,
-  HiOutlineComputerDesktop,
-} from 'react-icons/hi2';
+  ChevronDownIcon,
+  ChartBarSquareIcon,
+  IdentificationIcon,
+  FilmIcon,
+  BanknotesIcon,
+  Cog8ToothIcon,
+  LifebuoyIcon,
+  ComputerDesktopIcon,
+} from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 interface AccordionItemProps {
   header: string;
@@ -24,7 +24,7 @@ const items: AccordionItemProps[] = [
     header: 'Creator Studio',
     content: (
       <NavItem href="/" width="full" size="default">
-        <HiOutlineChartBarSquare className="w-4 h-4" />
+        <ChartBarSquareIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
         <div className="inline-flex flex-none text-sm font-medium">
           Analytics
         </div>
@@ -36,19 +36,19 @@ const items: AccordionItemProps[] = [
     content: (
       <>
         <NavItem href="/" width="full" size="default">
-          <HiOutlineIdentification className="w-4 h-4" />
+          <IdentificationIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
           <div className="inline-flex flex-none text-sm font-medium">
             Twitter for Professionals
           </div>
         </NavItem>
         <NavItem href="/" width="full" size="default">
-          <HiOutlineFilm className="w-4 h-4" />
+          <FilmIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
           <div className="inline-flex flex-none text-sm font-medium">
             Twitter Ads
           </div>
         </NavItem>
         <NavItem href="/" width="full" size="default">
-          <HiOutlineBanknotes className="w-4 h-4" />
+          <BanknotesIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
           <div className="inline-flex flex-none text-sm font-medium">
             Monetization
           </div>
@@ -61,19 +61,19 @@ const items: AccordionItemProps[] = [
     content: (
       <>
         <NavItem href="/" width="full" size="default">
-          <HiOutlineCog8Tooth className="w-4 h-4" />
+          <Cog8ToothIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
           <div className="inline-flex flex-none text-sm font-medium">
             Settings and Privacy
           </div>
         </NavItem>
         <NavItem href="/" width="full" size="default">
-          <HiOutlineLifebuoy className="w-4 h-4" />
+          <LifebuoyIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
           <div className="inline-flex flex-none text-sm font-medium">
             Help Center
           </div>
         </NavItem>
         <NavItem href="/" width="full" size="default">
-          <HiOutlineComputerDesktop className="w-4 h-4" />
+          <ComputerDesktopIcon className="w-4 h-4" /> {/* Heroicons 아이콘 사용 */}
           <div className="inline-flex flex-none text-sm font-medium">
             Display
           </div>

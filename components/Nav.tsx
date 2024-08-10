@@ -1,15 +1,15 @@
 import { ReactNode } from 'react';
 import NavItem from '@ui/NavItem';
 import AccountNavItem from '@ui/AccountNavItem';
-import { SiTwitter } from 'react-icons/si';
+import Image from 'next/image'; 
 import {
-  HiOutlineHome,
-  HiHashtag,
-  HiOutlineBell,
-  HiOutlineEnvelope,
-  HiOutlineBookmark,
-  HiOutlineUser,
-} from 'react-icons/hi2';
+  HomeIcon,
+  HashtagIcon,
+  BellIcon,
+  EnvelopeIcon,
+  BookmarkIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 interface NavLinkItem {
   href: string;
@@ -21,32 +21,32 @@ const items: NavLinkItem[] = [
   {
     href: '/bettings',
     text: 'Bettings',
-    icon: <HiOutlineHome className="w-6 h-6" />,
+    icon: <HomeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },
   {
     href: '/explore',
     text: 'Hot Topic',
-    icon: <HiHashtag className="w-6 h-6" />,
+    icon: <HashtagIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },
   {
     href: '/notifications',
     text: 'Notifications',
-    icon: <HiOutlineBell className="w-6 h-6" />,
+    icon: <BellIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },
   {
     href: '/messages',
     text: 'Messages',
-    icon: <HiOutlineEnvelope className="w-6 h-6" />,
+    icon: <EnvelopeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },
   {
     href: '/bookmarks',
     text: 'Category Channel',
-    icon: <HiOutlineBookmark className="w-6 h-6" />,
+    icon: <BookmarkIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },
   {
     href: '/channel/1',
     text: 'My Channel',
-    icon: <HiOutlineUser className="w-6 h-6" />,
+    icon: <UserIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },
 ];
 
@@ -56,8 +56,14 @@ const Nav: React.FC = () => {
       <header className="hidden sm:flex w-24 xl:col-span-2">
         <div className="flex flex-1 xl:w-60 flex-col fixed h-full">
           <div className="flex flex-col flex-1">
-            <NavItem href="/home" width="inline" size="default">
-              <SiTwitter className="w-6 h-6" />
+            <NavItem href="/" width="inline" size="default">
+            <Image 
+                src="/images/logo.png" 
+                alt="Logo" 
+                width={24} 
+                height={24} 
+                className="w-6 h-6" 
+              />  {/* next/image 컴포넌트를 사용하여 트위터 로고 렌더링 */}
             </NavItem>
             {items.map(({ href, text, icon }, i) => (
               <div key={`header-${i}`} className="rounded-lg focus:outline-none overflow-hidden">

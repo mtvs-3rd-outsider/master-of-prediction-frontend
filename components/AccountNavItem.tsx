@@ -1,8 +1,7 @@
 import Avatar from '@rd/Avatar';
 import TierIcon from '@components/TierIcon';
 import Link from 'next/link';
-
-import { HiOutlineEllipsisHorizontal } from 'react-icons/hi2';
+import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';  // Heroicons에서 아이콘 가져오기
 
 const AccountNavItem = () => (
 	<div className="flex flex-1 items-center gap-x-2 px-4 py-8 ">
@@ -15,12 +14,13 @@ const AccountNavItem = () => (
 				/>
 			</div>
 			
-			<div className="hidden xl:flex flex-col ">
-			<div className="flex flex-1 gap-x-1 text-sm items-center">
-				<span className="text-xs bg-slate-200 rounded-full py-0 px-2 cursor-pointer inline-flex items-center justify-center hover:bg-slate-300">
-			<TierIcon name="노스트라다무스" size={15} className="mr-1 px-2"></TierIcon>
-			노스트라다무스</span>
-			</div>
+			<div className="hidden xl:flex flex-col">
+				<div className="flex flex-1 gap-x-1 text-sm items-center">
+					<span className="text-xs bg-slate-200 rounded-full py-0 px-2 cursor-pointer inline-flex items-center justify-center hover:bg-slate-300">
+						<TierIcon name="노스트라다무스" size={15} className="mr-1 px-2" />
+						노스트라다무스
+					</span>
+				</div>
 
 				<p className="text-base font-semibold">Roy Quilor</p>
 				<p className="text-sm text-slate-600 font-medium">@RoyQuilor</p>
@@ -28,7 +28,7 @@ const AccountNavItem = () => (
 		</div>
 		<div className="hidden xl:flex">
 			<Link href="/">
-				<HiOutlineEllipsisHorizontal className="w-6 h-6" />
+				<EllipsisHorizontalIcon className="w-6 h-6" />  {/* Heroicons 아이콘 사용 */}
 			</Link>
 		</div>
 	</div>

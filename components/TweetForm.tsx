@@ -3,12 +3,12 @@ import Avatar from '@rd/Avatar';
 import Link from 'next/link';
 import Button from '@ui/Button';
 import {
-	RiImage2Line,
-	RiFileGifLine,
-	RiChatPollLine,
-	RiEmotionLine,
-	RiMapPin2Line,
-} from 'react-icons/ri';
+	PhotoIcon,
+	GifIcon, // Gif 아이콘은 Heroicons에서 제공되지 않으므로 유사한 아이콘을 선택
+	ChartBarIcon,
+	FaceSmileIcon,
+	MapPinIcon,
+} from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 import { cva } from 'class-variance-authority';
 import { useState } from 'react';
@@ -47,23 +47,23 @@ function TweetForm({ width }: { width: 'default' | 'full' }) {
 				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-x-4 px-4">
 						<Link href="/">
-							<RiImage2Line className="w-5 h-5" />
+							<PhotoIcon className="w-5 h-5" /> {/* Heroicons 아이콘 사용 */}
 							<span className="sr-only">Image</span>
 						</Link>
 						<Link href="/">
-							<RiFileGifLine className="w-5 h-5" />
+							<GifIcon className="w-5 h-5" /> {/* 유사한 아이콘으로 대체 */}
 							<span className="sr-only">Gif</span>
 						</Link>
 						<Link href="/">
-							<RiChatPollLine className="w-5 h-5" />
+							<ChartBarIcon className="w-5 h-5" /> {/* Heroicons 아이콘 사용 */}
 							<span className="sr-only">Poll</span>
 						</Link>
 						<Link href="/">
-							<RiEmotionLine className="w-5 h-5" />
+							<FaceSmileIcon className="w-5 h-5" /> {/* Heroicons 아이콘 사용 */}
 							<span className="sr-only">Emoji</span>
 						</Link>
 						<Link href="/">
-							<RiMapPin2Line className="w-5 h-5" />
+							<MapPinIcon className="w-5 h-5" /> {/* Heroicons 아이콘 사용 */}
 							<span className="sr-only">Tag location</span>
 						</Link>
 					</div>

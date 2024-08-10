@@ -1,11 +1,10 @@
-
-import { HiMagnifyingGlass } from 'react-icons/hi2';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 const Search = () => (
 	<div className="sticky top-0 bg-white py-2 mb-3">
 		<form className="flex flex-col flex-1 gap-y-4">
 			<div className="flex flex-1 relative">
-				<HiMagnifyingGlass className="w-5 h-5 left-2.5 top-2 absolute flex items-center" />
+				<MagnifyingGlassIcon className="w-5 h-5 left-2.5 top-2 absolute flex items-center" /> {/* Heroicons 아이콘 사용 */}
 				<input
 					type="search"
 					placeholder="Search"
