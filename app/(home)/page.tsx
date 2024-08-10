@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '@ui/Header';
-import Tabs from '@rd/Tabs';
+import Feed from '@ui/Feed';
 import Search from '@ui/Search';
 import Panel from '@ui/Panel';
 import PanelItem from '@ui/PanelItem';
@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
     <>
       <main className="col-span-5 w-full border-x border-slate-200">
         <Header title="Home" />
-        <Tabs />
+        <Feed />
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
         <div className="sticky top-0">
