@@ -3,10 +3,10 @@ import { ReactNode } from 'react';
 import Nav from '@ui/Nav';
 import type { Metadata, Viewport } from "next";
 import Head from 'next/head';
+
 type LayoutProps = {
   children: ReactNode;
 };
-
 
 const APP_NAME = "PWA App";
 const APP_DEFAULT_TITLE = "My Awesome PWA App";
@@ -25,7 +25,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: APP_DEFAULT_TITLE,
-    // startUpImage: [],
   },
   formatDetection: {
     telephone: false,
@@ -52,26 +51,27 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#FFFFFF",
 };
+
 export default function RootLayout({ children }: LayoutProps): ReactNode {
   return (
-
     <html lang="en">
-
-      <head>
-      </head>
-      <body>
-            {/* <MainLayout> */}
-            <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
-              <h1>hi</h1>
-        {/* <Nav /> */}
-        {children}
-
-      </div>
-
-            {/* </MainLayout> */}
-
+      <Head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content={APP_DESCRIPTION} />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <title>{APP_DEFAULT_TITLE}</title>
+     
+      </Head>
+      <body >
+        {/* <MainLayout> */}
+        <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
+          <Nav />
+          {children}
+        </div>
+        {/* </MainLayout> */}
       </body>
-
     </html>
   );
 }
