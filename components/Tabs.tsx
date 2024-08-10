@@ -12,32 +12,32 @@ const CustomTabs = () => {
         variant="underlined"
         classNames={{
           tabList: "gap-6 w-full   relative rounded-none p-0 border-b border-divider ",
-          cursor: "w-full bg-[#1E2729]",
+          cursor: "w-2/3 h-1 rounded-full bg-[#1E2729] ",
           tab: " h-12",
           tabContent: "group-data-[selected=true]:text-[#171E1F]"
         }}
       >
         <Tab
-          key="photos"
+          key="posts"
           title={
             <div className="flex items-center space-x-2">
-              <span>Photos</span>
+              <span>Posts</span>
             </div>
           }
         />
         <Tab
-          key="music"
+          key="replies"
           title={
             <div className="flex items-center space-x-2">
-              <span>Music</span>
+              <span>Replies</span>
             </div>
           }
         />
         <Tab
-          key="videos"
+          key="bettings"
           title={
             <div className="flex items-center space-x-2">
-              <span>Videos</span>
+              <span>Bettings</span>
             </div>
           }
         />
