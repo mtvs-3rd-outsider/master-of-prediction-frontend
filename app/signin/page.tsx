@@ -1,12 +1,12 @@
-// pages/login.js
+// pages/signin.js
 import Head from 'next/head';
-import {Input} from "@nextui-org/input"
-import {Button} from "@nextui-org/button"
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
 import Link from 'next/link';
-export default function LoginPage() {
+
+export default function SignInPage() {
   return (
-    <main className=" w-full border-x border-slate-200">
-     
+    <main className="w-full border-x border-slate-200">
       <section className="flex flex-col md:flex-row h-screen items-center w-full">
         <div className="bg-blue-600 hidden lg:block lg:w-1/2 xl:w-2/3 h-full">
           <img src="bg.jpg" alt="Background Image" className="w-full h-full object-cover" />
@@ -15,42 +15,75 @@ export default function LoginPage() {
         <div className="bg-white w-full md:w-1/2 xl:w-1/3 h-full flex items-center justify-center px-6 lg:px-16 xl:px-12">
           <div className="w-full max-w-md">
             <Link href={"/"}>
-            <Button variant="light" size="lg" className="p-2 font-bold">예측의 달인 </Button>
+              <Button variant="light" size="lg" className="p-2 font-bold">예측의 달인</Button>
             </Link>
             <form className="mt-6" action="#" method="POST">
-              <div>
+                {/* <label className="block text-gray-700">Full Name</label> */}
+                <Input
+                  isRequired
+                  type="text"
+                  label="Full Name"
+                  autoFocus
+                  required
+              variant='bordered'
+
+                  
+                />
+              
+              <div className='inline-flex w-full mt-4'>
                 {/* <label className="block text-gray-700">Email Address</label> */}
                 <Input
-                isRequired
+                  isRequired
                   type="email"
                   label="Email"
-                  autoFocus
-                  errorMessage="Please enter a valid email"
                   autoComplete="on"
                   required
-                />
-              </div>
+                  className='w-2/3'
+              variant='bordered'
 
-              <div className="mt-4">
+                />
+              <Button
+                className="w-1/3 ml-3 block bg-blue-500 hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3 "
+              >
+                발송
+              </Button>
+              </div>
+              <div className='inline-flex w-full mt-4'>
+                {/* <label className="block text-gray-700">Email Address</label> */}
                 <Input
-                isRequired
-                label="password"
+                  isRequired
+                  type="number"
+                  label="code"
+                  autoComplete="on"
+              variant='bordered'
+                  
+                  required
+                  className='w-2/3'
+                />
+              <Button
+                className="w-1/3 ml-3 block  hover:bg-gray-400  text-black font-semibold rounded-lg px-4 py-3 "
+              variant='bordered'
+              >
+                인증확인
+              </Button>
+              </div>
+              <div className="mt-4">
+                {/* <label className="block text-gray-700">Password</label> */}
+                <Input
+                  isRequired
+                  label="Password"
                   type="password"
+              variant='bordered'
+
                   required
                 />
-              </div>
-
-              <div className="text-right mt-2">
-                <Link href="#" className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">
-                  Forgot Password?
-                </Link>
               </div>
 
               <Button
                 type="submit"
                 className="w-full block bg-blue-500 hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3 mt-6"
               >
-                Log In
+                Sign Up
               </Button>
             </form>
 
@@ -76,14 +109,14 @@ export default function LoginPage() {
                   <path clipPath="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z" />
                   <path clipPath="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z" />
                 </svg>
-                <span className="ml-4">Log in with Google</span>
+                <span className="ml-4">Sign up with Google</span>
               </div>
             </Button>
 
             <p className="mt-8">
-              Need an account?
-              <Link href="/signin" className="text-blue-500 hover:text-blue-700 font-semibold">
-                Create an account
+              Already have an account? 
+              <Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">
+                Log in
               </Link>
             </p>
 
