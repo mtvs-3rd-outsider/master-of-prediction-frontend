@@ -33,7 +33,7 @@ const NavItemStyles = cva(
 );
 
 const NavItem = ({ href, children, width, size }: Props) => (
-	<Link className={NavItemStyles({ width, size })} href={href}>
+	<Link className={NavItemStyles({ width, size })} href={href} prefetch={true} scroll={true}> 
 		{children}
 	</Link>
 );
