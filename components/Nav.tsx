@@ -10,6 +10,8 @@ import {
   BookmarkIcon,
   UserIcon,
 } from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
+import {Button} from '@nextui-org/button';
+import Link from 'next/link';
 
 interface NavLinkItem {
   href: string;
@@ -77,6 +79,11 @@ const Nav: React.FC = () => {
             ))}
           </div>
           <div>
+            <Link href="/login" prefetch={true}>
+          <Button radius="full"  variant="solid" className="font-bold w-full p-3">
+        로그인
+      </Button>
+      </Link>
             <AccountNavItem />
           </div>
         </div>

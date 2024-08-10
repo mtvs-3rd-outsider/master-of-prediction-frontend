@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import Avatar from "@components/radix/Avatar";
-import { Tabs, Tab } from "@nextui-org/tabs";
-import TierBadge from "@components/TierBadge";
 import TierIcon from "@components/TierIcon";
 import UserBanner from "@components/user/UserBanner";
 import { Button } from "@nextui-org/button";
@@ -13,8 +11,10 @@ import {
   LinkIcon,
   CakeIcon,
   CalendarIcon,
+  SwatchIcon
 } from "@heroicons/react/24/outline";
 import IconText from "./IconText";
+import Link from "next/link";
 
 const MyChannel: React.FC = () => {
   return (
@@ -39,11 +39,13 @@ const MyChannel: React.FC = () => {
         >
           <EnvelopeIcon className="h-6 w-6" />
         </Button>
-        <Button radius="full" variant="solid" className="font-bold">
-          Follow
-        </Button>
+        <Link href="profile-edit">
+      <Button radius="full"  variant="solid" className="font-bold p-3">
+        프로필 수정
+      </Button>
+    </Link>
       </div>
-      <div className="relative  top-[-40px] mb-1 h-10 flex flex-col ">
+      <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col ">
         <div
           className="relative left-4 top-[-40px] mb-1 h-10"
           style={{
@@ -57,8 +59,7 @@ const MyChannel: React.FC = () => {
           />
         </div>
 
-        <div>
-          {/* <TierBadge name={"nostradamus"}/> */}
+        <div >
           <div className="inline-flex gap-1">
             <TierIcon name={"견습생"} size={23} className="px-2" />{" "}
             <h1 className="text-md m-auto font-bold">홍길동</h1>{" "}
@@ -66,7 +67,7 @@ const MyChannel: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="mt-4">
+      <div className="mt-2">
         <p className="text-sm text-gray-800">
           This is a short bio about the user.
         </p>
@@ -74,7 +75,9 @@ const MyChannel: React.FC = () => {
           <IconText icon={MapPinIcon} text="Earth" />
           <IconText icon={LinkIcon} text="master-of-prediction.com" />
           <IconText icon={CakeIcon} text="November 7,1987" />
-          <IconText icon={CalendarIcon} text="Joined November 2010 " />
+          <IconText icon={CalendarIcon} text="Joined November 2010" />
+          <IconText icon={CalendarIcon} text="Joined November 2010" />
+          <IconText icon={SwatchIcon} text="남" />
         </div>
         <div className="mt-4 flex space-x-1">
           <span className="text-xs font-bold">30000</span>
@@ -101,11 +104,11 @@ const MyChannel: React.FC = () => {
         <div className="flex mt-1 space-x-4">
           <div>
             <span className="text-xs font-bold">100 </span>
-            <button className="text-xs text-gray-600"> Followings</button>
+            <Button variant="light" className="text-xs  p-1 text-gray-600"> Followings</Button>
           </div>
           <div>
             <span className="text-xs font-bold">200 </span>
-            <button className="text-xs text-gray-600"> Followers</button>
+            <Button variant="light" className="text-xs p-1 text-gray-600"> Followers</Button>
           </div>
         </div>
       </div>
