@@ -65,7 +65,7 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
         <title>{APP_DEFAULT_TITLE}</title>
       </Head>
       <body>
-        <NextUIProvider>
+        <NextUIProvider className="light text-foreground bg-background">
           <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
             {/* Nav 컴포넌트가 로드되기 전에 공간을 확보하여 레이아웃 이동 방지 */}
               <Nav />
