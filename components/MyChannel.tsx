@@ -3,6 +3,7 @@ import React from "react";
 import Avatar from "@components/radix/Avatar";
 import TierIcon from "@components/TierIcon";
 import UserBanner from "@components/user/UserBanner";
+import { usePathname , useRouter } from 'next/navigation';
 import { Button } from "@nextui-org/button";
 import {
   EllipsisHorizontalIcon,
@@ -17,6 +18,16 @@ import IconText from "./IconText";
 import Link from "next/link";
 
 const MyChannel: React.FC = () => {
+ const  router= useRouter();
+  const pathname = usePathname(); // 현재 경로 가져오기
+  const handleSubscribeClick = () => {
+    router.push(`${pathname}/subscribe`);
+  };
+
+
+  const handleClick = () => {
+    router.push('profile-edit');
+  };
   return (
     <div className="p-4 ">
       <div className="sticky  overflow-hidden ">
@@ -39,11 +50,9 @@ const MyChannel: React.FC = () => {
         >
           <EnvelopeIcon className="h-6 w-6" />
         </Button>
-        <Link href="profile-edit">
-      <Button radius="full"  variant="solid" className="font-bold p-3">
+      <Button radius="full" onClick={handleClick}  variant="solid" className="font-bold px-3 py-2" color="primary">
         프로필 수정
       </Button>
-    </Link>
       </div>
       <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col ">
         <div
@@ -104,11 +113,23 @@ const MyChannel: React.FC = () => {
         <div className="flex mt-1 space-x-4">
           <div>
             <span className="text-xs font-bold">100 </span>
-            <Button variant="light" className="text-xs  p-1 text-gray-600"> Followings</Button>
+            <Button
+        variant="light"
+        className="text-xs p-1 text-gray-600"
+        onClick={handleSubscribeClick}
+      >
+        Followings
+      </Button>
           </div>
           <div>
             <span className="text-xs font-bold">200 </span>
-            <Button variant="light" className="text-xs p-1 text-gray-600"> Followers</Button>
+            <Button
+        variant="light"
+        className="text-xs p-1 text-gray-600"
+        onClick={handleSubscribeClick}
+      >
+        Followers
+      </Button>
           </div>
         </div>
       </div>

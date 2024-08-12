@@ -1,18 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Select, SelectItem } from "@nextui-org/select";
 import { RadioGroup, Radio } from "@nextui-org/radio";
 import { DatePicker } from "@nextui-org/date-picker";
-import UserBanner from "@/components/user/UserBanner";
+import UserBanner from "@components/user/UserBanner";
 import {locations} from "./location";
 import { CameraIcon } from '@heroicons/react/24/outline'; // 또는 '@heroicons/react/outline'
-import Avatar from "@/components/AvatarWithIcon";
+import Avatar from "@components/AvatarWithIcon";
 import BackButton from "@components/BackButton"
+import {getParentPath} from "@util/path"
+// 현재 경로에서 마지막 세그먼트를 제거한 경로를 계산하는 함수
 const ProfileEditPage: React.FC = () => {
   const router = useRouter();
+  const pathName = usePathname();
   const [name, setName] = useState("John Doe");
   const [username, setUsername] = useState("@johndoe");
   const [location, setLocation] = useState("New York, USA");
@@ -40,7 +43,7 @@ const ProfileEditPage: React.FC = () => {
           </Button>
         </div>
         <div className="absolute top-0 left-0 mb-4 p-4 flex justify-start w-full">
-          <BackButton/>
+        <BackButton href={getParentPath(pathName)} />
         </div>
         <div className="sticky  overflow-hidden ">
           <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" >

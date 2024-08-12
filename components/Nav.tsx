@@ -1,7 +1,9 @@
+"use client";
 import { ReactNode } from 'react';
 import NavItem from '@ui/NavItem';
 import AccountNavItem from '@ui/AccountNavItem';
 import Image from 'next/image'; 
+import { useRouter } from 'next/navigation';
 import {
   HomeIcon,
   HashtagIcon,
@@ -53,6 +55,10 @@ const items: NavLinkItem[] = [
 ];
 
 const Nav: React.FC = () => {
+  const router = useRouter();
+  const handleClick = () => {
+    router.push('/login');
+  };
   return (
     <>
       <header className="hidden sm:flex w-24 xl:col-span-2">
@@ -79,11 +85,15 @@ const Nav: React.FC = () => {
             ))}
           </div>
           <div>
-            <Link href="/login" prefetch={true}>
-          <Button radius="full"  variant="solid" className="font-bold w-full p-3">
-        로그인
-      </Button>
-      </Link>
+          <Button
+      radius="full"
+      variant="solid"
+      color="primary"
+      className="font-bold w-full p-3"
+      onClick={handleClick}
+    >
+      로그인
+    </Button>
             <AccountNavItem />
           </div>
         </div>

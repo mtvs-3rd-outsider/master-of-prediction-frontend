@@ -14,7 +14,7 @@ interface TierBadgeProps {
   name: string;
 }
 
-const TierBadge2: React.FC<TierBadgeProps> = ({ name = "" }) => {
+const TierBadge: React.FC<TierBadgeProps> = ({ name = "" }) => {
   const tier = tierLabels[name] || { name: "Unknown Tier", label: "" };
 
   return (
@@ -25,4 +25,4 @@ const TierBadge2: React.FC<TierBadgeProps> = ({ name = "" }) => {
   );
 };
 
-export default TierBadge2;
+export default TierBadge;

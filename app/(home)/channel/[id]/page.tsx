@@ -1,18 +1,19 @@
 import React from 'react';
-import Tabs2 from '@components/StickyTabs';
+import Tabs from '@components/StickyTabs';
 import Search from '@ui/Search';
 import Panel from '@ui/Panel';
 import PanelItem from '@ui/PanelItem';
 import PanelItemTrends from '@ui/PanelItemTrends';
 import Footer from '@ui/Footer';
-import MyChannel from '@/components/MyChannel';
+import MyChannel from '@components/MyChannel';
 const HomePage: React.FC = () => {
+  const tabs = ['Posts', 'Replies', 'Bettings'];
   return (
     <>
     
       <main className="col-span-5 w-full border-x border-slate-200">
       <MyChannel /> {/* Adding the Component here */}
-      <Tabs2/>
+      <Tabs tabNames={tabs}/>
       {/* <Tabs/> */}
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
