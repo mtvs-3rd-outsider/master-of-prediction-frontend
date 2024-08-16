@@ -17,10 +17,20 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@ui/*": ["components/*"],
+			"@rd/*": ["components/radix/*"],
+			"@styles/*": ["public/styles/*"],
+			"@components/*": ["components/*"],
+      "@lib/*": ["lib/*"],
+      "@store/*": ["store/*"],
+      "@handler/*": ["handler/*"],
+      "@util/*": ["util/*"],
+      "@/*": ["./*"],
+
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/*.stories.tsx"]
 }
