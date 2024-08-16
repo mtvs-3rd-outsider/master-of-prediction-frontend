@@ -30,7 +30,7 @@ function TweetForm({ width }: { width: 'default' | 'full' }) {
 	return (
 		<div className={TweetFormStyles({ width })}>
 			<Avatar
-				src="https://pbs.twimg.com/profile_images/1489998205236527108/q2REh8nW_400x400.jpg"
+				// src="https://pbs.twimg.com/profile_images/1489998205236527108/q2REh8nW_400x400.jpg"
 				alt="Roy Quilor"
 				initials="RQ"
 			/>

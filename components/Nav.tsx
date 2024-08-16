@@ -23,7 +23,7 @@ interface NavLinkItem {
 
 const items: NavLinkItem[] = [
   {
-    href: '/bettings',
+    href: '/',
     text: 'Bettings',
     icon: <HomeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
   },

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Image from 'next/image';
 type AvatarProps = {
   src?: string; // src is optional
   alt: string;
@@ -24,7 +24,7 @@ const Avatar = ({
       style={{ width: size, height: size }}
     >
       {src ? (
-        <img
+        <Image
           src={src}
           alt={alt}
           className="object-cover w-full h-full"

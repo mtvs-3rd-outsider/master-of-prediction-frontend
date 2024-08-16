@@ -2,16 +2,12 @@
 import React, { ReactNode, useState, useRef, useCallback, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-
+import { Skeleton  } from '@nextui-org/skeleton';
 // 동적 임포트로 Post 컴포넌트 로드
 const Post = dynamic(() => import('@ui/Post'), {
   suspense: true,
 });
 
-// 동적 임포트로 Skeleton 컴포넌트 로드
-const Skeleton = dynamic(() => import('@nextui-org/skeleton'), {
-  suspense: true,
-});
 
 interface PostItem {
   name: string;
@@ -154,10 +150,10 @@ const fetchMoreItems = (currentPage: number): PostItem[] => {
 const Feed = () => {
   const [items, setItems] = useState<PostItem[]>(initialItems);
   const [page, setPage] = useState(1);
-  const observerRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver  | null>(null);
 
   const lastItemRef = useCallback(
-    (node: HTMLDivElement) => {
+    (node: HTMLLIElement ) => {
       if (observerRef.current) observerRef.current.disconnect();
 
       observerRef.current = new IntersectionObserver((entries) => {
