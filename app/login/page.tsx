@@ -1,10 +1,71 @@
 // pages/login.js
+"use client";
 import Head from 'next/head';
 import {Input} from "@nextui-org/input"
 import {Button} from "@nextui-org/button"
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { NextApiRequest, NextApiResponse } from 'next';
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<String | null>(null);
+  const router = useRouter();
+  function getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    console.log(value)
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    return null;
+  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    
+  
+    try {
+      const response = await axios.post(
+        'https://master-of-prediction.shop:8081/api/v1/auth/login',
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      const accessToken=  getCookie("accessToken")
+      console.log('Login successful:', response.data);
+      //     // 로그인 후 사용자 정보 API 호출
+        const userInfoResponse = await axios.get(
+            'https://master-of-prediction.shop:8081/api/v1/user/info', // 사용자 정보 API 엔드포인트
+            {
+              withCredentials: true,
+            }
+        );
+          const { userID, username, displayName, tier, userURL } = userInfoResponse.data;
+          console.log('User Info:', { userID, username, displayName, tier, userURL });
+          
+      //     // 필요한 로직 처리 후 홈 페이지로 리다이렉트
+      //     router.push('/');  // '/'는 home 페이지를 의미
+  
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data.message || err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    }
+  };
+  
+  const handleGoogleLogin = () => {
+    router.push ("https://master-of-prediction.shop:8081/oauth2/authorization/google");
+  };
+
+
   return (
     <main className=" w-full border-x border-slate-200">
      
@@ -23,7 +84,7 @@ export default function LoginPage() {
             <Link href={"/"}>
             <Button variant="light" size="lg" className="p-2 font-bold">예측의 달인 </Button>
             </Link>
-            <form className="mt-6" action="#" method="POST">
+            <form className="mt-6" onSubmit={handleSubmit} >
               <div>
                 {/* <label className="block text-gray-700">Email Address</label> */}
                 <Input
@@ -33,6 +94,8 @@ export default function LoginPage() {
                   autoFocus
                   errorMessage="Please enter a valid email"
                   autoComplete="on"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -42,10 +105,12 @@ export default function LoginPage() {
                 isRequired
                 label="password"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
-
+              {error && <p className="text-red-500 mt-2">{error}</p>}
               <div className="text-right mt-2">
                 <Link href="#" className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">
                   Forgot Password?
@@ -65,6 +130,7 @@ export default function LoginPage() {
             <Button
               type="button"
               className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
+              onClick={handleGoogleLogin}
             >
               <div className="flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 48 48">
