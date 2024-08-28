@@ -38,16 +38,16 @@ export default function LoginPage() {
         }
       );
       const accessToken=  getCookie("accessToken")
+      console.log('Login successful:', accessToken);
       console.log('Login successful:', response.data);
-      //     // 로그인 후 사용자 정보 API 호출
-        const userInfoResponse = await axios.get(
-            'https://master-of-prediction.shop:8081/api/v1/user/info', // 사용자 정보 API 엔드포인트
-            {
-              withCredentials: true,
-            }
-        );
-          const { userID, username, displayName, tier, userURL } = userInfoResponse.data;
-          console.log('User Info:', { userID, username, displayName, tier, userURL });
+        // const userInfoResponse = await axios.get(
+        //     'https://master-of-prediction.shop:8081/api/v1/user/info', // 사용자 정보 API 엔드포인트
+        //     {
+        //       withCredentials: true,
+        //     }
+        // );
+          // const { userID, username, displayName, tier, userURL } = userInfoResponse.data;
+          // console.log('User Info:', { userID, username, displayName, tier, userURL });
           
       //     // 필요한 로직 처리 후 홈 페이지로 리다이렉트
       //     router.push('/');  // '/'는 home 페이지를 의미
