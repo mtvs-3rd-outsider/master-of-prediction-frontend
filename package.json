@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prod": "next build && next start ",
-    "dev": "next dev",
-    "dev-ssl": "node server.js ",
-    "build": "next build",
-    "start": "next start ",
-    "lint": "next lint",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "prod": "bun next build && next start ",
+    "prod-ssl": "bun  next build  && node server-prod.js ",
+    "dev": "bun  next dev",
+    "dev-ssl": "bun  node server.js ",
+    "build": "bun  next build",
+    "start": "bun  next start ",
+    "lint": "bun next lint",
+    "storybook": "bun storybook dev -p 6006",
+    "build-storybook": "bun storybook build"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.8",
