@@ -1,3 +1,4 @@
+"use client";
 import { Avatar as NextUIAvatar } from '@nextui-org/avatar';
 
 type AvatarProps = {

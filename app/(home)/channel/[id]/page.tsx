@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import Tabs from '@components/StickyTabs';
 import Search from '@ui/Search';
