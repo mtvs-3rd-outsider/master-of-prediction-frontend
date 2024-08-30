@@ -1,3 +1,4 @@
+
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
 const Search = () => (
