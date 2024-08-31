@@ -27,6 +27,7 @@
       "@store/*": ["store/*"],
       "@handler/*": ["handler/*"],
       "@util/*": ["util/*"],
+      "@api/*": ["handler/axios/*"],
       "@/*": ["./*"],
 
     }

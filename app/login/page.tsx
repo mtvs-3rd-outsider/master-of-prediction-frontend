@@ -9,6 +9,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { NextApiRequest, NextApiResponse } from 'next';
+import apiClient from '@api/axios';  
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,16 +28,10 @@ export default function LoginPage() {
     
   
     try {
-      const response = await axios.post(
-        'https://master-of-prediction.shop:8081/api/v1/auth/login',
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await apiClient.post('/auth/login', {
+        email,
+        password,
+    });
       const accessToken=  getCookie("accessToken")
       console.log('Login successful:', accessToken);
       console.log('Login successful:', response.data);
