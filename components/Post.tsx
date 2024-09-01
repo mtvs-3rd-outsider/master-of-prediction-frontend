@@ -1,3 +1,4 @@
+"use client";
 import { ReactNode } from 'react';
 import DropdownMenuDemo from '@rd/DropdownMenu';
 import HoverCard from '@rd/HoverCard';

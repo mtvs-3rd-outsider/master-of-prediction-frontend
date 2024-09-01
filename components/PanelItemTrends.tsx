@@ -1,3 +1,4 @@
+"use client"
 import Link from 'next/link';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
 
