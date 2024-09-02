@@ -1,9 +1,10 @@
+// components/MyChannel.tsx (클라이언트 컴포넌트)
 "use client";
 import React from "react";
 import Avatar from "@components/radix/Avatar";
 import TierIcon from "@components/TierIcon";
 import UserBanner from "@components/user/UserBanner";
-import { usePathname , useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from "@nextui-org/button";
 import {
   EllipsisHorizontalIcon,
@@ -15,22 +16,46 @@ import {
   SwatchIcon
 } from "@heroicons/react/24/outline";
 import IconText from "./IconText";
-import Link from "next/link";
+import fetchWithBaseURL from "@handler/fetch/fetch";
 
-const MyChannel: React.FC = () => {
- const  router= useRouter();
+type MyChannelProps = {
+  user: {
+    name: string;
+    username: string;
+    bio: string;
+    location: string;
+    website: string;
+    birthdate: string;
+    joinedDate: string;
+    gender: string;
+    points: number;
+    transactions: number;
+    profitRate: string;
+    positionValue: string;
+    tradeCount: number;
+    followingCount: number;
+    followerCount: number;
+  };
+};
+// 데이터 페칭 함수: userId를 사용하여 API 요청
+async function fetchUserData(userId: string) {
+  return fetchWithBaseURL(`/my-channel/${userId}`);
+}
+const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
+  const router = useRouter();
   const pathname = usePathname(); // 현재 경로 가져오기
+
   const handleSubscribeClick = () => {
     router.push(`${pathname}/subscribe`);
   };
 
-
   const handleClick = () => {
     router.push('profile-edit');
   };
+
   return (
-    <div className="p-4 ">
-      <div className="sticky  overflow-hidden ">
+    <div className="p-4">
+      <div className="sticky overflow-hidden">
         <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" />
       </div>
       <div className="relative pt-2 flex justify-end gap-2 z-10">
@@ -38,7 +63,7 @@ const MyChannel: React.FC = () => {
           isIconOnly
           radius="full"
           variant="light"
-          aria-label="Take a photo"
+          aria-label="Options"
         >
           <EllipsisHorizontalIcon className="h-6 w-6" />
         </Button>
@@ -46,15 +71,21 @@ const MyChannel: React.FC = () => {
           isIconOnly
           radius="full"
           variant="light"
-          aria-label="Take a photo"
+          aria-label="Message"
         >
           <EnvelopeIcon className="h-6 w-6" />
         </Button>
-      <Button radius="full" onClick={handleClick}  variant="solid" className="font-bold px-3 py-2" color="primary">
-        프로필 수정
-      </Button>
+        <Button
+          radius="full"
+          onClick={handleClick}
+          variant="solid"
+          className="font-bold px-3 py-2"
+          color="primary"
+        >
+          프로필 수정
+        </Button>
       </div>
-      <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col ">
+      <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col">
         <div
           className="relative left-4 top-[-40px] mb-1 h-10"
           style={{
@@ -68,68 +99,67 @@ const MyChannel: React.FC = () => {
           />
         </div>
 
-        <div >
+        <div>
           <div className="inline-flex gap-1">
             <TierIcon name={"견습생"} size={23} className="px-2" />{" "}
-            <h1 className="text-md m-auto font-bold">홍길동</h1>{" "}
-            <p className="text-xs  mb-1 mt-auto text-gray-600">@홍길동</p>
+            <h1 className="text-md m-auto font-bold">{user.name}</h1>{" "}
+            <p className="text-xs mb-1 mt-auto text-gray-600">@{user.username}</p>
           </div>
         </div>
       </div>
       <div className="mt-2">
         <p className="text-sm text-gray-800">
-          This is a short bio about the user.
+          {user.bio}
         </p>
         <div className="flex-wrap gap-3 mt-3">
-          <IconText icon={MapPinIcon} text="Earth" />
-          <IconText icon={LinkIcon} text="master-of-prediction.com" />
-          <IconText icon={CakeIcon} text="November 7,1987" />
-          <IconText icon={CalendarIcon} text="Joined November 2010" />
-          <IconText icon={CalendarIcon} text="Joined November 2010" />
-          <IconText icon={SwatchIcon} text="남" />
+          <IconText icon={MapPinIcon} text={user.location} />
+          <IconText icon={LinkIcon} text={user.website} />
+          <IconText icon={CakeIcon} text={user.birthdate} />
+          <IconText icon={CalendarIcon} text={user.joinedDate} />
+          <IconText icon={SwatchIcon} text={user.gender} />
         </div>
         <div className="mt-4 flex space-x-1">
-          <span className="text-xs font-bold">30000</span>
+          <span className="text-xs font-bold">{user.points}</span>
           <span className="text-xs text-gray-600"> 내 포인트</span>
         </div>
         <div className="mt-2 flex space-x-4">
           <div>
-            <span className="text-xs font-bold">100</span>{" "}
+            <span className="text-xs font-bold">{user.transactions}</span>{" "}
             <span className="text-xs text-gray-600"> 거래량</span>
           </div>
           <div>
-            <span className="text-xs font-bold">200%</span>
+            <span className="text-xs font-bold">{user.profitRate}</span>
             <span className="text-xs text-gray-600"> 손익률</span>
           </div>
           <div>
-            <span className="text-xs font-bold">200p</span>
+            <span className="text-xs font-bold">{user.positionValue}</span>
             <span className="text-xs text-gray-600"> 포지션 가치</span>
           </div>
           <div>
-            <span className="text-xs font-bold">200</span>
+            <span className="text-xs font-bold">{user.tradeCount}</span>
             <span className="text-xs text-gray-600"> 거래수</span>
           </div>
         </div>
         <div className="flex mt-1 space-x-4">
           <div>
-            <span className="text-xs font-bold">100 </span>
+            <span className="text-xs font-bold">{user.followingCount} </span>
             <Button
-        variant="light"
-        className="text-xs p-1 text-gray-600"
-        onClick={handleSubscribeClick}
-      >
-        Followings
-      </Button>
+              variant="light"
+              className="text-xs p-1 text-gray-600"
+              onClick={handleSubscribeClick}
+            >
+              Followings
+            </Button>
           </div>
           <div>
-            <span className="text-xs font-bold">200 </span>
+            <span className="text-xs font-bold">{user.followerCount} </span>
             <Button
-        variant="light"
-        className="text-xs p-1 text-gray-600"
-        onClick={handleSubscribeClick}
-      >
-        Followers
-      </Button>
+              variant="light"
+              className="text-xs p-1 text-gray-600"
+              onClick={handleSubscribeClick}
+            >
+              Followers
+            </Button>
           </div>
         </div>
       </div>

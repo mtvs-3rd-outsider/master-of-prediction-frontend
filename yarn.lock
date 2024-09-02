@@ -7027,6 +7027,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.53.1":
+  version: 5.53.1
+  resolution: "@tanstack/query-core@npm:5.53.1"
+  checksum: 10c0/9014bdf5a21f9ba9830cdd1289deeb29e4b881872b86a2dc60cd2ca06a194284437f371b77ec210897c8500429b4f41371d959cecfddfcc73f067ef09fc77a20
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.52.3":
+  version: 5.52.3
+  resolution: "@tanstack/query-devtools@npm:5.52.3"
+  checksum: 10c0/da3a1f5a2e272fcf2f06f0b089afbf4e1c3ac65c332c1c25ab59cadc1688ad5d1dca84460e45c8c3a6dd63d8158d2e94cb70c4a2486349010bce48bac720632a
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.53.1":
+  version: 5.53.1
+  resolution: "@tanstack/react-query-devtools@npm:5.53.1"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.52.3"
+  peerDependencies:
+    "@tanstack/react-query": ^5.53.1
+    react: ^18 || ^19
+  checksum: 10c0/aa101fb732377db6b488df35d4348307f3cac357f9feffe1c73f55bc95387fd2648476f44904ccdcc400b84f3692d17568717fac90cceb1c955bda04a51548e9
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.53.1":
+  version: 5.53.1
+  resolution: "@tanstack/react-query@npm:5.53.1"
+  dependencies:
+    "@tanstack/query-core": "npm:5.53.1"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/2506360d2dc1b57fedaa42b1a01d2f561a672643bc728f36261ff16764c6f0159a0950be8190b52cfabb8911d96c09f2cd124dc41fd1fbca514a0482db3bd813
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:10.1.0":
   version: 10.1.0
   resolution: "@testing-library/dom@npm:10.1.0"
@@ -14590,6 +14627,8 @@ __metadata:
     "@tailwindcss/aspect-ratio": "npm:^0.4.2"
     "@tailwindcss/forms": "npm:^0.5.7"
     "@tailwindcss/typography": "npm:^0.5.13"
+    "@tanstack/react-query": "npm:^5.53.1"
+    "@tanstack/react-query-devtools": "npm:^5.53.1"
     "@types/next-pwa": "npm:^5"
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"

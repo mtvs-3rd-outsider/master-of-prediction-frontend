@@ -1,5 +1,6 @@
 // pages/login.js
 "use client";
+import useUserStore from '@store/useUserStore';
 import Head from 'next/head';
 import {Input} from "@nextui-org/input"
 import {Button} from "@nextui-org/button"
@@ -35,18 +36,31 @@ export default function LoginPage() {
       const accessToken=  getCookie("accessToken")
       console.log('Login successful:', accessToken);
       console.log('Login successful:', response.data);
-        // const userInfoResponse = await axios.get(
-        //     'https://master-of-prediction.shop:8081/api/v1/user/info', // 사용자 정보 API 엔드포인트
-        //     {
-        //       withCredentials: true,
-        //     }
-        // );
-          // const { userID, username, displayName, tier, userURL } = userInfoResponse.data;
-          // console.log('User Info:', { userID, username, displayName, tier, userURL });
-          
-      //     // 필요한 로직 처리 후 홈 페이지로 리다이렉트
-      //     router.push('/');  // '/'는 home 페이지를 의미
+
+      const { id} = response.data;
+
+
+      const userInfoResponse = await apiClient.get(`/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // accessToken을 Authorization 헤더에 추가
+        },
+        withCredentials: true,
+      });
   
+        console.log('User Info:',  userInfoResponse.data);
+
+     // Zustand 스토어에 userInfo를 저장합니다
+     const setUserInfo = useUserStore.getState().setUserInfo;
+     const userInfoWithToken = {
+      ...userInfoResponse.data,  // 기존 사용자 정보
+      token: accessToken         // 토큰 추가
+    };
+     setUserInfo(userInfoWithToken);
+          
+      //  필요한 로직 처리 후 홈 페이지로 리다이렉트
+        // 홈 페이지로 리다이렉트
+        router.push('/');
+
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data.message || err.message);

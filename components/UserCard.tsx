@@ -1,3 +1,4 @@
+"use client";
 import TierBadge from "./TierBadge";
 import { Nostradamus } from "../stories/TierIcon.stories";
 

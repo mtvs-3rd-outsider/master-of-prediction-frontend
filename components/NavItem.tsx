@@ -1,3 +1,4 @@
+"use client";
 import { cva } from 'class-variance-authority';
 import Link from 'next/link';
 import { ReactNode } from 'react';

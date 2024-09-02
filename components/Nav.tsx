@@ -11,9 +11,9 @@ import {
   EnvelopeIcon,
   BookmarkIcon,
   UserIcon,
-} from '@heroicons/react/24/outline'; // Heroicons에서 아이콘 가져오기
-import {Button} from '@nextui-org/button';
-import Link from 'next/link';
+} from '@heroicons/react/24/outline'; 
+import { Button } from '@nextui-org/button';
+import useUserStore from '@store/useUserStore';
 
 interface NavLinkItem {
   href: string;
@@ -21,51 +21,61 @@ interface NavLinkItem {
   icon?: ReactNode;
 }
 
-const items: NavLinkItem[] = [
-  {
-    href: '/',
-    text: 'Bettings',
-    icon: <HomeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
-  },
-  {
-    href: '/explore',
-    text: 'Hot Topic',
-    icon: <HashtagIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
-  },
-  {
-    href: '/notifications',
-    text: 'Notifications',
-    icon: <BellIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
-  },
-  {
-    href: '/messages',
-    text: 'Messages',
-    icon: <EnvelopeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
-  },
-  {
-    href: '/bookmarks',
-    text: 'Category Channel',
-    icon: <BookmarkIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
-  },
-  {
-    href: '/channel/1',
-    text: 'My Channel',
-    icon: <UserIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
-  },
-];
-
 const Nav: React.FC = () => {
+  const userId = useUserStore((state) => state.userInfo?.id); // Zustand에서 userId 가져오기
+  const isLogin = useUserStore((state) => state.isLogin); // Zustand에서 userId 가져오기
+
+  // 로그인 상태에 따라 네비게이션 항목 구성
+  const items: NavLinkItem[] = [
+    {
+      href: '/',
+      text: 'Bettings',
+      icon: <HomeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+    },
+    {
+      href: '/explore',
+      text: 'Hot Topic',
+      icon: <HashtagIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+    },
+    {
+      href: '/notifications',
+      text: 'Notifications',
+      icon: <BellIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+    },
+    {
+      href: '/messages',
+      text: 'Messages',
+      icon: <EnvelopeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+    },
+    {
+      href: '/bookmarks',
+      text: 'Category Channel',
+      icon: <BookmarkIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+    },
+    // userId가 있을 때만 'My Channel' 항목을 추가
+    ...(isLogin
+      ? [
+          {
+            href: `/channel/${userId}`,
+            text: 'My Channel',
+            icon: <UserIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+          },
+        ]
+      : []),
+  ];
+
   const router = useRouter();
   const handleClick = () => {
     router.push('/login');
   };
+
   return (
     <>
       <header className="hidden sm:flex w-24 xl:col-span-2">
         <div className="flex flex-1 xl:w-60 flex-col fixed h-full">
           <div className="flex flex-col flex-1">
             <NavItem href="/" width="inline" size="default">
-            <Image 
+              <Image 
                 src="/images/logo.png" 
                 alt="Logo" 
                 width={24} 
@@ -85,16 +95,19 @@ const Nav: React.FC = () => {
             ))}
           </div>
           <div>
-          <Button
-      radius="full"
-      variant="solid"
-      color="primary"
-      className="font-bold w-full p-3"
-      onClick={handleClick}
-    >
-      로그인
-    </Button>
-            <AccountNavItem />
+            {!isLogin ? (
+              <Button
+                radius="full"
+                variant="solid"
+                color="primary"
+                className="font-bold w-full p-3"
+                onClick={handleClick}
+              >
+                로그인
+              </Button>
+            ) : (
+              <AccountNavItem />
+            )}
           </div>
         </div>
       </header>
