@@ -1,20 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import Account from "./Account";
 import AccountNavItem from "./AccountNavItem";
 import Avatar from "./AvatarWithIcon";
 import Button from "./Button";
+import BettingOptionList from "./BettingOptionList";
 
 function BettingProducts() {
+  const [data, setData] = useState({});
+
   return (
     <>
-      <div className="flex flex-1 items-center gap-x-2 px-4">
+      <div className="flex flex-1 items-center gap-x-2">
         <Account userId="1" />
         <Button>정산하기</Button>
       </div>
-      <div className="flex flex-1 items-center gap-x-2 px-4">
-        바이든 VS 트럼프
-      </div>
+      {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
+      <div>주제 탭 바이든 VS 트럼프</div>
+      <div>내용 탭 다음 대선 바이든 VS 트럼프 누가 될까요?</div>
+      <BettingOptionList />
     </>
     // <div className="main-container flex w-[600px] h-[1239px] flex-col gap-px items-start flex-nowrap relative mx-auto my-0">
     //   <div className="flex h-[501px] flex-col gap-px items-start self-stretch shrink-0 flex-nowrap bg-[#fff] relative">

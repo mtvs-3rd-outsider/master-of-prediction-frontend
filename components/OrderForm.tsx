@@ -1,5 +1,7 @@
 "use client";
 
+// import * as TextField from "@radix-ui/react-text-field";
+
 export default function OrderForm() {
   return (
     <div className="main-container w-[356px] h-[374px] relative mx-auto my-0">
@@ -19,43 +21,21 @@ export default function OrderForm() {
             </span>
           </div>
         </div>
-        <div className="flex w-[327.709px] flex-col gap-[6px] items-start flex-nowrap relative z-[9] mt-[48.764px] mr-0 mb-0 ml-[12.967px]">
-          <div className="flex h-[36px] pt-[9px] pr-[13px] pb-[9px] pl-[13px] gap-[4px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[6px] border-solid border border-[#e1e3e7] relative overflow-hidden shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] z-10">
-            <input className="w-[327.709px] h-[36px] shrink-0 bg-transparent border-none absolute top-[-1px] left-[-1px] z-[14]" />
-            <div className="flex gap-[8px] items-center grow shrink-0 basis-0 flex-nowrap relative z-[11]">
-              <span className="h-[24px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[24px] text-[#76809d] relative text-left whitespace-nowrap z-[12]">
-                Price
-              </span>
-              <span className="h-[24px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[24px] text-[#76809d] relative text-left whitespace-nowrap z-[13]">
-                USDT
-              </span>
-            </div>
-          </div>
-          <div className="h-[16px] self-stretch shrink-0 relative z-[15]">
-            <div className="flex w-[77px] h-[16px] gap-[2px] items-center flex-nowrap absolute top-0 left-0 z-[16]">
-              <div className="w-[16px] h-[16px] shrink-0 relative overflow-hidden z-[17]"></div>
-              <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[12px] font-medium leading-[16px] text-[#419e69] relative text-left whitespace-nowrap z-[19]">
-                59,780.04
-              </span>
-            </div>
-            <div className="flex w-[77px] h-[16px] gap-[2px] items-center flex-nowrap absolute top-0 right-[-0.29px] z-20">
-              <div className="w-[16px] h-[16px] shrink-0 relative overflow-hidden z-[21]"></div>
-              <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[12px] font-medium leading-[16px] text-[#d73232] relative text-left whitespace-nowrap z-[23]">
-                59,780.06
-              </span>
-            </div>
-          </div>
-          <div className="flex h-[36px] pt-[9px] pr-[13px] pb-[9px] pl-[13px] gap-[4px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[6px] border-solid border border-[#e1e3e7] relative overflow-hidden shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] z-[24]">
-            <input className="w-[327.709px] h-[36px] shrink-0 bg-transparent border-none absolute top-[-1px] left-[-1px] z-[28]" />
-            <div className="flex gap-[8px] items-center grow shrink-0 basis-0 flex-nowrap relative z-[25]">
-              <span className="h-[24px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[24px] text-[#76809d] relative text-left whitespace-nowrap z-[26]">
-                Amount
-              </span>
-              <span className="h-[24px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[24px] text-[#76809d] relative text-left whitespace-nowrap z-[27]">
-                BTC
-              </span>
-            </div>
-          </div>
+        <div className="flex w-[327.709px] flex-col gap-4 items-start flex-nowrap relative z-[9] mt-[48.764px] mr-0 mb-0 ml-[12.967px]">
+          <input
+            type="text"
+            id="first_name"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Price"
+            required
+          />
+          <input
+            type="text"
+            id="first_name"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Amount"
+            required
+          />
         </div>
         <div className="flex w-[328px] h-[25px] justify-between items-center relative z-[36] mt-[48.473px] mr-0 mb-0 ml-[12.967px]">
           <span className="h-[25px] shrink-0 font-['Inter'] text-[14px] font-medium leading-[20px] text-[#5a6689] relative text-left whitespace-nowrap z-[36]">
