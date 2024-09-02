@@ -100,7 +100,7 @@ const Nav: React.FC = () => {
                 radius="full"
                 variant="solid"
                 color="primary"
-                className="font-bold w-full p-3"
+                className="font-bold w-full p-3 mb-4"
                 onClick={handleClick}
               >
                 로그인
