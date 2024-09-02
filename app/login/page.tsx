@@ -1,85 +1,76 @@
 // pages/login.js
 "use client";
-import useUserStore from '@store/useUserStore';
-import Head from 'next/head';
-import {Input} from "@nextui-org/input"
-import {Button} from "@nextui-org/button"
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { NextApiRequest, NextApiResponse } from 'next';
-import apiClient from '@api/axios';  
+import useUserStore from "@store/useUserStore";
+import Head from "next/head";
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { NextApiRequest, NextApiResponse } from "next";
+import apiClient from "@api/axios";
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<String | null>(null);
   const router = useRouter();
   function getCookie(name: string): string | null {
     const value = `; ${document.cookie}`;
-    console.log(value)
+    console.log(value);
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
     return null;
   }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    
-  
-    try {
-      const response = await apiClient.post('/auth/login', {
-        email,
-        password,
+
+    // 로그인 요청
+    const response = await apiClient.post("/auth/login", { email, password });
+
+    // 쿠키에서 액세스 토큰을 가져옴
+    const accessToken = getCookie("accessToken");
+    console.log("Login successful:", accessToken);
+    console.log("Login successful:", response.data);
+
+    const { id } = response.data;
+
+    // 사용자 정보 요청
+    const userInfoResponse = await apiClient.get(`/users/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 Authorization 헤더에 추가
+      },
+      withCredentials: true,
     });
-      const accessToken=  getCookie("accessToken")
-      console.log('Login successful:', accessToken);
-      console.log('Login successful:', response.data);
 
-      const { id} = response.data;
+    console.log("User Info:", userInfoResponse.data);
 
-
-      const userInfoResponse = await apiClient.get(`/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // accessToken을 Authorization 헤더에 추가
-        },
-        withCredentials: true,
-      });
-  
-        console.log('User Info:',  userInfoResponse.data);
-
-     // Zustand 스토어에 userInfo를 저장합니다
-     const setUserInfo = useUserStore.getState().setUserInfo;
-     const userInfoWithToken = {
-      ...userInfoResponse.data,  // 기존 사용자 정보
-      token: accessToken         // 토큰 추가
+    // Zustand 스토어에 userInfo를 저장
+    const setUserInfo = useUserStore.getState().setUserInfo;
+    const userInfoWithToken = {
+      ...userInfoResponse.data, // 기존 사용자 정보
+      token: accessToken, // 토큰 추가
     };
-     setUserInfo(userInfoWithToken);
-          
-      //  필요한 로직 처리 후 홈 페이지로 리다이렉트
-        // 홈 페이지로 리다이렉트
-        router.push('/');
+    setUserInfo(userInfoWithToken);
 
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data.message || err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
-    }
+    // 홈 페이지로 리다이렉트
+    router.push("/");
   };
-  
+
   const handleGoogleLogin = () => {
-    router.push ("https://master-of-prediction.shop:8081/oauth2/authorization/google");
+    router.push(
+      "https://master-of-prediction.shop:8081/oauth2/authorization/google"
+    );
   };
-
 
   return (
     <main className=" w-full border-x border-slate-200">
-     
       <section className="flex flex-col md:flex-row h-screen items-center w-full">
-      <div className="bg-blue-600 hidden lg:block lg:w-1/2 xl:w-2/3 h-full relative">
+        <div className="bg-blue-600 hidden lg:block lg:w-1/2 xl:w-2/3 h-full relative">
           <Image
             src="/images/login-bg.webp"
             alt="Background Image"
@@ -91,13 +82,15 @@ export default function LoginPage() {
         <div className="bg-white w-full md:w-1/2 xl:w-1/3 h-full flex items-center justify-center px-6 lg:px-16 xl:px-12">
           <div className="w-full max-w-md">
             <Link href={"/"}>
-            <Button variant="light" size="lg" className="p-2 font-bold">예측의 달인 </Button>
+              <Button variant="light" size="lg" className="p-2 font-bold">
+                예측의 달인{" "}
+              </Button>
             </Link>
-            <form className="mt-6" onSubmit={handleSubmit} >
+            <form className="mt-6" onSubmit={handleSubmit}>
               <div>
                 {/* <label className="block text-gray-700">Email Address</label> */}
                 <Input
-                isRequired
+                  isRequired
                   type="email"
                   label="Email"
                   autoFocus
@@ -111,8 +104,8 @@ export default function LoginPage() {
 
               <div className="mt-4">
                 <Input
-                isRequired
-                label="password"
+                  isRequired
+                  label="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -121,7 +114,10 @@ export default function LoginPage() {
               </div>
               {error && <p className="text-red-500 mt-2">{error}</p>}
               <div className="text-right mt-2">
-                <Link href="#" className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">
+                <Link
+                  href="#"
+                  className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"
+                >
                   Forgot Password?
                 </Link>
               </div>
@@ -142,7 +138,11 @@ export default function LoginPage() {
               onClick={handleGoogleLogin}
             >
               <div className="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 48 48">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6"
+                  viewBox="0 0 48 48"
+                >
                   <defs>
                     <path
                       id="a"
@@ -153,9 +153,21 @@ export default function LoginPage() {
                     <use xlinkHref="#a" overflow="visible" />
                   </clipPath>
                   <path clipPath="url(#b)" fill="#FBBC05" d="M0 37V11l17 13z" />
-                  <path clipPath="url(#b)" fill="#EA4335" d="M0 11l17 13 7-6.1L48 14V0H0z" />
-                  <path clipPath="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z" />
-                  <path clipPath="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z" />
+                  <path
+                    clipPath="url(#b)"
+                    fill="#EA4335"
+                    d="M0 11l17 13 7-6.1L48 14V0H0z"
+                  />
+                  <path
+                    clipPath="url(#b)"
+                    fill="#34A853"
+                    d="M0 37l30-23 7.9 1L48 0v48H0z"
+                  />
+                  <path
+                    clipPath="url(#b)"
+                    fill="#4285F4"
+                    d="M48 48L17 24l-4-3 35-10z"
+                  />
                 </svg>
                 <span className="ml-4">Log in with Google</span>
               </div>
@@ -163,12 +175,17 @@ export default function LoginPage() {
 
             <p className="mt-8">
               Need an account?
-              <Link href="/signin" className="text-blue-500 hover:text-blue-700 font-semibold">
+              <Link
+                href="/signin"
+                className="text-blue-500 hover:text-blue-700 font-semibold"
+              >
                 Create an account
               </Link>
             </p>
 
-            <p className="text-sm text-gray-500 mt-12">&copy; 2024 예측의 달인 - All Rights Reserved.</p>
+            <p className="text-sm text-gray-500 mt-12">
+              &copy; 2024 예측의 달인 - All Rights Reserved.
+            </p>
           </div>
         </div>
       </section>

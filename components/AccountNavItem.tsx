@@ -2,6 +2,7 @@ import Avatar from '@rd/Avatar';
 import TierIcon from '@components/TierIcon';
 import Link from 'next/link';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';  // Heroicons에서 아이콘 가져오기
+import DropdownNext from '@ui/DropdownAccountNavItem';
 
 const AccountNavItem = () => (
 	<div className="flex flex-1 items-center gap-x-2 px-4 py-8 ">
@@ -27,9 +28,7 @@ const AccountNavItem = () => (
 			</div>
 		</div>
 		<div className="hidden xl:flex">
-			<Link href="/">
-				<EllipsisHorizontalIcon className="w-6 h-6" />  {/* Heroicons 아이콘 사용 */}
-			</Link>
+						<DropdownNext/>
 		</div>
 	</div>
 );
