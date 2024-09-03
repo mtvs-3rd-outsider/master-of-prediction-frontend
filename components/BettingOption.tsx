@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -23,12 +24,19 @@ interface Props {
 }
 
 const BettingOption = ({ data }: Props) => {
+  const [state, setState] = useState(false);
+
+  const handleClick = () => {
+    setState(!state);
+  };
+
   return (
     <>
       <li
         className="flex gap-4 py-6
 			rounded-lg shadow-lg p-6 transform transition-transform duration-300 ease-in-out hover:bg-gray-200 hover:shadow-xl
 			"
+        onClick={handleClick}
       >
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
           <img
@@ -41,7 +49,6 @@ const BettingOption = ({ data }: Props) => {
         </div>
         <div className="flex-1 m-auto">
           <p>{data.title}</p>
-          {/* <p>트럼프</p> */}
         </div>
         <div className="flex-1 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -62,6 +69,24 @@ const BettingOption = ({ data }: Props) => {
           <p>2,509.75</p>
         </div>
       </li>
+      {/* <div style={{ width: "300px", height: "300px" }}> */}
+      {state && (
+        <div className="w-full h-44">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data.chartData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
+              <XAxis dataKey="name" hide={false} />
+              <YAxis hide={false} />
+              <Tooltip />
+              {/* <Legend /> */}
+              <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </>
   );
 };

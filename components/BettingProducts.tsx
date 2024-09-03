@@ -6,6 +6,14 @@ import AccountNavItem from "./AccountNavItem";
 import Avatar from "./AvatarWithIcon";
 import Button from "./Button";
 import BettingOptionList from "./BettingOptionList";
+import {
+  HeartIcon,
+  ArrowUpTrayIcon,
+  ChatBubbleOvalLeftIcon,
+  ArrowPathIcon,
+  ChartBarSquareIcon,
+} from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
+import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
 
 function BettingProducts() {
   const [data, setData] = useState({});
@@ -19,7 +27,32 @@ function BettingProducts() {
       {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
       <div>주제 탭 바이든 VS 트럼프</div>
       <div>내용 탭 다음 대선 바이든 VS 트럼프 누가 될까요?</div>
+      <div>
+        <ul
+          className="mt-4 mb-4 
+        flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3 "
+        >
+          <li className="">
+            <ChartBarSquareIcon className="w-5 h-5" />
+            20
+          </li>
+          <li>
+            <ChatBubbleOvalLeftIcon className="w-5 h-5" />2
+          </li>
+          <li>
+            <ArrowPathIcon className="w-5 h-5" />1
+          </li>
+          <li>
+            <HeartIcon className="w-5 h-5" />
+            23
+          </li>
+          <li>
+            <ArrowUpTrayIcon className="w-5 h-5" />
+          </li>
+        </ul>
+      </div>
       <BettingOptionList />
+      <BettingCommentActivityTabs />
     </>
     // <div className="main-container flex w-[600px] h-[1239px] flex-col gap-px items-start flex-nowrap relative mx-auto my-0">
     //   <div className="flex h-[501px] flex-col gap-px items-start self-stretch shrink-0 flex-nowrap bg-[#fff] relative">
