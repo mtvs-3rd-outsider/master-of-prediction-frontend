@@ -38,6 +38,6 @@ next-env.d.ts
 *storybook.log
 certificates
 
-public/sw.js
-public/sw.js.map
-public/workbox-*.js
+/public/sw.js
+/public/sw.js.map
+/public/workbox-*.js
