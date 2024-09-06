@@ -39,26 +39,23 @@ export default function LoginPage() {
 
     const { id } = response.data;
 
-    // 사용자 정보 요청
-    const userInfoResponse = await apiClient.get(`/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 Authorization 헤더에 추가
-      },
-      withCredentials: true,
-    });
-
-    console.log("User Info:", userInfoResponse.data);
-
+    // // 사용자 정보 요청
+ 
     // Zustand 스토어에 userInfo를 저장
     const setUserInfo = useUserStore.getState().setUserInfo;
-    const userInfoWithToken = {
-      ...userInfoResponse.data, // 기존 사용자 정보
-      token: accessToken, // 토큰 추가
-    };
-    setUserInfo(userInfoWithToken);
+    // const userInfoWithToken = {
+    //   ...userInfoResponse.data, // 기존 사용자 정보
+    //   token: accessToken, // 토큰 추가
+    // };
+    setUserInfo(response.data);
+
+    const userInfoResponse = await apiClient.get(`/users/${id}`);
+
+    console.log("User Info:", userInfoResponse);
+
 
     // 홈 페이지로 리다이렉트
-    router.push("/");
+    // router.push("/");
   };
 
   const handleGoogleLogin = () => {

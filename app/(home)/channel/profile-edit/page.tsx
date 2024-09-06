@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
@@ -7,29 +7,88 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { RadioGroup, Radio } from "@nextui-org/radio";
 import { DatePicker } from "@nextui-org/date-picker";
 import UserBanner from "@components/user/UserBanner";
-import {locations} from "./location";
-import { CameraIcon } from '@heroicons/react/24/outline'; // 또는 '@heroicons/react/outline'
+import { locations } from "./location";
+import { CameraIcon } from '@heroicons/react/24/outline'; 
 import Avatar from "@components/AvatarWithIcon";
-import BackButton from "@components/BackButton"
-import {getParentPath} from "@util/path"
-// 현재 경로에서 마지막 세그먼트를 제거한 경로를 계산하는 함수
+import BackButton from "@components/BackButton";
+import { sendMultipartForm } from "@handler/fetch/axios";
+import useUserStore from "@store/useUserStore";
+
+
 const ProfileEditPage: React.FC = () => {
   const router = useRouter();
   const pathName = usePathname();
+  const { userInfo } = useUserStore();
+  const userId = userInfo?.id ;
   const [name, setName] = useState("John Doe");
   const [username, setUsername] = useState("@johndoe");
   const [location, setLocation] = useState("New York, USA");
   const [website, setWebsite] = useState("https://johndoe.com");
   const [birthday, setBirthday] = useState("1990-01-01");
   const [gender, setGender] = useState("male");
+  const [bannerImage, setBannerImage] = useState<File | null>(null); // 이미지 파일 저장
+  const [avatarImage, setAvatarImage] = useState<File | null>(null);  // 이미지 파일 저장
 
-  const handleSave = () => {
-    // Save profile logic here
-    alert("Profile updated successfully!");
-    router.push("/profile");
+  const bannerInputRef = useRef<HTMLInputElement | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleBannerClick = () => {
+    if (bannerInputRef.current) {
+      bannerInputRef.current.click();
+    }
   };
 
+  const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setBannerImage(file); // 선택된 파일을 상태로 저장
+    }
+  };
 
+  const handleAvatarClick = () => {
+    if (avatarInputRef.current) {
+      avatarInputRef.current.click();
+    }
+  };
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAvatarImage(file); // 선택된 파일을 상태로 저장
+    }
+  };
+
+  // 프로필 저장 핸들러
+  const handleSave = async () => {
+    try {
+      const formData = new FormData();
+
+      // FormData에 데이터 추가
+      formData.append("name", name);
+      formData.append("username", username);
+      formData.append("location", location);
+      formData.append("website", website);
+      formData.append("birthday", birthday);
+      formData.append("gender", gender);
+
+      // 이미지 파일이 있는 경우 추가
+      if (bannerImage) {
+        formData.append("bannerImage", bannerImage);
+      }
+      if (avatarImage) {
+        formData.append("avatarImage", avatarImage);
+      }
+
+      // API 요청
+      await sendMultipartForm(`/my-channel/${userId}`, formData, 'put');
+
+      alert("Profile updated successfully!");
+      router.push("/profile");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Error updating profile.");
+    }
+  };
 
   return (
     <main className="col-span-5 w-full border-x border-slate-200">
@@ -37,44 +96,55 @@ const ProfileEditPage: React.FC = () => {
         <div className="flex justify-center items-center ">
           <h1 className="font-bold mb-4 ">프로필 수정</h1>
         </div>
-        <div className="absolute top-0 right-0 mb-4 p-4 flex justify-end w-full">
-          <Button variant="light" className="font-bold text-sm mb-4 ">
+        <div className="absolute z-30 top-0 right-0 mb-4 p-4 flex justify-end w-full">
+          <Button variant="light" className="font-bold text-sm mb-4 " onClick={handleSave}>
             저장
           </Button>
         </div>
         <div className="absolute top-0 left-0 mb-4 p-4 flex justify-start w-full">
-        <BackButton />
+          <BackButton />
         </div>
-        <div className="sticky  overflow-hidden ">
-          <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" >
-          <CameraIcon   className="w-12 h-12" color="white"  />
-          </UserBanner>
+        <div className="sticky overflow-hidden ">
+          <div onClick={handleBannerClick} className="cursor-pointer">
+            <UserBanner imageUrl={bannerImage ? URL.createObjectURL(bannerImage) : undefined}>
+              <CameraIcon className="w-12 h-12" color="white" />
+            </UserBanner>
+          </div>
+          <input
+            ref={bannerInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleBannerChange}
+          />
         </div>
         <div
-  className="relative left-4 top-[-40px] mb-1 h-10"
-  style={{
-    transformOrigin: "bottom center",
-  }}
->
-  <div className="relative">
-    <Avatar
-      alt="User Avatar"
-      initials="RQ"
-      size={80} // 아바타 크기를 동적으로 설정
-    >
-       <CameraIcon   className="w-12 h-12" color="white"  />
-    </Avatar>
-   
-  </div>
-</div>
+          className="relative left-4 top-[-40px] mb-1 h-10"
+          style={{
+            transformOrigin: "bottom center",
+          }}
+        >
+          <div className="relative cursor-pointer" onClick={handleAvatarClick} >
+            <Avatar alt="User Avatar" initials="RQ" size={80} src={avatarImage ? URL.createObjectURL(avatarImage) : undefined}>
+              <CameraIcon className="w-12 h-12" color="white" />
+            </Avatar>
+          </div>
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
+        </div>
         <form className="space-y-4">
           <Input
             type="text"
             label="Name"
             fullWidth={false}
             variant="underlined"
-            // value={name}
-            // onChange={(e) => setName(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <Input
             label="Username"
@@ -83,7 +153,6 @@ const ProfileEditPage: React.FC = () => {
             variant="underlined"
             onChange={(e) => setUsername(e.target.value)}
           />
-            
           <Input
             label="Website"
             fullWidth
@@ -91,22 +160,13 @@ const ProfileEditPage: React.FC = () => {
             variant="underlined"
             onChange={(e) => setWebsite(e.target.value)}
           />
-            <Select 
-        label="Select an location" 
-        variant="underlined"
-      >
-        {locations.map((location) => (
-          <SelectItem key={location.key}>
-            {location.label}
-          </SelectItem>
-        ))}
-      </Select>
+          <Select label="Select an location" variant="underlined">
+            {locations.map((location) => (
+              <SelectItem key={location.key}>{location.label}</SelectItem>
+            ))}
+          </Select>
           <DatePicker label="Birth date" variant="underlined" className="max-w-[284px]" />
           <div className="inline-flex gap-2">
-
-          {/* <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label> */}
             <RadioGroup
               orientation="horizontal"
               value={gender}
@@ -116,11 +176,6 @@ const ProfileEditPage: React.FC = () => {
               <Radio value="female" size="sm">Female</Radio>
             </RadioGroup>
           </div>
-          <div>
-
-      
-            </div>
-         
         </form>
       </div>
     </main>
