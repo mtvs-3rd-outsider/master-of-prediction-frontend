@@ -1,42 +1,41 @@
 "use client";
-import { cva } from 'class-variance-authority';
+import { Button } from '@nextui-org/react';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
 interface Props {
-	href: string;
-	width: 'full' | 'inline' | 'mobile';
-	size: 'default' | 'small' | 'large';
-	children: ReactNode;
+  href: string;
+  width: 'full' | 'inline' | 'mobile';
+  size: 'default' | 'small' | 'large';
+  children: ReactNode;
 }
 
-const NavItemStyles = cva(
-	'flex items-center gap-x-4 px-4 py-3 hover:bg-slate-100 text-slate-900 my-1',
-	{
-		variants: {
-			width: {
-				full: 'w-full',
-				// inline: 'inline-flex [&_div:first-child]:rounded-full',
-				inline: 'max-w-fit rounded-full',
-				mobile: 'inline-flex justify-center xl:justify-start ',
-			},
-			size: {
-				default: '',
-				small: 'py-2 [&_div:last-child]:text-sm my-0',
-				large: '',
-			},
-		},
-		defaultVariants: {
-			width: 'inline',
-			size: 'default',
-		},
-	},
-);
+const NavItem = ({ href, children, width, size }: Props) => {
+  // NextUI Button에서 width와 size를 기반으로 가변적 스타일 설정
+  const buttonStyles = {
+    width: width === 'full' ? '100%' : width === 'inline' ? 'auto' : 'fit-content',
+    padding: size === 'small' ? '8px 12px' : size === 'large' ? '16px 24px' : '12px 16px',
+	border: 'none', // 기본 경계선 없음
+	borderRadius: '30px',
+	color: '#000000',
+    backgroundColor: 'transparent', // 배경색 없음
+    '&:hover': {
+      backgroundColor: '#e0e0e0', // 호버 시 배경색
+    },
+  };
 
-const NavItem = ({ href, children, width, size }: Props) => (
-	<Link className={NavItemStyles({ width, size })} href={href} prefetch={true} scroll={true}> 
-		{children}
-	</Link>
-);
+  return (
+    <Link href={href} passHref>
+      <Button 
+        as="a" 
+        style={buttonStyles} 
+        variant="ghost" // 배경이 없는 변형
+        color="primary"
+      >
+        {children}
+      </Button>
+    </Link>
+  );
+};
 
 export default NavItem;

@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
     <>
       <main className="relative col-span-5 w-full border-x border-slate-200">
       <div className=" top-0 left-0 p-4  flex justify-start w-full">
-      <BackButton href={getParentPath(pathName)} />
+      <BackButton  />
         </div>
         <Tabs tabNames={tabs}/>
       <SubscribePanel title="" href="/">

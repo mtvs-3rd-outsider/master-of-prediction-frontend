@@ -33,7 +33,7 @@ export default function LoginPage() {
     const response = await apiClient.post("/auth/login", { email, password });
 
     // 쿠키에서 액세스 토큰을 가져옴
-    const accessToken = getCookie("accessToken");
+    const accessToken = response.data.token;
     console.log("Login successful:", accessToken);
     console.log("Login successful:", response.data);
 

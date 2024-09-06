@@ -18,7 +18,6 @@ interface UserInfo {
 // UserStore 인터페이스 정의
 interface UserStore {
   userInfo: UserInfo | null;
-  isLogin: boolean;
   setUserInfo: (info: UserInfo) => void;
   clearUserInfo: () => void;
   rehydrate: () => void; // 로컬 스토리지에서 상태를 가져오는 메서드
@@ -29,16 +28,15 @@ const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
       userInfo: null,
-      isLogin: false,
 
       // 유저 정보를 설정하고 상태를 업데이트
       setUserInfo: (info) => {
-        set({ userInfo: info, isLogin: !!info.token });
+        set({ userInfo: info });
       },
 
       // 유저 정보를 초기화하고 상태를 업데이트
       clearUserInfo: () => {
-        set({ userInfo: null, isLogin: false });
+        set({ userInfo: null });
         localStorage.removeItem('user-storage'); // 로컬 스토리지에서 user-storage 키를 삭제
       },
 
@@ -58,8 +56,7 @@ rehydrate: () => {
 
     if (parsedState.userInfo) {
       set({
-        userInfo: parsedState.userInfo,
-        isLogin: !!parsedState.userInfo.token
+        userInfo: parsedState.userInfo
       });
 
       // 상태가 설정된 후 로그 출력
@@ -73,7 +70,7 @@ rehydrate: () => {
     }),
     {
       name: 'user-storage', // 로컬 스토리지에 저장될 이름
-      partialize: (state) => ({ userInfo: state.userInfo, isLogin: state.isLogin }), // 저장할 상태 선택
+      partialize: (state) => ({ userInfo: state.userInfo }), // 저장할 상태 선택
     }
   )
 );

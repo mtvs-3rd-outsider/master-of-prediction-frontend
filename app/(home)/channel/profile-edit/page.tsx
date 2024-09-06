@@ -43,7 +43,7 @@ const ProfileEditPage: React.FC = () => {
           </Button>
         </div>
         <div className="absolute top-0 left-0 mb-4 p-4 flex justify-start w-full">
-        <BackButton href={getParentPath(pathName)} />
+        <BackButton />
         </div>
         <div className="sticky  overflow-hidden ">
           <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" >

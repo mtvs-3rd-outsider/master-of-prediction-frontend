@@ -14,12 +14,13 @@ const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
         ...defaultHeaders,
         ...options.headers,
       },
+      cache: 'no-store', // 캐시 없이 매번 새 데이터를 가져옴
     });
   
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-  
-    return response.json();
+    let json = response.json()
+    return json;
   }
   export default fetchWithBaseURL;

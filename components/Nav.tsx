@@ -23,7 +23,6 @@ interface NavLinkItem {
 
 const Nav: React.FC = () => {
   const userId = useUserStore((state) => state.userInfo?.id); // Zustand에서 userId 가져오기
-  const isLogin = useUserStore((state) => state.isLogin); // Zustand에서 userId 가져오기
 
   // 로그인 상태에 따라 네비게이션 항목 구성
   const items: NavLinkItem[] = [
@@ -53,7 +52,7 @@ const Nav: React.FC = () => {
       icon: <BookmarkIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
     },
     // userId가 있을 때만 'My Channel' 항목을 추가
-    ...(isLogin
+    ...(userId
       ? [
           {
             href: `/channel/${userId}`,
@@ -95,7 +94,7 @@ const Nav: React.FC = () => {
             ))}
           </div>
           <div>
-            {!isLogin ? (
+            {!userId ? (
               <Button
                 radius="full"
                 variant="solid"
