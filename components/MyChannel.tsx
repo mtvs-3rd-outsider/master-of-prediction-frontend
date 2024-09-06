@@ -22,20 +22,22 @@ import Link from "next/link";
 type MyChannelProps = {
   user?: {
     name: string;
-    username: string;
+    user_img: string;
+    banner_img: string;
+    user_name: string;
     bio: string;
     location: string;
     website: string;
     birthdate: string;
-    joinedDate: string;
+    joined_date: string;   // 변경됨
     gender: string;
     points: number;
     transactions: number;
-    profitRate: string;
-    positionValue: string;
-    tradeCount: number;
-    followingCount: number;
-    followerCount: number;
+    profit_rate: string;   // 변경됨
+    position_value: string; // 변경됨
+    trade_count: number;   // 변경됨
+    following_count: number; // 변경됨
+    follower_count: number;  // 변경됨
   };
 };
 
@@ -45,7 +47,7 @@ async function fetchUserData(userId: string) {
 }
 
 const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
-  console.log(user)
+  console.log(user);
   const router = useRouter();
   const pathname = usePathname(); // 현재 경로 가져오기
 
@@ -65,7 +67,7 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
   return (
     <div className="p-4">
       <div className="sticky overflow-hidden">
-        <UserBanner imageUrl="https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80" />
+        <UserBanner imageUrl={user.banner_img} />
       </div>
       <div className="relative pt-2 flex justify-end gap-2 z-10">
         <Button
@@ -104,16 +106,17 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
         >
           <Avatar
             alt="User Avatar"
-            initials="RQ"
+            initials={user.user_name}
             size={80} // 아바타 크기를 동적으로 설정
+            src={user.user_img}
           />
         </div>
 
         <div>
           <div className="inline-flex gap-1">
             <TierIcon name={"견습생"} size={23} className="px-2" />{" "}
-            <h1 className="text-md m-auto font-bold">{user.name}</h1>{" "}
-            <p className="text-xs mb-1 mt-auto text-gray-600">@{user.username}</p>
+            <h1 className="text-md m-auto font-bold">{user.user_name}</h1>{" "}
+            <p className="text-xs mb-1 mt-auto text-gray-600">@{user.user_name}</p>
           </div>
         </div>
       </div>
@@ -125,7 +128,7 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
           {user.location && <IconText icon={MapPinIcon} text={user.location} />}
           {user.website && <IconText icon={LinkIcon} text={user.website} />}
           {user.birthdate && <IconText icon={CakeIcon} text={user.birthdate} />}
-          {user.joinedDate && <IconText icon={CalendarIcon} text={user.joinedDate} />}
+          {user.joined_date && <IconText icon={CalendarIcon} text={user.joined_date} />}
           {user.gender && <IconText icon={SwatchIcon} text={user.gender} />}
         </div>
         <div className="mt-4 flex space-x-1">
@@ -138,21 +141,21 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
             <span className="text-xs text-gray-600"> 거래량</span>
           </div>
           <div>
-            <span className="text-xs font-bold">{user.profitRate}</span>
+            <span className="text-xs font-bold">{user.profit_rate}</span>
             <span className="text-xs text-gray-600"> 손익률</span>
           </div>
           <div>
-            <span className="text-xs font-bold">{user.positionValue}</span>
+            <span className="text-xs font-bold">{user.position_value}</span>
             <span className="text-xs text-gray-600"> 포지션 가치</span>
           </div>
           <div>
-            <span className="text-xs font-bold">{user.tradeCount}</span>
+            <span className="text-xs font-bold">{user.trade_count}</span>
             <span className="text-xs text-gray-600"> 거래수</span>
           </div>
         </div>
         <div className="flex mt-1 space-x-4">
           <div>
-            <span className="text-xs font-bold">{user.followingCount} </span>
+            <span className="text-xs font-bold">{user.following_count} </span>
             <Link href={`${pathname}/subscribe`}>
             <Button
               variant="light"
@@ -163,7 +166,7 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
           </Link>
           </div>
           <div>
-            <span className="text-xs font-bold">{user.followerCount} </span>
+            <span className="text-xs font-bold">{user.follower_count} </span>
             <Link href={`${pathname}/subscribe`}>
             <Button
               variant="light"

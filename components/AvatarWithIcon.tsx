@@ -27,6 +27,8 @@ const Avatar = ({
         <Image
           src={src}
           alt={alt}
+          width={size}  // width를 size로 지정
+          height={size} 
           className="object-cover w-full h-full"
         />
       ) : (
