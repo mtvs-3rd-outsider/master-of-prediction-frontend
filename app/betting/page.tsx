@@ -1,27 +1,15 @@
-// pages/login.js
 // "use client";
-import Head from "next/head";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { NextApiRequest, NextApiResponse } from "next";
-import Header from "@ui/Header";
 import Search from "@ui/Search";
 import Panel from "@ui/Panel";
 import PanelItemTrends from "@ui/PanelItemTrends";
 import PanelItem from "@ui/PanelItem";
 import Footer from "@ui/Footer";
 import BettingProducts from "@ui/BettingProducts";
+
 function BettingPage() {
   return (
     <>
       <main className="col-span-5 w-full border-x border-slate-200">
-        <Header title="Betting List" />
-
         <BettingProducts />
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
