@@ -1,19 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
+
 interface TierIconProps {
-  name: string;
+  name?: string;
   size?: number;
-  className?: string; // className 속성 추가
+  className?: string;
 }
 
-const TierIcon: React.FC<TierIconProps> = ({ name, size = 24 , className  }) => {
-  const src = `/images/tier/${name}.svg`; // 상대 경로 사용
+const TierIcon: React.FC<TierIconProps> = ({ name , size = 24, className }) => {
+  const [isError, setIsError] = useState(false); // 에러 상태 관리
+
+  // 이미지 로드 실패 시 호출되는 함수
+  const handleError = () => {
+    setIsError(true); // 에러 상태를 true로 설정
+  };
+
+  if (isError || name==undefined) {
+    // 에러 상태일 경우 null을 반환하여 아무것도 렌더링하지 않음
+    return null;
+  }
+
   return (
     <Image
-      src={src} // 동적 임포트
+      src={`/images/tier/${name}.svg`}
       alt={`${name} icon`}
       width={size}
       height={size}
+      className={className}
+      onError={handleError} // 이미지 로드 실패 시 실행
     />
   );
 };

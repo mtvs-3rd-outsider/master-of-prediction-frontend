@@ -14,7 +14,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = withBundleAnalyzer({
   compress: true,
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     formats: ['image/webp', 'image/avif'], // webp와 avif 포맷 추가
     remotePatterns: [
@@ -30,7 +30,8 @@ const nextConfig = withBundleAnalyzer({
         port: '',
         pathname: '/**',
       },
-    ]
+    ],
+    domains: ['localhost'],  // localhost 도메인 추가
   },
   webpack: (config, { dev, isServer }) => {
     if (!isServer) {

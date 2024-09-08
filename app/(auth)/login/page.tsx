@@ -10,7 +10,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { NextApiRequest, NextApiResponse } from "next";
-import apiClient from "@api/axios";
+import apiClient from "@handler/fetch/axios";
 export default function LoginPage() {
   
   const [email, setEmail] = useState("");
@@ -39,6 +39,7 @@ export default function LoginPage() {
 
     const { id } = response.data;
 
+    
     // // 사용자 정보 요청
  
     // Zustand 스토어에 userInfo를 저장
@@ -49,13 +50,11 @@ export default function LoginPage() {
     // };
     setUserInfo(response.data);
 
-    const userInfoResponse = await apiClient.get(`/users/${id}`);
 
-    console.log("User Info:", userInfoResponse);
 
 
     // 홈 페이지로 리다이렉트
-    // router.push("/");
+    router.push("/");
   };
 
   const handleGoogleLogin = () => {

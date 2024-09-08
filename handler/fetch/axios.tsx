@@ -1,3 +1,4 @@
+"use client";
 import axios from 'axios';
 import useUserStore from '@store/useUserStore'; // Zustand 스토어 가져오기
 
@@ -16,33 +17,34 @@ export default apiClient;
 apiClient.interceptors.request.use(
   (config) => {
     const token = useUserStore.getState().userInfo?.token; // Zustand에서 토큰 가져오기
-
+    console.log(token)
     if (token) {
-      // 토큰이 있으면 Authorization 헤더 추가
       config.headers['Authorization'] = `Bearer ${token}`;
     } else {
-      // 토큰이 없으면 Authorization 헤더를 제거
       delete config.headers['Authorization'];
     }
-
     return config;
   },
   (error) => {
-    // 요청 오류가 발생한 경우 작업 수행
+    console.error("Request Error:", error);
     return Promise.reject(error);
   }
 );
+
 // 응답 인터셉터 추가
 apiClient.interceptors.response.use(
-  response => {
-    // 응답 데이터를 처리하기 전에 작업 수행
-    return response;
+  (response) => {
+    // 응답 전체를 로그로 출력
+    console.log("Response:", response.data);
+    return response; // 응답 데이터를 그대로 반환
   },
-  error => {
+  (error) => {
     // 응답 에러를 전역적으로 처리
     if (error.response) {
       const status = error.response.status;
       const message = error.response.data.message || 'Something went wrong';
+
+      console.error(`Error ${status}:`, message); // 상태 코드와 메시지 출력
 
       // 에러 상태 코드에 따라 적절한 조치를 취합니다.
       if (status === 401) {
@@ -51,12 +53,13 @@ apiClient.interceptors.response.use(
         alert('You do not have permission to perform this action.');
       } else if (status === 500) {
         alert('Internal server error, please try again later.');
-      } else {
-        alert(message);
-      }
+      } 
+      alert(message);
     } else if (error.request) {
+      console.error("No response from server:", error.request);
       alert('No response from server, please check your network.');
     } else {
+      console.error("Request setup error:", error.message);
       alert('Error in setting up request: ' + error.message);
     }
 
@@ -67,7 +70,7 @@ apiClient.interceptors.response.use(
 // 특정 요청을 보낼 때 headers 설정을 동적으로 변경하는 예시
 export const sendMultipartForm = async (url: string, formData: FormData, method: 'post' | 'put') => {
   return apiClient({
-    method: method,  // 메서드를 동적으로 설정 ('post' 또는 'put')
+    method: method,
     url: url,
     data: formData,
     headers: {

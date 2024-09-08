@@ -18,10 +18,9 @@ import {
 import IconText from "./IconText";
 import fetchWithBaseURL from "@handler/fetch/fetch";
 import Link from "next/link";
-
 type MyChannelProps = {
   user?: {
-    name: string;
+    display_name: string;
     user_img: string;
     banner_img: string;
     user_name: string;
@@ -30,7 +29,7 @@ type MyChannelProps = {
     website: string;
     birthdate: string;
     joined_date: string;   // 변경됨
-    gender: string;
+    user_gender: string;
     points: number;
     transactions: number;
     profit_rate: string;   // 변경됨
@@ -41,10 +40,7 @@ type MyChannelProps = {
   };
 };
 
-// 데이터 페칭 함수: userId를 사용하여 API 요청
-async function fetchUserData(userId: string) {
-  return fetchWithBaseURL(`/my-channel/${userId}`);
-}
+
 
 const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
   console.log(user);
@@ -114,22 +110,32 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
 
         <div>
           <div className="inline-flex gap-1">
-            <TierIcon name={"견습생"} size={23} className="px-2" />{" "}
-            <h1 className="text-md m-auto font-bold">{user.user_name}</h1>{" "}
+            <TierIcon name={"견습생"} size={35} className="px-2" />{" "}
+            <h1 className="text-md m-auto font-bold">{user.display_name ||user.user_name }</h1>{" "}
             <p className="text-xs mb-1 mt-auto text-gray-600">@{user.user_name}</p>
           </div>
         </div>
       </div>
       <div className="mt-2">
         <p className="text-sm text-gray-800">
-          {user.bio}
+        {user.bio.split('\n').map((line, index) => (
+        <span key={index}>
+          {line}
+          <br />
+        </span>
+  ))}
         </p>
         <div className="flex-wrap gap-3 mt-3">
           {user.location && <IconText icon={MapPinIcon} text={user.location} />}
-          {user.website && <IconText icon={LinkIcon} text={user.website} />}
+          {user.website && (
+  <IconText 
+    icon={LinkIcon} 
+    text={<a href={user.website} target="_blank" rel="noopener noreferrer">{user.website}</a>} 
+  />
+)}
           {user.birthdate && <IconText icon={CakeIcon} text={user.birthdate} />}
           {user.joined_date && <IconText icon={CalendarIcon} text={user.joined_date} />}
-          {user.gender && <IconText icon={SwatchIcon} text={user.gender} />}
+          {user.user_gender && <IconText icon={SwatchIcon} text={user.user_gender} />}
         </div>
         <div className="mt-4 flex space-x-1">
           <span className="text-xs font-bold">{user.points}</span>
