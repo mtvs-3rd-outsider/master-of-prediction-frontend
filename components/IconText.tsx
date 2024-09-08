@@ -2,7 +2,7 @@ import React from "react";
 
 interface IconTextProps {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  text: string;
+  text: string | JSX.Element; // string 또는 JSX 요소를 허용
 }
 
 const IconText: React.FC<IconTextProps> = ({ icon: Icon, text }) => {

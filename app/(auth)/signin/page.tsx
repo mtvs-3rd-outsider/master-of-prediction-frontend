@@ -5,7 +5,7 @@ import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import Link from 'next/link';
 import Image from 'next/image';
-import apiClient from '@api/axios';  
+import apiClient from '@handler/fetch/axios';  
 import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {

@@ -14,8 +14,10 @@ const BackButtonContainer: FC<BackButtonContainerProps> = ({ href }) => {
   const handleBackClick = () => {
     if (href) {
       router.push(href);  // href가 제공되면 해당 경로로 이동
+    } else if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();  // 브라우저 히스토리가 있으면 이전 페이지로 이동
     } else {
-      router.back();  // 그렇지 않으면 이전 페이지로 이동
+      router.push('/');  // 기본 경로로 이동 (홈 페이지나 원하는 기본 페이지로 설정)
     }
   };
 

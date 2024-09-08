@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useQuery,useMutation,useQueryClient } from '@tanstack/react-query';
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Select, SelectItem } from "@nextui-org/select";
@@ -13,25 +14,107 @@ import Avatar from "@components/AvatarWithIcon";
 import BackButton from "@components/BackButton";
 import { sendMultipartForm } from "@handler/fetch/axios";
 import useUserStore from "@store/useUserStore";
+import apiClient  from "@handler/fetch/axios";
+import { stat } from "fs";
+import useOptimisticMutation from "@handler/useOptimisticMutation";
+import {parseDate, getLocalTimeZone,CalendarDate} from "@internationalized/date";
+// Mock fetch function to get user profile data
+import {useDateFormatter} from "@react-aria/i18n";
+import { set } from "lodash";
+import {urlToFile, fetchImageUrl} from "@handler/fetch/img";
+import {Textarea} from "@nextui-org/input";
+  // 사용 예시
 
+  
+const ProfileEditPage: React.FC =  () => {
+  const queryClient = useQueryClient(); // 등록된 queryClient를 가져옴
 
-const ProfileEditPage: React.FC = () => {
+  const fetchUserProfile = async (userId: number | undefined ) => {
+    const response = await apiClient.get(`/my-channel/${userId}`);
+    if (!response.data) {
+      throw new Error("Failed to fetch profile data");
+    }
+    return response.data;
+  };
+
   const router = useRouter();
-  const pathName = usePathname();
-  const { userInfo } = useUserStore();
-  const userId = userInfo?.id ;
-  const [name, setName] = useState("John Doe");
-  const [username, setUsername] = useState("@johndoe");
-  const [location, setLocation] = useState("New York, USA");
-  const [website, setWebsite] = useState("https://johndoe.com");
-  const [birthday, setBirthday] = useState("1990-01-01");
+  const userInfo = useUserStore((state) => state.userInfo);
+  
+  // Fetch user profile data using useQuery
+  console.log("userInfo:", userInfo);
+  const userId= userInfo?.id;
+  const { isPending, error, data: userProfile } = useQuery({
+    queryKey: ['my-channel'],
+    queryFn: () => fetchUserProfile(userId),
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5,  // 5분 동안 데이터가 fresh 상태로 유지
+  });
+  console.log("userProfile:", userProfile);
+
+  const mutation = useOptimisticMutation({
+    queryKey: ['my-channel'], // 쿼리 키를 명확하게 설정
+    mutationFn: (formData: FormData) => sendMultipartForm(`/users/${userId}`, formData, 'put'), // 반드시 재정의되는 mutationFn 
+    onSettledFn: async (data: any, variables: any, context: any) =>{
+
+    const userInfoResponse = await apiClient.get(`/users/${userId}`);
+    // // 사용자 정보 요청
+    const setUserInfo = useUserStore.getState().setUserInfo;
+
+    setUserInfo(userInfoResponse.data);
+    console.log("userInfoResponse.data:",userInfoResponse.data)
+    }
+  });
+  let formatter = useDateFormatter({dateStyle: "full"});
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [location, setLocation] = useState("");
+  const [website, setWebsite] = useState("");
+  const [bio, setBio] = useState("");
+  const [birthday, setBirthday] = useState<CalendarDate | null>(null); // Date 타입에서 string으로 변경
   const [gender, setGender] = useState("male");
   const [bannerImage, setBannerImage] = useState<File | null>(null); // 이미지 파일 저장
   const [avatarImage, setAvatarImage] = useState<File | null>(null);  // 이미지 파일 저장
 
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
-
+  useEffect(() => {
+    if (userProfile) {
+      // 기본 프로필 정보 설정
+      setDisplayName(userProfile.display_name || "");
+      setUsername(userProfile.user_name || "");
+      setLocation(userProfile.user_location || "");
+      setWebsite(userProfile.website || "");
+      setBio(userProfile.bio || "");
+      setBirthday(userProfile.birthday ? parseDate(userProfile.birthday) : null);
+      setGender(userProfile.user_gender.toLowerCase() || "male");
+  
+      // user_img 처리
+      if (userProfile.user_img) {
+        fetchImageUrl(userProfile.user_img) // 서버에서 URL 가져오기
+          .then((url) => urlToFile(url)) // URL을 File로 변환
+          .then((file) => {
+            console.log(file);  // File 객체로 출력
+            setAvatarImage(file); // File 상태로 설정
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+  
+      // banner_img 처리
+      if (userProfile.banner_img) {
+        fetchImageUrl(userProfile.banner_img) // 서버에서 URL 가져오기
+          .then((url) => urlToFile(url)) // URL을 File로 변환
+          .then((file) => {
+            console.log(file);  // File 객체로 출력
+            setBannerImage(file); // File 상태로 설정
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    }
+  }, [userProfile]);
   const handleBannerClick = () => {
     if (bannerInputRef.current) {
       bannerInputRef.current.click();
@@ -57,18 +140,23 @@ const ProfileEditPage: React.FC = () => {
       setAvatarImage(file); // 선택된 파일을 상태로 저장
     }
   };
-
+  const handleSelectionChange = (e : React.ChangeEvent<HTMLSelectElement>) => {
+    setLocation(e.target.value);
+  };
   // 프로필 저장 핸들러
   const handleSave = async () => {
     try {
       const formData = new FormData();
 
       // FormData에 데이터 추가
-      formData.append("name", name);
-      formData.append("username", username);
+      formData.append("displayName", displayName);
+      formData.append("userName", username);
       formData.append("location", location);
       formData.append("website", website);
-      formData.append("birthday", birthday);
+      formData.append("bio", bio);
+      if (birthday) {
+        formData.append("birthday", birthday.toString());
+      }
       formData.append("gender", gender);
 
       // 이미지 파일이 있는 경우 추가
@@ -79,16 +167,27 @@ const ProfileEditPage: React.FC = () => {
         formData.append("avatarImage", avatarImage);
       }
 
-      // API 요청
-      await sendMultipartForm(`/my-channel/${userId}`, formData, 'put');
+      mutation.mutate(formData);
 
       alert("Profile updated successfully!");
-      router.push("/profile");
+      if (typeof window !== 'undefined' && window.history.length > 1) {
+        router.back();
+      } else {
+        router.push('/'); // 기본 페이지로 이동 (필요한 경로로 수정)
+      }
     } catch (error) {
       console.error("Failed to update profile:", error);
       alert("Error updating profile.");
     }
   };
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading profile data.</div>;
+  }
 
   return (
     <main className="col-span-5 w-full border-x border-slate-200">
@@ -96,12 +195,13 @@ const ProfileEditPage: React.FC = () => {
         <div className="flex justify-center items-center ">
           <h1 className="font-bold mb-4 ">프로필 수정</h1>
         </div>
-        <div className="absolute z-30 top-0 right-0 mb-4 p-4 flex justify-end w-full">
+        <div>
+        <div className="absolute  top-0 right-0 mb-4 p-4 flex justify-end w-auto">
           <Button variant="light" className="font-bold text-sm mb-4 " onClick={handleSave}>
             저장
           </Button>
         </div>
-        <div className="absolute top-0 left-0 mb-4 p-4 flex justify-start w-full">
+        <div className="absolute    top-0 left-0 mb-4 p-4 flex justify-start w-auto">
           <BackButton />
         </div>
         <div className="sticky overflow-hidden ">
@@ -109,6 +209,7 @@ const ProfileEditPage: React.FC = () => {
             <UserBanner imageUrl={bannerImage ? URL.createObjectURL(bannerImage) : undefined}>
               <CameraIcon className="w-12 h-12" color="white" />
             </UserBanner>
+          </div>
           </div>
           <input
             ref={bannerInputRef}
@@ -124,7 +225,7 @@ const ProfileEditPage: React.FC = () => {
             transformOrigin: "bottom center",
           }}
         >
-          <div className="relative cursor-pointer" onClick={handleAvatarClick} >
+          <div className="relative cursor-pointer" onClick={handleAvatarClick}>
             <Avatar alt="User Avatar" initials="RQ" size={80} src={avatarImage ? URL.createObjectURL(avatarImage) : undefined}>
               <CameraIcon className="w-12 h-12" color="white" />
             </Avatar>
@@ -143,8 +244,8 @@ const ProfileEditPage: React.FC = () => {
             label="Name"
             fullWidth={false}
             variant="underlined"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
           <Input
             label="Username"
@@ -153,6 +254,13 @@ const ProfileEditPage: React.FC = () => {
             variant="underlined"
             onChange={(e) => setUsername(e.target.value)}
           />
+           <Textarea
+            label="Bio"
+            fullWidth={false}
+            value={bio}
+            variant="underlined"
+            onChange={(e) => setBio(e.target.value)}
+          />
           <Input
             label="Website"
             fullWidth
@@ -160,12 +268,15 @@ const ProfileEditPage: React.FC = () => {
             variant="underlined"
             onChange={(e) => setWebsite(e.target.value)}
           />
-          <Select label="Select an location" variant="underlined">
+          <Select label="Select an location" variant="underlined"
+               selectedKeys={[location]}// 선택된 값을 표시
+               onChange={handleSelectionChange}
+          >
             {locations.map((location) => (
               <SelectItem key={location.key}>{location.label}</SelectItem>
             ))}
           </Select>
-          <DatePicker label="Birth date" variant="underlined" className="max-w-[284px]" />
+          <DatePicker label="Birth date" variant="underlined" className="max-w-[284px]"   value={birthday} onChange={setBirthday}/>
           <div className="inline-flex gap-2">
             <RadioGroup
               orientation="horizontal"

@@ -8,6 +8,7 @@ import PanelItem from '@ui/PanelItem';
 import PanelItemTrends from '@ui/PanelItemTrends';
 import Footer from '@ui/Footer';
 import fetchWithBaseURL from '@api/fetch'; 
+import {urlToFile, fetchImageUrl} from "@handler/fetch/img";
 
 // 데이터 페칭 함수: userId를 사용하여 API 요청
 async function fetchUserData(userId: string) {
@@ -17,7 +18,20 @@ async function fetchUserData(userId: string) {
 export default async function HomePage({ params }: { params: { userId: string } }) {
   // 서버에서 데이터 페칭
   const userData = await fetchUserData(params.userId);
+  const { banner_img, user_img, ...rest } = userData;
 
+  const [newBannerImg, newUserImg] = await Promise.all([
+    fetchImageUrl(banner_img),
+    fetchImageUrl(user_img)
+  ]);
+  console.log(newBannerImg)
+  console.log(newUserImg)
+  const updatedUserData = {
+    ...rest,
+    banner_img: newBannerImg,
+    user_img: newUserImg
+  };
+  
   const tabs = ['Posts', 'Replies', 'Bettings'];
   const trends = [
     { title: "Next JS", category: "Development", stat: "57.5K" },
@@ -52,7 +66,7 @@ export default async function HomePage({ params }: { params: { userId: string } 
     <>
       <main className="col-span-5 w-full border-x border-slate-200">
         {/* 서버에서 페칭한 데이터를 MyChannel 컴포넌트에 전달 */}
-        <MyChannel user={userData} />
+        <MyChannel user={updatedUserData} />
         <Tabs tabNames={tabs} />
       </main>
     </>
