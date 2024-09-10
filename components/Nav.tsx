@@ -32,7 +32,7 @@ const Nav: React.FC = () => {
       icon: <HomeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
     },
     {
-      href: '/explore',
+      href: '/hot-topic',
       text: 'Hot Topic',
       icon: <HashtagIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
     },
