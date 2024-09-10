@@ -13,7 +13,7 @@ import { CameraIcon } from '@heroicons/react/24/outline';
 import Avatar from "@components/AvatarWithIcon";
 import BackButton from "@components/BackButton";
 import { sendMultipartForm } from "@handler/fetch/axios";
-import useUserStore from "@store/useUserStore";
+import useUserStore, { UserInfo } from "@store/useUserStore";
 import apiClient  from "@handler/fetch/axios";
 import { stat } from "fs";
 import useOptimisticMutation from "@handler/useOptimisticMutation";
@@ -53,16 +53,49 @@ const ProfileEditPage: React.FC =  () => {
 
   const mutation = useOptimisticMutation({
     queryKey: ['my-channel'], // 쿼리 키를 명확하게 설정
-    mutationFn: (formData: FormData) => sendMultipartForm(`/users/${userId}`, formData, 'put'), // 반드시 재정의되는 mutationFn 
-    onSettledFn: async (data: any, variables: any, context: any) =>{
+    mutationFn: (formData: FormData) => sendMultipartForm(`/users/${userId}`, formData, 'put'),
+    onErrorFn: (error: any, context: any) => {
+      console.error('Mutation failed:', error);
+      if (context?.previousData) {
+        const setUserInfo = useUserStore.getState().setUserInfo;
+        setUserInfo(context.previousData);
+      }
+    },
+    onSuccessFn: (data: any, variables: any, context: any)=>
+    {
+      alert("Profile updated successfully!");
+      if (typeof window !== 'undefined' && window.history.length > 1) {
+        router.back();
+      } else {
+        router.push('/'); // 기본 페이지로 이동 (필요한 경로로 수정)
+      }
+    },
+    onMutateFn: async (newData: FormData, previousData: FormData) =>{
+      const newPreviousData = useUserStore.getState().userInfo;
 
-    const userInfoResponse = await apiClient.get(`/users/${userId}`);
-    // // 사용자 정보 요청
-    const setUserInfo = useUserStore.getState().setUserInfo;
-
-    setUserInfo(userInfoResponse.data);
-    console.log("userInfoResponse.data:",userInfoResponse.data)
-    }
+      // FormData를 UserInfo 형태로 변환
+      const optimisticUpdate: UserInfo = {
+        ...newPreviousData, // 이전 데이터를 스프레드로 복사
+        displayName: (newData.get('displayName') as string) || newPreviousData?.displayName,
+        userName: (newData.get('userName') as string) || newPreviousData?.userName,
+        location: (newData.get('location') as string) || newPreviousData?.location,
+        birthday: (newData.get('birthday') as string) || newPreviousData?.birthday,
+        gender: (newData.get('gender') as string) || newPreviousData?.gender,
+  
+        // 이미지 파일 처리 (선택적으로 새로운 이미지 URL 생성)
+        avatarUrl: newData.get('avatarImage') ? URL.createObjectURL(newData.get('avatarImage') as Blob) : newPreviousData?.avatarUrl,
+      };
+  
+      // 낙관적 업데이트 반영
+      const setUserInfo = useUserStore.getState().setUserInfo;
+      setUserInfo(optimisticUpdate);
+  
+      console.log('Optimistic update with newData:', optimisticUpdate);
+  
+      // 실패 시 롤백을 위한 이전 데이터를 반환
+      return { previousData };
+      }
+    
   });
   let formatter = useDateFormatter({dateStyle: "full"});
   const [displayName, setDisplayName] = useState("");
@@ -86,12 +119,11 @@ const ProfileEditPage: React.FC =  () => {
       setWebsite(userProfile.website || "");
       setBio(userProfile.bio || "");
       setBirthday(userProfile.birthday ? parseDate(userProfile.birthday) : null);
-      setGender(userProfile.user_gender.toLowerCase() || "male");
+      setGender(userProfile.user_gender?.toLowerCase() || "male");
   
       // user_img 처리
       if (userProfile.user_img) {
-        fetchImageUrl(userProfile.user_img) // 서버에서 URL 가져오기
-          .then((url) => urlToFile(url)) // URL을 File로 변환
+     urlToFile(userProfile.user_img) // URL을 File로 변환
           .then((file) => {
             console.log(file);  // File 객체로 출력
             setAvatarImage(file); // File 상태로 설정
@@ -103,8 +135,7 @@ const ProfileEditPage: React.FC =  () => {
   
       // banner_img 처리
       if (userProfile.banner_img) {
-        fetchImageUrl(userProfile.banner_img) // 서버에서 URL 가져오기
-          .then((url) => urlToFile(url)) // URL을 File로 변환
+       urlToFile(userProfile.banner_img) // URL을 File로 변환
           .then((file) => {
             console.log(file);  // File 객체로 출력
             setBannerImage(file); // File 상태로 설정
@@ -169,12 +200,7 @@ const ProfileEditPage: React.FC =  () => {
 
       mutation.mutate(formData);
 
-      alert("Profile updated successfully!");
-      if (typeof window !== 'undefined' && window.history.length > 1) {
-        router.back();
-      } else {
-        router.push('/'); // 기본 페이지로 이동 (필요한 경로로 수정)
-      }
+   
     } catch (error) {
       console.error("Failed to update profile:", error);
       alert("Error updating profile.");

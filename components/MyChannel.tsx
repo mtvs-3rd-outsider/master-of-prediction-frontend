@@ -16,7 +16,6 @@ import {
   SwatchIcon
 } from "@heroicons/react/24/outline";
 import IconText from "./IconText";
-import fetchWithBaseURL from "@handler/fetch/fetch";
 import Link from "next/link";
 type MyChannelProps = {
   user?: {
@@ -118,7 +117,7 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
       </div>
       <div className="mt-2">
         <p className="text-sm text-gray-800">
-        {user.bio.split('\n').map((line, index) => (
+        {user.bio?.split('\n').map((line, index) => (
         <span key={index}>
           {line}
           <br />

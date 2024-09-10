@@ -58,18 +58,20 @@ const useOptimisticMutation = ({
       // onSuccessFn이 있으면 실행, 없으면 기본 성공 처리
       if (onSuccessFn) {
         onSuccessFn(data, variables, context);
-      } else {
+      } 
         console.log('요청 성공');
-      }
     },
     onSettled: (data, error, variables, context) => {
       // onSettledFn이 있으면 실행, 없으면 기본 쿼리 무효화 처리
       if (onSettledFn) {
         onSettledFn(data, error, variables, context);
-      } else {
+      console.log("onSettledFn")
+
+      } 
+
         queryClient.invalidateQueries({ queryKey: [queryKey] }); // 기본 쿼리 무효화
-        console.log("onSettled")
-      }
+      console.log("onSettled")
+
     },
   });
 };

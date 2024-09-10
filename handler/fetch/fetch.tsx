@@ -37,7 +37,7 @@ async function fetchWithBaseURL(
     console.log('Request sent:', url, modifiedOptions);
 
     const response = await fetch(url, modifiedOptions);
-
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

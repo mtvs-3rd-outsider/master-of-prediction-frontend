@@ -3,11 +3,11 @@ import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 
 // UserInfo 인터페이스 정의
-interface UserInfo {
-  id: number;
-  email: string;
-  displayName: string;
-  userName: string;
+export interface UserInfo {
+  id?: number;
+  email?: string;
+  displayName?: string;
+  userName?: string;
   age?: number;
   gender?: string;
   authority?: string;

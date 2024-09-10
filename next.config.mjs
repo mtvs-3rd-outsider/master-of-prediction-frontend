@@ -30,6 +30,10 @@ const nextConfig = withBundleAnalyzer({
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
     ],
     domains: ['localhost'],  // localhost 도메인 추가
   },

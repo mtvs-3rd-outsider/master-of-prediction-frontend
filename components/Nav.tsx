@@ -47,7 +47,7 @@ const Nav: React.FC = () => {
       icon: <EnvelopeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
     },
     {
-      href: '/bookmarks',
+      href: '/category-channel',
       text: 'Category Channel',
       icon: <BookmarkIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
     },
