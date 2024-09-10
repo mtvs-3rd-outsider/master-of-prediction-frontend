@@ -1,26 +1,26 @@
 "use client";
 import React from 'react';
-import CustomTabs from '@components/Tabs'; // Adjust the path to CustomTabs according to your actual project structure.
+import CustomTabs from '@components/Tabs';
+
 interface TabsProps {
   tabNames: string[];
+  onTabChange: (index: number) => void; // 탭 변경 핸들러 전달
 }
 
-const StickyTabsWrapper :React.FC<TabsProps> = ({tabNames}) => {
-  // Define the header height. Adjust the value according to your actual header height.
+const StickyTabsWrapper: React.FC<TabsProps> = ({ tabNames, onTabChange }) => {
   return (
     <div style={{ position: 'relative' }}>
+      {/* Sticky Tabs */}
       <div
-        style={{ 
-          position: 'sticky', 
-          top: `0px`, 
-          zIndex: 10, 
-          backgroundColor: 'white' 
+        style={{
+          position: 'sticky',
+          top: `0px`,
+          zIndex: 10,
+          backgroundColor: 'white',
         }}
       >
-        <CustomTabs tabNames={tabNames} />
-      </div>
-      <div style={{ height: '200vh', padding: '20px' }}>
-        Scroll to see the sticky effect. Add more content here to see the effect of the sticky tabs.
+        {/* 탭 변경 핸들러 전달 */}
+        <CustomTabs tabNames={tabNames} onTabChange={onTabChange} />
       </div>
     </div>
   );
