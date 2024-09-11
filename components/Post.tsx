@@ -21,6 +21,7 @@ interface Props {
   followers: string;
   following: string;
   description: string;
+  viewCount: string;
   children?: ReactNode;
 }
 
