@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash'; // lodash를 사용하여 debounce 적용
 import apiClient from '@api/axios'
 import Link from 'next/link';
+import { useDebounce } from "@uidotdev/usehooks";
 // API 호출 함수
 const fetchSearchResults = async ( queryKey : string ) => {
   const response = await apiClient.get(`/search/displayName?q=${queryKey}`);
@@ -21,7 +22,7 @@ export default function Page() {
   const [isHeaderVisible, setHeaderVisible] = useState(true); // 헤더 보임 여부 관리
   const [isSearching, setIsSearching] = useState(false); // 검색 상태 관리
   const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
-
+  const debouncedSearchTerm = useDebounce(searchQuery, 500);
   const handleSearchToggle = () => {
     setHeaderVisible((prev) => !prev); // 헤더 표시 상태를 반전
     setIsSearching((prev) => !prev);   // 검색 중인지 여부 설정
@@ -34,10 +35,10 @@ export default function Page() {
 
   // React Query를 사용한 검색 API 호출
   const { data: searchResults, isLoading, error } = useQuery({
-    queryKey: ['searchResults', searchQuery], // queryKey로 검색 쿼리를 관리
-    queryFn: () => fetchSearchResults(searchQuery), // 검색 API 호출 함수
-    enabled: !!searchQuery, // searchQuery가 존재할 때만 요청 수행
-    staleTime: 5 * 60 , // 5분 동안 캐시 상태 유지
+    queryKey: ['searchResults', debouncedSearchTerm], // queryKey로 검색 쿼리를 관리
+    queryFn: () => fetchSearchResults(debouncedSearchTerm), // 검색 API 호출 함수
+    enabled: !!debouncedSearchTerm, // searchQuery가 존재할 때만 요청 수행
+    staleTime: 5 * 60 *1000, // 5분 동안 캐시 상태 유지
   });
 
   // 탭 변경 핸들러
