@@ -25,7 +25,9 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
       return '/category-channel/regist'; // 대시보드에서 추가 버튼을 눌렀을 때 이동할 경로
     } else if (pathname.startsWith('/profile')) {
       return '/profile/edit'; // 프로필 페이지에서 이동할 경로
-    } else {
+    } else if (pathname.startsWith('/hot-topic')){
+      return '/hot-topic/create-feed'; // 핫토픽 feed 등록 경로
+    }else {
       return '/default-action'; // 기본 경로
     }
   };

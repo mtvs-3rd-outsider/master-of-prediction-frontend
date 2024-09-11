@@ -2,62 +2,76 @@
 import { ReactNode } from 'react';
 import NavItem from '@ui/NavItem';
 import AccountNavItem from '@ui/AccountNavItem';
-import Image from 'next/image'; 
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import {
-  HomeIcon,
-  HashtagIcon,
-  BellIcon,
-  EnvelopeIcon,
-  BookmarkIcon,
-  UserIcon,
-} from '@heroicons/react/24/outline'; 
+  CircleStackIcon as CircleStackIconOutline,
+  FireIcon as FireIconOutline,
+  BellIcon as BellIconOutline,
+  EnvelopeIcon as EnvelopeIconOutline,
+  RectangleStackIcon as RectangleStackIconOutline,
+  UserIcon as UserIconOutline,
+} from '@heroicons/react/24/outline';
+import {
+  CircleStackIcon as CircleStackIconSolid,
+  FireIcon as FireIconSolid,
+  BellIcon as BellIconSolid,
+  EnvelopeIcon as EnvelopeIconSolid,
+  RectangleStackIcon as RectangleStackIconSolid,
+  UserIcon as UserIconSolid,
+} from '@heroicons/react/24/solid';
 import { Button } from '@nextui-org/button';
 import useUserStore from '@store/useUserStore';
 
 interface NavLinkItem {
   href: string;
   text: string;
-  icon?: ReactNode;
+  icon: ReactNode;
+  activeIcon: ReactNode;
 }
 
 const Nav: React.FC = () => {
-  const userId = useUserStore((state) => state.userInfo?.id); // Zustand에서 userId 가져오기
+  const userId = useUserStore((state) => state.userInfo?.id);
+  const pathname = usePathname();
 
-  // 로그인 상태에 따라 네비게이션 항목 구성
   const items: NavLinkItem[] = [
     {
       href: '/',
       text: 'Bettings',
-      icon: <HomeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+      icon: <CircleStackIconOutline className="w-6 h-6" />,
+      activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
     },
     {
       href: '/hot-topic',
       text: 'Hot Topic',
-      icon: <HashtagIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+      icon: <FireIconOutline className="w-6 h-6" />,
+      activeIcon: <FireIconSolid className="w-6 h-6" />,
     },
     {
       href: '/notifications',
       text: 'Notifications',
-      icon: <BellIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+      icon: <BellIconOutline className="w-6 h-6" />,
+      activeIcon: <BellIconSolid className="w-6 h-6" />,
     },
     {
       href: '/messages',
       text: 'Messages',
-      icon: <EnvelopeIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+      icon: <EnvelopeIconOutline className="w-6 h-6" />,
+      activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
     },
     {
       href: '/category-channel',
       text: 'Category Channel',
-      icon: <BookmarkIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+      icon: <RectangleStackIconOutline className="w-6 h-6" />,
+      activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
     },
-    // userId가 있을 때만 'My Channel' 항목을 추가
     ...(userId
       ? [
           {
             href: `/channel/${userId}`,
             text: 'My Channel',
-            icon: <UserIcon className="w-6 h-6" />, // Heroicons 아이콘으로 대체
+            icon: <UserIconOutline className="w-6 h-6" />,
+            activeIcon: <UserIconSolid className="w-6 h-6" />,
           },
         ]
       : []),
@@ -80,12 +94,12 @@ const Nav: React.FC = () => {
                 width={24} 
                 height={24} 
                 className="w-6 h-6" 
-              />  {/* next/image 컴포넌트를 사용하여 트위터 로고 렌더링 */}
+              />
             </NavItem>
-            {items.map(({ href, text, icon }, i) => (
+            {items.map(({ href, text, icon, activeIcon }, i) => (
               <div key={`header-${i}`} className="rounded-lg focus:outline-none overflow-hidden">
                 <NavItem href={href} width="inline" size="default">
-                  {icon}
+                  {pathname === href ? activeIcon : icon}
                   <div className="hidden xl:inline-flex flex-none text-lg font-medium">
                     {text}
                   </div>
@@ -112,9 +126,9 @@ const Nav: React.FC = () => {
       </header>
 
       <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around">
-        {items.map(({ href, icon }, i) => (
+        {items.map(({ href, icon, activeIcon }, i) => (
           <NavItem key={`footer-${i}`} href={href} width="inline" size="default">
-            {icon}
+            {pathname === href ? activeIcon : icon}
           </NavItem>
         ))}
       </footer>

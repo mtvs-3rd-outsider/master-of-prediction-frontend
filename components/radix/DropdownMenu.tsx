@@ -10,10 +10,10 @@ import {
 	EllipsisHorizontalIcon,
 	FaceFrownIcon,
 	UserPlusIcon,
-	QueueListIcon,
-	SpeakerXMarkIcon,
+	// QueueListIcon,
+	// SpeakerXMarkIcon,
 	NoSymbolIcon,
-	CodeBracketIcon,
+	// CodeBracketIcon,
 	FlagIcon,
 } from '@heroicons/react/24/outline';
 
@@ -44,31 +44,10 @@ const items: AccordionItem[] = [
 	},
 	{
 		href: '/',
-		text: `Add/remove @${username} from Lists`,
-		width: 'full',
-		size: 'small',
-		icon: <QueueListIcon className="w-4 h-4" />,
-	},
-	{
-		href: '/',
-		text: `Mute @${username}`,
-		width: 'full',
-		size: 'small',
-		icon: <SpeakerXMarkIcon className="w-4 h-4" />,
-	},
-	{
-		href: '/',
 		text: `Block @${username}`,
 		width: 'full',
 		size: 'small',
 		icon: <NoSymbolIcon className="w-4 h-4" />,
-	},
-	{
-		href: '/',
-		text: 'Embed Tweet',
-		width: 'full',
-		size: 'small',
-		icon: <CodeBracketIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
