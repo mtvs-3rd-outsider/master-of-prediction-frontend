@@ -1,55 +1,141 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import Search from "@ui/Search";
 import Panel from "@ui/Panel";
 import PanelItem from "@ui/PanelItem";
 import PanelItemTrends from "@ui/PanelItemTrends";
 import Footer from "@ui/Footer";
+import Link from "next/link";
+import { sendMultipartForm } from "@handler/fetch/axios";
+import { useRouter } from "next/router";
+
+interface BettingOptions {
+  imgUrl: string;
+  image?: File;
+  content: string;
+  fileInputRef: RefObject<HTMLInputElement>;
+}
+
 const BettingAddPage = () => {
+  // const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<File[]>([]);
+  const [mainPreviewUrls, setMainPreviewUrls] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState(true);
+  const [options, setOptions] = useState<BettingOptions[]>([
+    { imgUrl: "", image: undefined, content: "", fileInputRef: useRef(null) },
+    { imgUrl: "", image: undefined, content: "", fileInputRef: useRef(null) },
+  ]);
+
+  useEffect(() => {
+    // Cleanup URLs when component unmounts
+    return () => {
+      mainPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [mainPreviewUrls]);
 
   // input click method
   const handleClick = () => {
     fileRef?.current?.click();
   };
 
-  const handleChange = (e: React.ChangeEvent) => {
-    const targetFiles = (e.target as HTMLInputElement).files as FileList;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const targetFiles = e.target.files as FileList;
     const targetFilesArray = Array.from(targetFiles);
-    const selectedFiles: string[] = targetFilesArray.map((file) => {
-      return URL.createObjectURL(file);
-    });
-    // 합체!
-    setImages((prev) => prev.concat(selectedFiles));
+
+    // Generate URLs for new files
+    const newUrls = targetFilesArray.map((file) => URL.createObjectURL(file));
+
+    setImages((prev) => [...prev, ...targetFilesArray]);
+    setMainPreviewUrls((prev) => [...prev, ...newUrls]);
+  };
+
+  const handleOptionImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      const updatedOptions = [...options];
+
+      updatedOptions[index].imgUrl = URL.createObjectURL(e.target.files[0]);
+      updatedOptions[index].image = e.target.files[0];
+
+      setOptions(updatedOptions); // 변경된 옵션 상태 업데이트
+    }
   };
 
   const handleDelete = (index: number) => {
-    // images 배열에서 클릭된 이미지를 제거
-    const newImages = images.filter((_, i) => i !== index);
-    setImages(newImages);
+    // Revoke the URL of the deleted image
+    URL.revokeObjectURL(mainPreviewUrls[index]);
+
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setMainPreviewUrls((prev) => prev.filter((_, i) => i !== index));
   };
+  const handleOptionContent = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const updatedOptions = [...options];
+    updatedOptions[index].content = e.target.value;
+    setOptions(updatedOptions); // 변경된 값 반영
+  };
+
+  const handleOptionImageClick = (index: number) => {
+    const fileInputRef = options[index].fileInputRef;
+    if (fileInputRef && fileInputRef.current) {
+      fileInputRef.current.click(); // input 요소 클릭
+      setOptions(options);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formElement = e.target as HTMLFormElement; // e.target을 HTMLFormElement로 명시
+    const formData = new FormData(formElement);
+    formData.append("isBlind", isPublic.valueOf.toString());
+
+    options.forEach((option, index) => {
+      // if (option.content) {
+      //   formData.append(`options[${index}].content`, option.content);
+      // }
+      if (option.image != undefined) {
+        formData.append(`option_image[]`, option.image);
+      }
+      if (option.content != null) {
+        formData.append(`option_content[]`, option.content);
+      }
+    });
+
+    console.log(Object.fromEntries(formData));
+    console.log(options);
+    const response = await sendMultipartForm("/betting/add", formData, "post");
+    console.log("response data: ", response.data);
+  };
+  // router.push("/");
+
   return (
     <>
       <main className="col-span-5 w-full h-auto border-x border-slate-200 p-4 pl-20 pr-20 pb-32">
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            className={`${!isPublic ? "bg-blue-500 hover:bg-blue-700" : "bg-black hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
-            onClick={() => setIsPublic(false)}
-          >
-            비공개
-          </button>
-          <button
-            className={`${isPublic ? "bg-blue-500 hover:bg-blue-700" : "bg-black hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
-            onClick={() => setIsPublic(true)}
-          >
-            공개
-          </button>
-        </div>
-        <h1 className="text-4xl pt-4 pb-4">등록하기</h1>
-        <form className="w-full ">
+        <form className="w-full" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              className={`${!isPublic ? "bg-blue-500 hover:bg-blue-700" : "bg-black hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
+              onClick={() => setIsPublic(false)}
+            >
+              비공개
+            </button>
+            <button
+              type="button"
+              className={`${isPublic ? "bg-blue-500 hover:bg-blue-700" : "bg-black hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
+              onClick={() => setIsPublic(true)}
+            >
+              공개
+            </button>
+          </div>
+          <h1 className="text-4xl pt-4 pb-4">등록하기</h1>
           <div className="w-full mb-6 md:mb-0">
             <label
               className="block mb-2 text-sm font-bold text-gray-600 w-full"
@@ -58,9 +144,10 @@ const BettingAddPage = () => {
               주제
             </label>
             <input
-              className="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               id="title"
               type="text"
+              name="title"
             />
           </div>
           <div className="w-full mb-6">
@@ -71,9 +158,10 @@ const BettingAddPage = () => {
               내용
             </label>
             <input
-              className="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               id="content"
               type="text"
+              name="content"
             />
           </div>
 
@@ -88,10 +176,11 @@ const BettingAddPage = () => {
               id="countries"
               className="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none"
               defaultValue="politics"
+              name="categoryCode"
             >
-              <option value="politics">정치</option>
-              <option value="economy">경제</option>
-              <option value="sports">스포츠</option>
+              <option value="1">정치</option>
+              <option value="2">경제</option>
+              <option value="3">스포츠</option>
             </select>
           </div>
           <div className="block w-full mb-6">
@@ -105,7 +194,7 @@ const BettingAddPage = () => {
               </label>
               <input
                 ref={fileRef}
-                name="file"
+                name="mainImgUrl"
                 className="hidden"
                 type="file"
                 multiple
@@ -120,30 +209,24 @@ const BettingAddPage = () => {
 				flex pt-[10px] pr-[10px] pb-[10px] pl-[10px] gap-[10px] items-start self-stretch shrink-0 flex-nowrap bg-[#cfcfcf]  relative overflow-hidden z-[3]
 				overflow-x-scroll overflow-y-hidden whitespace-nowrap scrolling-touch ms-overflow-none "
             >
-              {images.map((url, i) => (
-                <>
-                  <div
-                    // w-[120px] h-[112px]
-                    className="
-							shrink-0 bg-[#efe8e8] rounded-[10px] relative overflow-hidden
-							w-36 h-36  "
-                  >
+              {mainPreviewUrls.map((url, i) => (
+                <div key={i} className="w-full">
+                  <div className="shrink-0 bg-[#efe8e8] rounded-[10px] relative overflow-hidden w-36 h-36">
                     <img
                       src={url}
                       width="100%"
                       height="100%"
-                      alt=""
+                      alt={`image${i}`}
                       className="object-cover"
                     />
                     <span
-                      className="absolute bg-red-700 text-green-100 px-2 py-1 text-xs font-bold rounded-full top-1 right-2"
+                      className="absolute bg-red-700 text-green-100 px-2 py-1 text-xs font-bold rounded-full top-1 right-2 cursor-pointer"
                       onClick={() => handleDelete(i)}
                     >
                       X
                     </span>
                   </div>
-                  <input src={url} alt={`image${i}`} className="hidden" />
-                </>
+                </div>
               ))}
             </div>
           </div>
@@ -153,12 +236,42 @@ const BettingAddPage = () => {
               htmlFor="optionId"
             >
               선택지 추가하기 (기본 2개)
+              <span className="text-large cursor-pointer"> + </span>
             </label>
-            <input
-              className="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="optionId"
-              type="datetime-local"
-            />
+            <div>
+              {options.map(({ imgUrl, content, fileInputRef }, i) => (
+                <div key={i} className="w-full grid  grid-cols-4 gap-4 py-4 ">
+                  <div
+                    className="border rounded-md border-gray-400 w-28 h-28 overflow-hidden"
+                    onClick={() => handleOptionImageClick(i)}
+                  >
+                    <img
+                      src={imgUrl}
+                      width="100%"
+                      height="100%"
+                      alt=""
+                      className="object-cover"
+                    />
+                    <input
+                      ref={fileInputRef}
+                      accept="image/*"
+                      type="file"
+                      className="hidden"
+                      onChange={(e) => handleOptionImageChange(e, i)}
+                    />
+                  </div>
+                  <div className="col-span-3 items-center flex">
+                    <input
+                      className="appearance-none block w-full text-gray-700 border border-gray-400 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      id="content"
+                      type="text"
+                      value={content}
+                      onChange={(e) => handleOptionContent(e, i)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="block w-full mb-6">
             <label
@@ -168,7 +281,7 @@ const BettingAddPage = () => {
               마감 일자
             </label>
             <input
-              className="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               id="dateTime"
               type="datetime-local"
             />
@@ -182,7 +295,7 @@ const BettingAddPage = () => {
                 익명 아이디
               </label>
               <input
-                className="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="privateId"
                 type="text"
                 placeholder="설정할 익명 아이디"
@@ -191,11 +304,14 @@ const BettingAddPage = () => {
           )}
 
           <div className="flex justify-end gap-4 w-full">
-            <button className="w-24 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            <button
+              type="submit"
+              className="w-24 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            >
               등록
             </button>
             <button className="w-24 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">
-              취소
+              <Link href={"/"}>취소</Link>
             </button>
           </div>
         </form>
