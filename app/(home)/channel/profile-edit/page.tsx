@@ -83,7 +83,7 @@ const ProfileEditPage: React.FC =  () => {
         birthday: (newData.get('birthday') as string) || newPreviousData?.birthday,
         gender: (newData.get('gender') as string) || newPreviousData?.gender,
         // 이미지 파일 처리 (선택적으로 새로운 이미지 URL 생성)
-        avatarUrl: newData.get('avatarImage') ? newData.get('avatarImage') as File : newPreviousData?.avatarUrl,
+        avatarUrl: newData.get('avatarImage') ? newData.get('avatarImage') as string : newPreviousData?.avatarUrl,
       };
   
       // 낙관적 업데이트 반영

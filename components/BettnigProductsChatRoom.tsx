@@ -1,39 +1,148 @@
-"use client";
+import { useState, useRef, useEffect } from "react";
+// import { Avatar } from "@nextui-org/avatar";
+import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
+import { ArrowUpIcon } from "@heroicons/react/24/solid";
+import { Chip } from "@nextui-org/chip";
+import { ScrollShadow } from "@nextui-org/scroll-shadow";
+import Avatar from "./radix/Avatar";
+type Message = {
+  id: number;
+  sender: string;
+  text: string;
+  time: string;
+  avatar?: string;
+};
 
-export default function BettingProductsChatRoom() {
+export default function ChatUI() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      sender: "Tom Martinez",
+      text: "Hello!",
+      time: "10:31",
+      avatar: "/placeholder-user.jpg",
+    },
+    {
+      id: 2,
+      sender: "Tom Martinez",
+      text: "How are you? I just found an excellent chat solution that will fit our needs!",
+      time: "10:32",
+      avatar: "/placeholder-user.jpg",
+    },
+  ]);
+  const [newMessage, setNewMessage] = useState("");
+  const [isAtBottom, setIsAtBottom] = useState(true); // 스크롤이 맨 아래에 있는지 여부
+  const [showNewMessageAlert, setShowNewMessageAlert] = useState(false); // 새 메시지 알림 표시 여부
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // 스크롤 이벤트 처리
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 10; // 스크롤이 맨 아래에 있는지 확인
+      setIsAtBottom(isBottom);
+
+      if (isBottom) {
+        setShowNewMessageAlert(false); // 스크롤이 맨 아래에 있으면 새 메시지 알림 숨김
+      }
+    }
+  };
+
+  // 새 메시지 추가 시 처리
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessage.trim() === "") return;
+
+    const newChat: Message = {
+      id: messages.length + 1,
+      sender: "You",
+      text: newMessage,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      avatar: "/your-avatar.jpg",
+    };
+
+    setMessages([...messages, newChat]);
+    setNewMessage(""); // 입력 필드 초기화
+  };
+
+  // 메시지가 추가될 때 자동 스크롤
+  useEffect(() => {
+    if (chatContainerRef.current && isAtBottom) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    } else if (!isAtBottom) {
+      setShowNewMessageAlert(true); // 스크롤이 맨 아래가 아닌 경우 알림 표시
+    }
+  }, [messages]);
+
   return (
-    <div className="main-container w-[356px] h-[383px] bg-[#e1f2fa] rounded-[16px] relative mx-auto my-0">
-      <div className="flex w-[331px] h-[133px] pt-0 pr-[40px] pb-0 pl-0 flex-col gap-[8px] items-start flex-nowrap relative z-[1] mt-[116px] mr-0 mb-0 ml-0">
-        <div className="flex gap-[8px] items-start self-stretch shrink-0 flex-nowrap relative z-[2]">
-          <div className="w-[24px] h-[24px] shrink-0 rounded-[100px] border-solid border border-[#fff] relative overflow-hidden shadow-[0_4px_6px_0_rgba(13,10,44,0.06)] z-[3]"></div>
-          <div className="flex flex-col gap-[8px] items-start grow shrink-0 basis-0 flex-nowrap relative z-[5]">
-            <span className="flex w-[93px] h-[14px] justify-center items-start shrink-0 basis-auto font-['Roboto'] text-[12px] font-normal leading-[14px] text-[#9a9bb1] relative text-center whitespace-nowrap z-[6]">
-              Edward Davidson
-            </span>
-            <div className="flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] flex-col gap-[8px] items-start self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-tl-none rounded-tr-[16px] rounded-br-[16px] rounded-bl-[16px] relative z-[7]">
-              <span className="flex w-[227px] h-[57px] justify-start items-start self-stretch shrink-0 font-['Roboto'] text-[16px] font-normal leading-[18.75px] text-[#2c2d3a] relative text-left z-[8]">
-                Oh! <br />
-                They fixed it and upgraded the security further. 🚀
-              </span>
-              <span className="h-[14px] shrink-0 basis-auto font-['Roboto'] text-[12px] font-medium leading-[14px] text-[#d0d1db] relative text-left whitespace-nowrap z-[9]">
-                10:14
-              </span>
+    <div className="flex flex-col h-screen max-w-md mx-auto bg-white">
+      <ScrollShadow
+          ref={chatContainerRef}
+          onScroll={handleScroll} // 스크롤 이벤트 바인딩
+
+        hideScrollBar
+        offset={100}
+        orientation="horizontal"
+        className="max-w-[400px] max-h-[300px] flex-1 overflow-y-auto"
+      >
+        <div
+      
+          className="p-4 space-y-4"
+        >
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex items-start space-x-2 ${
+                message.sender === "You" ? "justify-end" : ""
+              }`}
+            >
+              <Avatar size={32}  src={message.avatar || undefined} />
+              <div
+                className={`max-w-xs p-2 ${
+                  message.sender === "You" ? "text-right" : "text-left"
+                }`}
+              >
+                <p className="font-semibold">
+                  {message.sender}{" "}
+                  <span className="text-xs text-gray-500">{message.time}</span>
+                </p>
+                <p className="text-sm">{message.text}</p>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+      </ScrollShadow>
+
+      {/* 새 메시지 알림 */}
+      {showNewMessageAlert && (
+        <div className="px-4 pb-2">
+          <Chip color="primary" onClick={() => {
+            // 알림 클릭 시 맨 아래로 스크롤
+            if (chatContainerRef.current) {
+              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+              setShowNewMessageAlert(false); // 알림 숨기기
+            }
+          }}>
+            New message
+          </Chip>
+        </div>
+      )}
+
+      <div className="p-4 border-t">
+        <form className="flex space-x-2" onSubmit={handleSubmit}>
+          <Input
+            className="flex-1"
+            placeholder="메시지 입력"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <Button type="submit" isIconOnly>
+            <ArrowUpIcon className="h-4 w-4" />
+            <span className="sr-only">Send</span>
+          </Button>
+        </form>
       </div>
-      <button className="flex w-[95px] pt-[12px] pr-[16px] pb-[12px] pl-[16px] flex-col gap-[8px] items-end flex-nowrap bg-[#1565c0] rounded-tl-[16px] rounded-tr-[16px] rounded-br-none rounded-bl-[16px] border-none relative z-10 pointer mt-[11px] mr-0 mb-0 ml-[233px]">
-        <span className="h-[19px] shrink-0 basis-auto font-['Roboto'] text-[16px] font-normal leading-[18.75px] text-[#fff] relative text-left whitespace-nowrap z-[11]">
-          Great! 😊
-        </span>
-        <div className="flex w-[53px] gap-[8px] justify-end items-start shrink-0 flex-nowrap relative z-[12]">
-          <span className="h-[14px] shrink-0 basis-auto font-['Roboto'] text-[12px] font-medium leading-[14px] text-[#e9eaeb] relative text-left whitespace-nowrap z-[13]">
-            10:20
-          </span>
-          <div className="w-[14px] h-[14px] shrink-0 relative overflow-hidden z-[14]"></div>
-        </div>
-      </button>
-      <div className="w-[356px] h-[47px] bg-[#fff] rounded-[10px] border-solid border-[0.5px] border-[#000] relative mt-[11px] mr-0 mb-0 ml-0" />
     </div>
   );
 }

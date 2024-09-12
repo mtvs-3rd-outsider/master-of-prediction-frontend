@@ -3,8 +3,8 @@ import { Avatar as NextUIAvatar } from '@nextui-org/avatar';
 
 type AvatarProps = {
   src?: string; // src는 JSON 형식의 문자열 또는 일반 URL일 수 있음
-  alt: string;
-  initials: string;
+  alt?: string;
+  initials?: string;
   size?: number;
   children?: React.ReactNode;
 };

@@ -14,7 +14,7 @@ export interface UserInfo {
   location?: string;
   token?: string;
   birthday?: string;
-  avatarUrl?: string | File;
+  avatarUrl?: string ;
   tier?: string;
 }
 
