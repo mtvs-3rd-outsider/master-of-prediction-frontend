@@ -223,6 +223,7 @@ const Feed: React.FC = () => {
               onClick={() => handlePostClick(id)}
             >
               <Post
+                id={id}
                 name={name}
                 username={username}
                 content={content}

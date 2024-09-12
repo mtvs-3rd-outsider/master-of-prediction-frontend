@@ -1,22 +1,15 @@
 "use client";
 import React from 'react';
 import Header from '@ui/Header';
-import Feed from '@ui/Feed';
-import Search from '@ui/Search';
-import Panel from '@ui/Panel';
-import PanelItem from '@ui/PanelItem';
-import PanelItemTrends from '@ui/PanelItemTrends';
-import Footer from '@ui/Footer';
+import HotTopicFeedList from '@components/HotTopicFeedList';
 
-const HotTopic: React.FC = () => {
+const HotTopicPage: React.FC = () => {
   return (
-    <>
-      <main className="col-span-5 w-full border-x border-slate-200">
-        <Header title="Hot Topic" />
-        <Feed />
-      </main>
-    </>
+    <main className="col-span-5 w-full border-x border-slate-200">
+      <Header title="Hot Topic" />
+      <HotTopicFeedList />
+    </main>
   );
 };
 
-export default HotTopic;
+export default HotTopicPage;
