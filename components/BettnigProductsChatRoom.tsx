@@ -13,11 +13,12 @@ import { Textarea } from "@nextui-org/input";
 import sanitizeHtml from "sanitize-html";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import useUserStore from "@store/useUserStore";
 
 // 메시지 및 유저 타입 정의
 type User = {
-  name: string;
-  avatarImageLink: string;
+  name?: string;
+  avatarImageLink?: string;
 };
 
 type Message = {
@@ -35,10 +36,11 @@ export default function ChatUI() {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [roomId, setRoom] = useState<any>(2);
   const [endpoint, setEndpoint] = useState<any>(null);
+  const userInfo =useUserStore(state=> state.userInfo);
   // RSocket 관련 상태 및 변수
   const clientRef = useRef<any>(null);
   const sourceRef = useRef<any>(null);
-  const user: User = { name: "You", avatarImageLink: "/your-avatar.jpg" }; // 현재 사용자를 하드코딩했으나 동적으로 변경 가능
+  const user: User = { name: userInfo?.displayName, avatarImageLink: userInfo?.avatarUrl }; // 현재 사용자를 하드코딩했으나 동적으로 변경 가능
 
   // RSocket 초기화
   useEffect(() => {
