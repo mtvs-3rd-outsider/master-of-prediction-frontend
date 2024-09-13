@@ -7,14 +7,9 @@ import NavItem from '@ui/NavItem';
 
 import {
 	// Importing directly from @heroicons/react/outline
-	EllipsisHorizontalIcon,
-	FaceFrownIcon,
-	UserPlusIcon,
-	// QueueListIcon,
-	// SpeakerXMarkIcon,
-	NoSymbolIcon,
-	// CodeBracketIcon,
-	FlagIcon,
+	TrashIcon,
+	PencilSquareIcon,
+    EllipsisHorizontalIcon
 } from '@heroicons/react/24/outline';
 
 interface AccordionItem {
@@ -30,35 +25,21 @@ const username = 'royquilor';
 const items: AccordionItem[] = [
 	{
 		href: '/',
-		text: "This Tweet's not helpful",
+		text: "Edit",
 		width: 'full',
 		size: 'small',
-		icon: <FaceFrownIcon className="w-4 h-4" />,
+		icon: <PencilSquareIcon className="w-4 h-4" />,
 	},
 	{
 		href: '/',
-		text: `Follow @${username}`,
+		text: 'Remove',
 		width: 'full',
 		size: 'small',
-		icon: <UserPlusIcon className="w-4 h-4" />,
-	},
-	{
-		href: '/',
-		text: `Block @${username}`,
-		width: 'full',
-		size: 'small',
-		icon: <NoSymbolIcon className="w-4 h-4" />,
-	},
-	{
-		href: '/',
-		text: 'Report Tweet',
-		width: 'full',
-		size: 'small',
-		icon: <FlagIcon className="w-4 h-4" />,
+		icon: <TrashIcon className="w-4 h-4" />,
 	},
 ];
 
-const DropdownMenuDemo = () => (
+const DropdownMenuMyDemo = () => (
 	<DropdownMenuPrimitive.Root>
 		<DropdownMenuPrimitive.Trigger asChild>
 			<button
@@ -98,4 +79,4 @@ const DropdownMenuDemo = () => (
 	</DropdownMenuPrimitive.Root>
 );
 
-export default DropdownMenuDemo;
+export default DropdownMenuMyDemo;
