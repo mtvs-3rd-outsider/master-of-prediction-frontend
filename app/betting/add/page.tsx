@@ -22,11 +22,29 @@ const BettingAddPage = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<File[]>([]);
   const [mainPreviewUrls, setMainPreviewUrls] = useState<string[]>([]);
-  const [isPublic, setIsPublic] = useState(true);
+  const [isBlind, setIsBlind] = useState(false);
   const [options, setOptions] = useState<BettingOptions[]>([
     { imgUrl: "", image: undefined, content: "", fileInputRef: useRef(null) },
     { imgUrl: "", image: undefined, content: "", fileInputRef: useRef(null) },
   ]);
+  const [currentDateTime, setCurrentDateTime] = useState("");
+
+  /**
+   * 마감 날짜 내일로 자동 설정
+   */
+  useEffect(() => {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    const hours = String(tomorrow.getHours()).padStart(2, "0");
+    const minutes = String(tomorrow.getMinutes()).padStart(2, "0");
+
+    const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    setCurrentDateTime(formattedDateTime);
+  }, []);
 
   useEffect(() => {
     // Cleanup URLs when component unmounts
@@ -94,24 +112,35 @@ const BettingAddPage = () => {
 
     const formElement = e.target as HTMLFormElement; // e.target을 HTMLFormElement로 명시
     const formData = new FormData(formElement);
-    formData.append("isBlind", isPublic.valueOf.toString());
+    formData.append("isBlind", isBlind.toString());
+    const mainImgUrl = formData.get("mainImgUrl");
+    if (
+      (mainImgUrl instanceof File && mainImgUrl.name.trim() == "") ||
+      mainImgUrl === null
+    ) {
+      formData.delete("mainImgUrl");
+    }
 
     options.forEach((option, index) => {
-      // if (option.content) {
-      //   formData.append(`options[${index}].content`, option.content);
-      // }
       if (option.image != undefined) {
-        formData.append(`option_image[]`, option.image);
+        formData.append(`options_image`, option.image);
       }
-      if (option.content != null) {
-        formData.append(`option_content[]`, option.content);
+      if (option.content.trim() != "") {
+        formData.append(`options_content`, option.content);
       }
     });
 
-    console.log(Object.fromEntries(formData));
-    console.log(options);
-    const response = await sendMultipartForm("/betting/add", formData, "post");
-    console.log("response data: ", response.data);
+    console.log("formData: ", Object.fromEntries(formData));
+    try {
+      const response = await sendMultipartForm(
+        "/betting-products",
+        formData,
+        "post"
+      );
+      console.log("response data: ", response.data);
+    } catch (error) {
+      console.log(error?.response?.data.errors);
+    }
   };
   // router.push("/");
 
@@ -122,15 +151,15 @@ const BettingAddPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
-              className={`${!isPublic ? "bg-blue-500 hover:bg-blue-700" : "bg-black hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
-              onClick={() => setIsPublic(false)}
+              className={`${isBlind ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-400 hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
+              onClick={() => setIsBlind(true)}
             >
               비공개
             </button>
             <button
               type="button"
-              className={`${isPublic ? "bg-blue-500 hover:bg-blue-700" : "bg-black hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
-              onClick={() => setIsPublic(true)}
+              className={`${!isBlind ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-400 hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
+              onClick={() => setIsBlind(false)}
             >
               공개
             </button>
@@ -276,17 +305,20 @@ const BettingAddPage = () => {
           <div className="block w-full mb-6">
             <label
               className="block mb-2 text-sm font-bold text-gray-600 w-full"
-              htmlFor="dateTime"
+              htmlFor="deadLineDateTime"
             >
               마감 일자
             </label>
             <input
               className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="dateTime"
+              name="deadLineDateTime"
+              id="deadLineDateTime"
               type="datetime-local"
+              value={currentDateTime}
+              onChange={(e) => setCurrentDateTime(e.target.value)}
             />
           </div>
-          {!isPublic && (
+          {isBlind && (
             <div className="block w-full mb-6">
               <label
                 className="block mb-2 text-sm font-bold text-gray-600 w-full"
@@ -310,9 +342,16 @@ const BettingAddPage = () => {
             >
               등록
             </button>
-            <button className="w-24 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">
-              <Link href={"/"}>취소</Link>
-            </button>
+            {/* <button */}
+            {/* > */}
+            <Link
+              href={"/"}
+              // type="reset"
+              className="text-center w-24 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+            >
+              취소
+            </Link>
+            {/* </button> */}
           </div>
         </form>
       </main>
