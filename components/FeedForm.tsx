@@ -9,11 +9,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import { FreeMode } from 'swiper/modules';
-import useUserStore from '@store/useUserStore';
 import Image from "next/image";
 
 interface FeedFormProps {
-  onSubmit: (content: string, media: File[], youtubeUrl: string) => void;
+  onSubmit: (content: string, media: File[], youtubeUrls: string[]) => void;
 }
 
 const YouTubeIcon = () => (
@@ -25,28 +24,28 @@ const YouTubeIcon = () => (
 const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
   const [content, setContent] = useState('');
   const [media, setMedia] = useState<File[]>([]);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeUrls, setYoutubeUrls] = useState<string[]>([]);
+  const [currentYoutubeUrl, setCurrentYoutubeUrl] = useState('');
   const [isYoutubeInputOpen, setIsYoutubeInputOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const userInfo = useUserStore((state) => state.userInfo);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(content, media, youtubeUrl);
+    onSubmit(content, media, youtubeUrls);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && media.length < 4) {
-      const newMedia = Array.from(files).slice(0, 4 - media.length);
+    if (files && media.length + youtubeUrls.length < 4) {
+      const newMedia = Array.from(files).slice(0, 4 - media.length - youtubeUrls.length);
       setMedia(prev => [...prev, ...newMedia]);
     }
   };
 
   const handleYoutubeUrlSubmit = () => {
-    if (youtubeUrl && media.length < 4) {
-      // YouTube URL을 처리하는 로직을 여기에 추가
-      setYoutubeUrl('');
+    if (currentYoutubeUrl && media.length + youtubeUrls.length < 4) {
+      setYoutubeUrls(prev => [...prev, currentYoutubeUrl]);
+      setCurrentYoutubeUrl('');
       setIsYoutubeInputOpen(false);
     }
   };
@@ -55,22 +54,26 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
     setMedia(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleRemoveYoutubeUrl = (index: number) => {
+    setYoutubeUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex justify-between items-center mb-4 relative">
-        <BackButton />
+      <div className="flex justify-between items-center mb-4 relative p-4">
+        <BackButton size="lg"/>
         <h1 className="text-lg font-bold absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">새 게시물 작성</h1>
         <Button type="submit" color="primary" radius='full' className="h-7" size='sm'>
           게시하기
         </Button>
       </div>
-      
+
       <div className="flex space-x-2 mb-4">
         <Button
           isIconOnly={true}
           onClick={() => fileInputRef.current?.click()}
           startContent={<CameraIcon className="h-5 w-5" />}
-          disabled={media.length >= 4}
+          disabled={media.length + youtubeUrls.length >= 4}
           className='x-1 bg-white'
         />
         <input
@@ -85,11 +88,11 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
           <div className="flex-grow flex space-x-2">
             <Input
               placeholder="YouTube URL"
-              value={youtubeUrl}
-              onChange={(e) => setYoutubeUrl(e.target.value)}
+              value={currentYoutubeUrl}
+              onChange={(e) => setCurrentYoutubeUrl(e.target.value)}
               className="flex-grow"
             />
-            <Button size="sm" onClick={handleYoutubeUrlSubmit} disabled={media.length >= 4}>
+            <Button size="sm" onClick={handleYoutubeUrlSubmit} disabled={media.length + youtubeUrls.length >= 4}>
               추가
             </Button>
             <Button size="sm" onClick={() => setIsYoutubeInputOpen(false)}>
@@ -101,7 +104,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
             isIconOnly={true}
             onClick={() => setIsYoutubeInputOpen(true)}
             startContent={<YouTubeIcon />}
-            disabled={media.length >= 4}
+            disabled={media.length + youtubeUrls.length >= 4}
             className='x-1 bg-white'
           />
         )}
@@ -120,7 +123,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
         }}
       />
 
-      {media.length > 0 && (
+      {(media.length > 0 || youtubeUrls.length > 0) && (
         <Swiper
           slidesPerView="auto"
           spaceBetween={30}
@@ -128,7 +131,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
           className="mySwiper"
         >
           {media.map((file, index) => (
-            <SwiperSlide key={index} style={{ width: 'auto', height: '200px' }} className="relative">
+            <SwiperSlide key={`media-${index}`} style={{ width: 'auto', height: '200px' }} className="relative">
               <button
                 type="button"
                 onClick={() => handleRemoveMedia(index)}
@@ -143,10 +146,37 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
               )}
             </SwiperSlide>
           ))}
+          {youtubeUrls.map((url, index) => (
+            <SwiperSlide key={`youtube-${index}`} style={{ width: 'auto', height: '200px' }} className="relative">
+              <button
+                type="button"
+                onClick={() => handleRemoveYoutubeUrl(index)}
+                className="absolute top-2 right-2 z-10 bg-black bg-opacity-50 rounded-full p-1"
+              >
+                <XMarkIcon className="h-5 w-5 text-white" />
+              </button>
+              <iframe
+                width="200"
+                height="200"
+                src={`https://www.youtube.com/embed/${getYouTubeVideoId(url)}`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="rounded-[20px]"
+              ></iframe>
+            </SwiperSlide>
+          ))}
         </Swiper>
       )}
     </form>
   );
 };
+
+function getYouTubeVideoId(url: string): string {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : '';
+}
 
 export default FeedForm;

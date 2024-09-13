@@ -1,7 +1,6 @@
-"use client";
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
+import { useRouter } from 'next/navigation';
 import Post from '@ui/Post';
 import { getInitialHotTopicFeeds, getNextHotTopicFeeds } from '@handler/hotTopicApi';
 import { HotTopicFeedResponseDTO } from '@components/types/feed';
@@ -24,7 +23,6 @@ const HotTopicFeedList: React.FC = () => {
         setHasMore(false);
       } else {
         setFeeds((prevFeeds) => {
-          // 중복 제거
           const uniqueNewFeeds = newFeeds.filter(
             (newFeed) => !prevFeeds.some((prevFeed) => prevFeed.id === newFeed.id)
           );
@@ -42,7 +40,10 @@ const HotTopicFeedList: React.FC = () => {
       loadMoreFeeds();
     }
   }, [inView, loadMoreFeeds]);
-
+  const router = useRouter();
+  const handlePostClick = (id: string) => {
+    router.push(`/feed/${id}`);
+  };
   return (
     <div>
       {feeds.map((feed) => (
@@ -54,13 +55,14 @@ const HotTopicFeedList: React.FC = () => {
           username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
           date={new Date(feed.createdAt).toLocaleString()}
           src={feed.user?.userImg || ''}
-          initials={feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U'}
+          initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
           description={feed.title}
           followers={feed.likesCount.toString()}
           following={feed.commentsCount.toString()}
           viewCount={feed.viewCount.toString()}
-          images={feed.imageFiles?.map(file => file.imageUrl) || []}
-          videos={feed.youTubeVideos?.map(video => video.youtubeUrl) || []}
+          mediaFiles={feed.mediaFileUrls}
+          youtubeUrls={feed.youtubeUrls}
+          
         />
       ))}
       <div ref={ref}>

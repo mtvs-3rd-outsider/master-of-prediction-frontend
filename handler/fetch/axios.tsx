@@ -18,6 +18,10 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = useUserStore.getState().userInfo?.token; // Zustand에서 토큰 가져오기
     console.log(token)
+  console.log(config.baseURL);
+  console.log(config.url);
+  console.log(config.method)
+
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     } else {

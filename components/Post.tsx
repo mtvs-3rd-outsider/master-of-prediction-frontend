@@ -1,7 +1,4 @@
-"use client";
-
-import { ReactNode } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import DropdownMenuDemo from '@rd/DropdownMenu';
 import HoverCard from '@rd/HoverCard';
 import {
@@ -12,6 +9,7 @@ import {
   ChartBarSquareIcon,
 } from '@heroicons/react/24/outline';
 import Userinfo from '@components/UserInfo';
+import MediaGrid from '@components/MediaGrid';
 
 interface Props {
   id: string;
@@ -25,12 +23,12 @@ interface Props {
   following: string;
   description: string;
   viewCount: string;
-  images?: string[];
-  videos?: string[];
-  children?: ReactNode;
+  mediaFiles?: string[];
+  youtubeUrls?: string[];
+  children?: React.ReactNode;
 }
 
-const Post = ({
+const Post: React.FC<Props> = ({
   id,
   content,
   name,
@@ -43,11 +41,11 @@ const Post = ({
   following,
   description,
   viewCount,
-  images,
-  videos,
+  mediaFiles,
+  youtubeUrls,
   ...props
-}: Props) => (
-  <div className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4">
+}) => (
+  <div className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4">
     <div className="flex-shrink-0">
       <HoverCard
         src={src}
@@ -73,34 +71,11 @@ const Post = ({
         </div>
       </div>
       <div className="text-sm text-slate-900 mb-4">{content}</div>
-      {images && images.length > 0 && (
-        <div className="mb-4 grid grid-cols-1 gap-2">
-          {images.map((image, index) => (
-            <div key={`${id}-image-${index}`} className="relative h-64 w-full">
-              <Image
-                src={image}
-                alt={`Post image ${index + 1}`}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
-              />
-            </div>
-          ))}
+      {(mediaFiles && mediaFiles.length > 0) || (youtubeUrls && youtubeUrls.length > 0) ? (
+        <div className="mb-4">
+          <MediaGrid mediaFiles={mediaFiles || []} youtubeUrls={youtubeUrls || []} id={id} />
         </div>
-      )}
-      {videos && videos.length > 0 && (
-        <div className="mb-4 grid grid-cols-1 gap-2">
-          {videos.map((video, index) => (
-            <div key={`${id}-video-${index}`} className="relative h-64 w-full">
-              <video
-                src={video}
-                controls
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      ) : null}
       {children}
       <div>
         <ul className="flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3">

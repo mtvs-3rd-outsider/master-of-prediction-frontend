@@ -8,14 +8,15 @@ interface IconButtonDefaultProps {
   icon: IconDefinition;
   onClick: () => void;
   ariaLabel: string; // 접근성을 위한 aria-label 추가
+  size?: "sm" | "md" | "lg" | undefined;
 }
 
-const IconButtonDefault: FC<IconButtonDefaultProps> = ({ icon, onClick, ariaLabel }) => {
+const IconButtonDefault: FC<IconButtonDefaultProps> = ({ icon, onClick, ariaLabel ,size="lg"}) => {
   return (
     <Button
     variant="light"
       isIconOnly
-      size="sm"
+      size={size}
       onClick={onClick}
       className="rounded-full "
       aria-label={ariaLabel} // 접근성을 위한 aria-label 설정

@@ -34,6 +34,10 @@ const nextConfig = withBundleAnalyzer({
         protocol: 'https',
         hostname: 'via.placeholder.com',
       },
+      {
+        protocol: 'http',
+        hostname: '125.132.216.190',
+      },
     ],
     domains: ['localhost'],  // localhost 도메인 추가
   },

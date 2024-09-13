@@ -11,12 +11,12 @@ export default function CreateFeedPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userInfo = useUserStore((state) => state.userInfo);
 
-  const handleSubmit = async (content: string, media: File[], youtubeUrl: string) => {
+  const handleSubmit = async (content: string, media: File[], youtubeUrls: string[]) => {
     if (!userInfo) {
       alert('로그인이 필요합니다.');
       return;
     }
-
+  
     setIsSubmitting(true);
     try {
       const formData = new FormData();
@@ -27,17 +27,22 @@ export default function CreateFeedPage() {
         channelType: 'MYCHANNEL',
         user: {
           userId: userInfo.id
-        },
-        youtubeUrl
+        }
       };
-
+  
       formData.append('feedData', new Blob([JSON.stringify(feedData)], { type: 'application/json' }));
+      
       media.forEach((file) => {
         formData.append('files', file);
       });
 
+      // YouTube URL들을 FormData에 추가
+      youtubeUrls.forEach((url, index) => {
+        formData.append(`youtubeUrls`, url);
+      });
+  
       const response = await sendMultipartForm('/feeds', formData, 'post');
-
+  
       if (response.data.success) {
         router.push('/');
       } else {
@@ -51,9 +56,5 @@ export default function CreateFeedPage() {
     }
   };
 
-  return (
-    <div className="p-4">
-      <FeedForm onSubmit={handleSubmit} />
-    </div>
-  );
+  return <FeedForm onSubmit={handleSubmit} />;
 }
