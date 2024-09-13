@@ -1,6 +1,6 @@
 // components/MyChannel.tsx (클라이언트 컴포넌트)
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@components/radix/Avatar";
 import TierIcon from "@components/TierIcon";
 import UserBanner from "@components/user/UserBanner";
@@ -17,31 +17,39 @@ import {
 } from "@heroicons/react/24/outline";
 import IconText from "./IconText";
 import Link from "next/link";
-type MyChannelProps = {
-  user?: {
-    display_name: string;
-    user_img: string;
-    banner_img: string;
-    user_name: string;
-    bio: string;
-    location: string;
-    website: string;
-    birthdate: string;
-    joined_date: string;   // 변경됨
-    user_gender: string;
-    points: number;
-    transactions: number;
-    profit_rate: string;   // 변경됨
-    position_value: string; // 변경됨
-    trade_count: number;   // 변경됨
-    following_count: number; // 변경됨
-    follower_count: number;  // 변경됨
-  };
-};
+import useUserStore from "@store/useUserStore";
+import apiClient from "@handler/fetch/axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import useOptimisticMutation from "@handler/useOptimisticMutation";
+import { MyChannelProps } from "@/app/(home)/channel/[userId]/page";
 
 
+// 구독 상태를 서버에서 가져오는 함수
 
 const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
+
+  const fetchFollowers = async (channelId?: string) => {
+    const response = await apiClient.get(`/channel/${channelId}/follower-count`);
+    setFollowerCount(response.data);
+    return response.data;
+  };
+  
+  // 팔로잉 목록을 가져오는 함수
+  const fetchFollowing = async (channelId?: string) => {
+    const response = await apiClient.get(`/channel/${channelId}/following-count`);
+    setFollowingCount(response.data);
+    return response.data;
+  };
+  const fetchSubscriptionStatus = async (userId?: number,channelId?: string) => {
+    const response = await apiClient.get(`/subscription?channelId=${channelId}&isUserChannel=true`);
+    setIsSubscribed(response.data)
+    return response.data;
+  };
+  
+  const [isSubscribed, setIsSubscribed] = useState(false); // 로컬 구독 상태
+  const [followerCount, setFollowerCount] = useState(0); // 로컬 구독 상태
+  const [followingCount, setFollowingCount] = useState(0); // 로컬 구독 상태
+  const userInfo = useUserStore(state=> state?.userInfo)
   console.log(user);
   const router = useRouter();
   const pathname = usePathname(); // 현재 경로 가져오기
@@ -53,44 +61,103 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
   const handleClick = () => {
     router.push('profile-edit');
   };
+  const isLoggedIn = Boolean(userInfo); // 로그인 여부를 확인하는 추가 코드
+    // 현재 채널이 내 채널인지 검증 (user.user_name과 현재 로그인한 사용자를 비교)
+    const isMyChannel = user?.user_name === userInfo?.userName;
+    const { isLoading } = useQuery({
+      queryKey: ['subscriptionStatus',user?.userId], // queryKey로 검색 쿼리를 관리
+      queryFn: () => fetchSubscriptionStatus(userInfo?.id,user?.userId), // 검색 API 호출 함수
+      enabled: isLoggedIn && !isMyChannel, // searchQuery가 존재할 때만 요청 수행
+      staleTime: 5*60*1000 , // 5분 동안 캐시 상태 유지
+      
+    });
+    const {  isLoading: isFollowersLoading } = useQuery({
+      queryKey: ["followerCount", user?.userId],
+      queryFn: () => fetchFollowers(user?.userId),
+      enabled: !!user?.userId,  // userId가 있을 때만 호출
+      staleTime: 5 * 60 * 1000, // 캐시 시간 5분
+    });
+    
+    const {isLoading: isFollowingLoading } = useQuery({
+      queryKey: ["followingCount", user?.userId],
+      queryFn: () => fetchFollowing(user?.userId),
+      enabled: !!user?.userId,  // userId가 있을 때만 호출
+      staleTime: 5 * 60 * 1000, // 캐시 시간 5분
+    });
+
+    const fetchSubscripition=   async () => {
+        return apiClient.post(`/channel/subscription`,{
+          userId:userInfo?.id,
+          channelId: user?.userId,
+          isUserChannel: true,
+        });
+  }
+// 구독/구독 취소 API 요청을 처리하는 mutation
+const toggleSubscription  = useOptimisticMutation({
+  queryKey:  ["subscriptionStatus", user?.user_name], // 쿼리 키를 명확하게 설정
+  mutationFn: fetchSubscripition,
+    onMutateFn: async () => {
+      // 낙관적 업데이트: 버튼 클릭 시 즉시 상태 변경
+      setIsSubscribed((prev) => !prev);
+      setFollowerCount((prev) => prev + (isSubscribed ? -1 : 1)); // 낙관적 followingCount 업데이트
+    },
+    onErrorFn: (error) => {
+      // 에러가 발생하면 이전 상태로 롤백
+      setIsSubscribed((prev) => !prev);
+      setFollowerCount((prev) => prev + (isSubscribed ? 1 : -1)); // 롤백 followingCount 상태
+    }
+});
+
+// 구독/구독 취소 버튼 클릭 핸들러
+const handleSubscribeToggle = () => {
+  toggleSubscription.mutate(null);
+};
 
   // user가 없을 때 아무것도 렌더링하지 않도록 방어 코드 추가
   if (!user) {
     return null;
   }
-
+    
   return (
     <div className="p-4">
       <div className="sticky overflow-hidden">
         <UserBanner imageUrl={user.banner_img} />
       </div>
       <div className="relative pt-2 flex justify-end gap-2 z-10">
-        <Button
-          isIconOnly
-          radius="full"
-          variant="light"
-          aria-label="Options"
-        >
-          <EllipsisHorizontalIcon className="h-6 w-6" />
-        </Button>
-        <Button
-          isIconOnly
-          radius="full"
-          variant="light"
-          aria-label="Message"
-        >
-          <EnvelopeIcon className="h-6 w-6" />
-        </Button>
-        <Link href="profile-edit">
-          <Button
-            radius="full"
-            variant="solid"
-            className="font-bold px-3 py-2"
-            color="primary"
-          >
-            프로필 수정
-          </Button>
-        </Link>
+      {isMyChannel ? (
+          <>
+            <Button
+              isIconOnly
+              radius="full"
+              variant="light"
+              aria-label="Options"
+            >
+              <EllipsisHorizontalIcon className="h-6 w-6" />
+            </Button>
+            <Link href="profile-edit">
+              <Button
+                radius="full"
+                variant="solid"
+                className="font-bold px-3 py-2"
+                color="primary"
+              >
+                프로필 수정
+              </Button>
+            </Link>
+          </>
+        ) : (
+          isLoggedIn && !isLoading && ( // 로그인한 상태에서만 구독 버튼이 보이고 로딩 중에는 버튼 숨김
+            <Button
+              radius="full"
+              className="font-bold px-3 py-2"
+              color="primary"
+              variant={isSubscribed ? 'bordered' : 'solid'}
+              onClick={handleSubscribeToggle}
+            >
+              {isSubscribed ? "구독 취소" : "구독"}
+            </Button>
+        ))
+        }
       </div>
       <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col">
         <div
@@ -159,29 +226,23 @@ const MyChannel: React.FC<MyChannelProps> = ({ user }) => {
           </div>
         </div>
         <div className="flex mt-1 space-x-4">
-          <div>
-            <span className="text-xs font-bold">{user.following_count} </span>
-            <Link href={`${pathname}/subscribe`}>
-            <Button
-              variant="light"
-              className="text-xs p-1 text-gray-600"
-            >
-              Followings
-            </Button>
-          </Link>
-          </div>
-          <div>
-            <span className="text-xs font-bold">{user.follower_count} </span>
-            <Link href={`${pathname}/subscribe`}>
-            <Button
-              variant="light"
-              className="text-xs p-1 text-gray-600"
-            >
-              Followers
-            </Button>
-          </Link>
-          </div>
-        </div>
+  <div>
+    <span className="text-xs font-bold">{followerCount } </span>
+    <Link href={`${pathname}/subscribe`}>
+      <Button variant="light" className="text-xs p-1 text-gray-600">
+        Followers
+      </Button>
+    </Link>
+  </div>
+  <div>
+    <span className="text-xs font-bold">{followingCount} </span>
+    <Link href={`${pathname}/subscribe`}>
+      <Button variant="light" className="text-xs p-1 text-gray-600">
+        Followings
+      </Button>
+    </Link>
+  </div>
+</div>
       </div>
     </div>
   );

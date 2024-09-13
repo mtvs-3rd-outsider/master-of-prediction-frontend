@@ -75,8 +75,6 @@ const ProfileEditPage: React.FC =  () => {
         router.push('/'); // 기본 페이지로 이동
       }
     }
-    
-    
   });
   let formatter = useDateFormatter({dateStyle: "full"});
   const [displayName, setDisplayName] = useState("");

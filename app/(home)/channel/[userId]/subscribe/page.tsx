@@ -1,66 +1,96 @@
-
 "use client";
 import React, { useState } from 'react';
-import Tabs2 from '@components/StickyTabs';
-import Search from '@ui/Search';
-import Panel from '@ui/Panel';
-import PanelItem from '@ui/PanelItem';
-import PanelItemTrends from '@ui/PanelItemTrends';
-import Footer from '@ui/Footer';
-import MyChannel from '@components/MyChannel';
+import { useQuery } from '@tanstack/react-query';
 import BackButton from '@components/BackButton';
-import SubscribePanel from '@components/SubscribePanel';
 import Tabs from '@components/Tabs';
-import { getParentPath } from '@util/path';
-import { usePathname } from "next/navigation"
+import SubscribePanel from '@components/SubscribePanel';
+import PanelItem from '@ui/PanelItem';
+import apiClient from '@api/axios'; // 예시 API 함수
+import { usePathname } from "next/navigation";
+export const fetchFollowers = async (path: string) => {
+  const response = await apiClient.get(`/subscriptions/channel/${path}/subscribers?isUserChannel=true`);
+  return response.data;
+};
+
+export const fetchFollowings = async (path: string) => {
+  const response = await apiClient.get(`/subscriptions/user/${path}/following?isUserChannel=true`);
+  return response.data;
+};
 const HomePage: React.FC = () => {
-  const tabs = [ 'Followers', 'Followings'];
+  const tabs = ['Followers', 'Followings'];
   const [activeTab, setActiveTab] = useState(0);
   const pathName = usePathname();
+  const parts = pathName.split('/');
+  const channelId = parts[2]; // "2" 추출
+
   const handleTabChange = (index: number) => {
-    console.log(`Active tab: ${index}`);
     setActiveTab(index);
   };
+
+  // Followers 탭에 대한 API 호출
+  const { data: followersData, isLoading: followersLoading } = useQuery({
+
+    queryKey:['followers', channelId], 
+    queryFn:() => fetchFollowers(channelId), 
+     enabled: activeTab === 0 ,
+     staleTime: 1000 * 60 * 5,  // 5분 동안 데이터가 fresh 상태로 유지
+    }
+  );
+
+  // Followings 탭에 대한 API 호출
+  const { data: followingsData, isLoading: followingsLoading } = useQuery({
+    queryKey:['followings', channelId], 
+    queryFn:() => fetchFollowings(channelId), 
+    enabled: activeTab === 1 
+  }
+  );
 
   return (
     <>
       <main className="relative col-span-5 w-full border-x border-slate-200">
-      <div className=" top-0 left-0 p-4  flex justify-start w-full">
-      <BackButton  />
+        <div className="top-0 left-0 p-4 flex justify-start w-full">
+          <BackButton />
         </div>
-        <Tabs tabNames={tabs} onTabChange={handleTabChange}/>
-         {/* 탭에 따라 표시할 콘텐츠를 추가로 렌더링할 수 있음 */}
-      {activeTab === 0 && 
-      
-      <SubscribePanel title="" href="/">
-      <PanelItem
-        src="https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8Mjd8NzkwMjQ2NTJ8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60"
-        name="Charles Deluvio"
-        username="charlesdeluvio"
-        initials="CD"
-      />
-      <PanelItem
-        src="https://images.unsplash.com/photo-1613951085587-cfe5d0a6cffc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MTZ8NzkwMjQ2NTJ8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60"
-        name="Tolga Ulkan"
-        username="tolgaulkan"
-        initials="TU"
-      />
-      <PanelItem
-        src="https://images.unsplash.com/photo-1614777735430-7b46df56b404?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MXw3OTAyNDY1Mnx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        name="Rob Potter"
-        username="robpotter"
-        initials="RB"
-      />
-    </SubscribePanel>
-      
-      
-      }
-      {activeTab === 1 && <div>Replies content...</div>}
-      {activeTab === 2 && <div>Bettings content...</div>}
-      
+        <Tabs tabNames={tabs} onTabChange={handleTabChange} />
+
+        {/* Followers 탭 */}
+        {activeTab === 0 && (
+          <SubscribePanel title="" href="/">
+            {followersLoading ? (
+              <div>Loading followers...</div>
+            ) : (
+              followersData.content.map((follower: any) => (
+                <PanelItem
+                  key={follower.userId}
+                  src={follower.userAvatarUrl}
+                  name={follower.displayName}
+                  username={follower.userName}
+                  initials={follower.displayName}
+                />
+              ))
+            )}
+          </SubscribePanel>
+        )}
+
+        {/* Followings 탭 */}
+        {activeTab === 1 && (
+          <SubscribePanel title="" href="/">
+            {followingsLoading ? (
+              <div>Loading followings...</div>
+            ) : (
+              followingsData.content.map((following: any) => (
+                <PanelItem
+                  key={following.channelId}
+                  src={following.channelImageUrl}
+                  name={following.displayName}
+                  username={following.channelName}
+                  initials={following.displayName}
+                />
+              ))
+            )}
+          </SubscribePanel>
+        )}
       </main>
-
-
     </>
   );
 };
