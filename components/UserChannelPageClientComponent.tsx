@@ -4,9 +4,10 @@
 import React, { useState } from 'react';
 import MyChannel from '@components/MyChannel';
 import Tabs from '@components/StickyTabs';
+import { MyChannelProps } from '@/app/(home)/channel/[userId]/page';
 
 interface UserChannelPageProps {
-  user: any; // 서버에서 전달받은 유저 데이터
+  user: MyChannelProps; // 서버에서 전달받은 유저 데이터
   tabNames: string[];
 }
 
@@ -21,7 +22,7 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user, 
   return (
     <div>
       {/* MyChannel 컴포넌트에 서버에서 전달받은 유저 데이터를 전달 */}
-      <MyChannel user={user} />
+      <MyChannel user={user}  />
 
       {/* 탭 컴포넌트 */}
       <Tabs tabNames={tabNames} onTabChange={handleTabChange} />
