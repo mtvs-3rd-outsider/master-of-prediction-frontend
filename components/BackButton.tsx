@@ -6,9 +6,10 @@ import IconButtonDefault from '@components/IconButton';
 
 interface BackButtonContainerProps {
   href?: string;  // href를 선택적으로 받도록 설정
+  size?: "sm" | "md" | "lg" | undefined;
 }
 
-const BackButtonContainer: FC<BackButtonContainerProps> = ({ href }) => {
+const BackButtonContainer: FC<BackButtonContainerProps> = ({ href ,size}) => {
   const router = useRouter();
 
   const handleBackClick = () => {
@@ -22,7 +23,7 @@ const BackButtonContainer: FC<BackButtonContainerProps> = ({ href }) => {
   };
 
   return (
-    <IconButtonDefault icon={faArrowLeft} onClick={handleBackClick} ariaLabel="Go back" />
+    <IconButtonDefault icon={faArrowLeft} onClick={handleBackClick} ariaLabel="Go back" size={size} />
   );
 };
 

@@ -27,7 +27,6 @@ import {Textarea} from "@nextui-org/input";
 
   
 const ProfileEditPage: React.FC =  () => {
-  const queryClient = useQueryClient(); // 등록된 queryClient를 가져옴
 
   const fetchUserProfile = async (userId: number | undefined ) => {
     const response = await apiClient.get(`/my-channel/${userId}`);
