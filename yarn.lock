@@ -3241,6 +3241,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nextui-org/modal@npm:^2.0.40":
+  version: 2.0.40
+  resolution: "@nextui-org/modal@npm:2.0.40"
+  dependencies:
+    "@nextui-org/framer-utils": "npm:2.0.25"
+    "@nextui-org/react-utils": "npm:2.0.17"
+    "@nextui-org/shared-icons": "npm:2.0.9"
+    "@nextui-org/shared-utils": "npm:2.0.8"
+    "@nextui-org/use-aria-button": "npm:2.0.10"
+    "@nextui-org/use-aria-modal-overlay": "npm:2.0.12"
+    "@nextui-org/use-disclosure": "npm:2.0.10"
+    "@react-aria/dialog": "npm:3.5.14"
+    "@react-aria/focus": "npm:3.17.1"
+    "@react-aria/interactions": "npm:3.21.3"
+    "@react-aria/overlays": "npm:3.22.1"
+    "@react-aria/utils": "npm:3.24.1"
+    "@react-stately/overlays": "npm:3.6.7"
+    "@react-types/overlays": "npm:3.8.7"
+  peerDependencies:
+    "@nextui-org/system": ">=2.0.0"
+    "@nextui-org/theme": ">=2.1.0"
+    framer-motion: ">=10.17.0"
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/6048feff8eb3b2a78074b9f434989a629bc7f22e6f7c68e5e03402704e044d5bb185befd02e0a417a279d5c37eac6cb6c53c721e7d10624d41c81cef5632ab03
+  languageName: node
+  linkType: hard
+
 "@nextui-org/navbar@npm:2.0.2":
   version: 2.0.2
   resolution: "@nextui-org/navbar@npm:2.0.2"
@@ -4037,6 +4065,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nextui-org/use-aria-modal-overlay@npm:2.0.12":
+  version: 2.0.12
+  resolution: "@nextui-org/use-aria-modal-overlay@npm:2.0.12"
+  dependencies:
+    "@nextui-org/use-aria-overlay": "npm:2.0.1"
+    "@react-aria/overlays": "npm:3.22.1"
+    "@react-aria/utils": "npm:3.24.1"
+    "@react-stately/overlays": "npm:3.6.7"
+    "@react-types/shared": "npm:3.23.1"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/88093120ce0e959b253270c31a51dbbcd8cf4fa83d50216322b634aaa8ca4b224f0a653a2031733e8cf055c487b01c56635caa84f7c92f1081a78a96411b202b
+  languageName: node
+  linkType: hard
+
 "@nextui-org/use-aria-multiselect@npm:2.2.3":
   version: 2.2.3
   resolution: "@nextui-org/use-aria-multiselect@npm:2.2.3"
@@ -4059,6 +4103,21 @@ __metadata:
     react: ">=18"
     react-dom: ">=18"
   checksum: 10c0/ae05ded66f36992bc56eb17c85b560684a384bb2050426b5cb09f01927bb4d941da210b3637a4a17b98a07e303f4eadfefa23dc8082a3b7baacec7bd4b50a35e
+  languageName: node
+  linkType: hard
+
+"@nextui-org/use-aria-overlay@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@nextui-org/use-aria-overlay@npm:2.0.1"
+  dependencies:
+    "@react-aria/focus": "npm:3.17.1"
+    "@react-aria/interactions": "npm:3.21.3"
+    "@react-aria/overlays": "npm:3.22.1"
+    "@react-types/shared": "npm:3.23.1"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/08d087f1db066f36b474972b4d417793c81659f0e964b74116fb3ef08e9628e3c6aaecfb736e1154e564d78531ab31358c07a1a119965e016c263d9dfb0227b6
   languageName: node
   linkType: hard
 
@@ -4085,6 +4144,17 @@ __metadata:
   peerDependencies:
     react: ">=18"
   checksum: 10c0/71e3c906263305dc1ea1debccb7437f84f0b3e7ad3ec36c33d0ed8e8fe59cb45cddaf62f4c73aa70bdfad58ba3f66e22654559055fd9e0347a1312a51df6a2ad
+  languageName: node
+  linkType: hard
+
+"@nextui-org/use-callback-ref@npm:2.0.6":
+  version: 2.0.6
+  resolution: "@nextui-org/use-callback-ref@npm:2.0.6"
+  dependencies:
+    "@nextui-org/use-safe-layout-effect": "npm:2.0.6"
+  peerDependencies:
+    react: ">=18"
+  checksum: 10c0/a8fce6780fa2473694e3a4f1ede02efb549b8c11013556cbfa79af8fa345fb31c91c69fe25c9bca3488938ba2532f7179e75cc709b5ac1474a2853d48c55ea65
   languageName: node
   linkType: hard
 
@@ -4118,6 +4188,19 @@ __metadata:
   peerDependencies:
     react: ">=18"
   checksum: 10c0/c62126dd8d908eb85fa0768f924d9b33256c15154ae1431b6194fb2907227f63bc98b18988b12ae4b4393feac15f1b864577c34f3f8269d1718500917820f85a
+  languageName: node
+  linkType: hard
+
+"@nextui-org/use-disclosure@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@nextui-org/use-disclosure@npm:2.0.10"
+  dependencies:
+    "@nextui-org/use-callback-ref": "npm:2.0.6"
+    "@react-aria/utils": "npm:3.24.1"
+    "@react-stately/utils": "npm:3.10.1"
+  peerDependencies:
+    react: ">=18"
+  checksum: 10c0/b9bdb3b01b88f34ecb8c8341ae7a63c5ce38b3b77905108c739d467b650351d7bff1e32be87fadca9bc1777e9a07c76dda7435303bdd49e2f5c1fa586669b59b
   languageName: node
   linkType: hard
 
@@ -16101,6 +16184,7 @@ __metadata:
     "@nextui-org/input": "npm:^2.2.4"
     "@nextui-org/listbox": "npm:^2.1.25"
     "@nextui-org/menu": "npm:^2.0.28"
+    "@nextui-org/modal": "npm:^2.0.40"
     "@nextui-org/radio": "npm:^2.1.4"
     "@nextui-org/select": "npm:^2.2.5"
     "@nextui-org/storybook": "npm:^2.0.0"

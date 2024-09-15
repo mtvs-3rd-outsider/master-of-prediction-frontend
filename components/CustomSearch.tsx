@@ -6,12 +6,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { debounce } from "lodash"; // lodash로 debounce 적용
 
 interface SearchProps {
+  placeholder?:string,
   onSearchToggle: () => void;
   onInput: (input: string) => void; // 검색 쿼리 입력을 처리할 함수
   initialIsOpen?: boolean;
 }
 
-const Search = ({ onSearchToggle, onInput, initialIsOpen = false }: SearchProps) => {
+const Search = ({ placeholder,onSearchToggle, onInput, initialIsOpen = false }: SearchProps) => {
   const [isOpen, setIsOpen] = useState(initialIsOpen); // 검색창 상태 관리
   const [inputValue, setInputValue] = useState(""); // 입력 상태 관리
 
@@ -84,7 +85,7 @@ const Search = ({ onSearchToggle, onInput, initialIsOpen = false }: SearchProps)
               }}
               value={inputValue}
               onChange={handleInputChange} // 입력 값이 변경될 때마다 호출
-              placeholder="카테고리 채널을 검색해보세요"
+              placeholder={placeholder}
               startContent={
                 <MagnifyingGlassIcon
                   onClick={toggleSearch}

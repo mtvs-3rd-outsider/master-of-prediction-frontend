@@ -43,7 +43,7 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
     setFollowingCount(response.data);
     return response.data;
   };
-  const fetchSubscriptionStatus = async (userId?: number,channelId?: string) => {
+  const fetchSubscriptionStatus = async (channelId?: string) => {
     const response = await apiClient.get(`/subscription?channelId=${channelId}&isUserChannel=true`);
     setIsSubscribed(response.data)
     return response.data;
@@ -69,7 +69,7 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
     const isMyChannel = user?.userId == userInfo?.id;
     const { isLoading } = useQuery({
       queryKey: ['subscriptionStatus',user?.userId], // queryKey로 검색 쿼리를 관리
-      queryFn: () => fetchSubscriptionStatus(userInfo?.id,user?.userId), // 검색 API 호출 함수
+      queryFn: () => fetchSubscriptionStatus(user?.userId), // 검색 API 호출 함수
       enabled: isLoggedIn && !isMyChannel, // searchQuery가 존재할 때만 요청 수행
       staleTime: 5*60*1000 , // 5분 동안 캐시 상태 유지
       refetchOnMount:"always",
@@ -94,7 +94,6 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
 
     const fetchSubscripition=   async () => {
         return apiClient.post(`/channel/subscription`,{
-          userId:userInfo?.id,
           channelId: user?.userId,
           isUserChannel: true,
         });
