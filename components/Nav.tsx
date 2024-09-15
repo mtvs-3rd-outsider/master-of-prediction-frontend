@@ -37,11 +37,7 @@ const Nav: React.FC = () => {
   }));
   const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
-  useEffect(() => {
-    if (hasHydrated) {
-      setIsReady(true); // Zustand가 hydration이 완료되면 렌더링 시작
-    }
-  }, [hasHydrated]);
+
   const items: NavLinkItem[] = [
     {
       href: '/',
@@ -84,13 +80,16 @@ const Nav: React.FC = () => {
         ]
       : []),
   ];
-
   const router = useRouter();
   const handleClick = () => {
     router.push('/login');
   };
 
-
+  useEffect(() => {
+    if (hasHydrated) {
+      setIsReady(true); // Zustand가 hydration이 완료되면 렌더링 시작
+    }
+  }, [hasHydrated,userInfo ]);
  
 
   return (

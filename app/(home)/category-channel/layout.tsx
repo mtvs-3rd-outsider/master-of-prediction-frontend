@@ -4,15 +4,12 @@ import Panel from '@ui/Panel';
 import PanelItem from '@ui/PanelItem';
 import PanelItemTrends from '@ui/PanelItemTrends';
 import Footer from '@ui/Footer';
-import TanstackQueryProvider from '@ui/TanstackQueryProvider';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <main className="col-span-5 w-full border-x border-slate-200">
-        <TanstackQueryProvider>
         {children}
-        </TanstackQueryProvider>
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
         <div className="sticky top-0">

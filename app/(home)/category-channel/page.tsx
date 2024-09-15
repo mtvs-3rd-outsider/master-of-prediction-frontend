@@ -141,10 +141,10 @@ export default function Page() {
           <div className="p-4">
             {isLoading ? (
               <p>검색 중...</p>
-            ) : error ? (
+            ) : error ? ( 
               <p>에러 발생: {error.message}</p>
             ) : (
-              searchResults?.map((result: any) => (
+              searchResults?.content.map((result: any) => (
                 <Link key={result.userId} href={`/channel/${result.user_id}`}>
                   <Account
                     className="px-2 py-2"

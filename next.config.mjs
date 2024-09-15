@@ -15,6 +15,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = withBundleAnalyzer({
   compress: true,
   reactStrictMode: false,
+      // styled-components 설정 추가
+      compiler: {
+        styledComponents: true,
+      },
   images: {
     formats: ['image/webp', 'image/avif'], // webp와 avif 포맷 추가
     remotePatterns: [
@@ -59,6 +63,8 @@ const nextConfig = withBundleAnalyzer({
     }
     return config;
   },
+
+
 });
 const nextConfigFunction = async (phase) => {
   if (phase === PHASE_DEVELOPMENT_SERVER || phase === PHASE_PRODUCTION_BUILD) {

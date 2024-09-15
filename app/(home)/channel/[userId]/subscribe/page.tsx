@@ -47,6 +47,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+    
       <main className="relative col-span-5 w-full border-x border-slate-200">
         <div className="top-0 left-0 p-4 flex justify-start w-full">
           <BackButton />
@@ -62,10 +63,13 @@ const HomePage: React.FC = () => {
               followersData.content.map((follower: any) => (
                 <PanelItem
                   key={follower.userId}
+                  id={follower.userId}
                   src={follower.userAvatarUrl}
                   name={follower.displayName}
                   username={follower.userName}
                   initials={follower.displayName}
+                  isUserChannel={true}
+                  following={follower.following}
                 />
               ))
             )}
@@ -81,10 +85,13 @@ const HomePage: React.FC = () => {
               followingsData.content.map((following: any) => (
                 <PanelItem
                   key={following.channelId}
+                  id={following.channelId}
                   src={following.channelImageUrl}
                   name={following.displayName}
                   username={following.channelName}
                   initials={following.displayName}
+                  isUserChannel={following.userChannel}
+                  following={following.isFollowing}
                 />
               ))
             )}
