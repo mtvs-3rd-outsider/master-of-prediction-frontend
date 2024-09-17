@@ -42,4 +42,3 @@ certificates
 /public/sw.js.map
 /public/workbox-*.js
 /public/worker-development.js
-/worker
