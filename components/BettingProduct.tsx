@@ -13,8 +13,13 @@ const BettingProduct = () => {
   return (
     <>
       <div>
-        <div className="flex flex-1 items-center gap-x-2">
-          <Account userId="1" />
+        <div className="flex flex-1 items-center gap-x-2 px-4 py-4">
+          <Account
+            userName="바이든"
+            avatarUrl=""
+            displayName="바이든"
+            tier=""
+          />
         </div>
         {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
         <div className="px-4">
