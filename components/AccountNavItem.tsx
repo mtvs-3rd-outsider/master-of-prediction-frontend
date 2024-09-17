@@ -21,7 +21,6 @@ const AccountNavItem = () => {
   }
   // userInfo가 null이 아닌 경우 데이터 사용
   const { userName, avatarUrl, tier, displayName } = userInfo;
-  console.log("userInfo",avatarUrl);
   // 권한이나 티어에 따라 사용자 티어 설정 (기본 값은 '회원')
   const userTier = tier; 
 

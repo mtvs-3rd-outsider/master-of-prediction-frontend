@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import NavItem from '@ui/NavItem';
 import AccountNavItem from '@ui/AccountNavItem';
 import Image from 'next/image';
@@ -11,6 +11,7 @@ import {
   EnvelopeIcon as EnvelopeIconOutline,
   RectangleStackIcon as RectangleStackIconOutline,
   UserIcon as UserIconOutline,
+  MagnifyingGlassIcon as MagnifyingGlassIconOutline, // 검색 아이콘 추가
 } from '@heroicons/react/24/outline';
 import {
   CircleStackIcon as CircleStackIconSolid,
@@ -19,6 +20,7 @@ import {
   EnvelopeIcon as EnvelopeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
   UserIcon as UserIconSolid,
+  MagnifyingGlassIcon as MagnifyingGlassIconSolid, // 검색 아이콘 추가
 } from '@heroicons/react/24/solid';
 import { Button } from '@nextui-org/button';
 import useUserStore from '@store/useUserStore';
@@ -31,7 +33,11 @@ interface NavLinkItem {
 }
 
 const Nav: React.FC = () => {
-  const userId = useUserStore((state) => state.userInfo?.id);
+  const { hasHydrated, userInfo } = useUserStore((state) => ({
+    hasHydrated: state.hasHydrated,
+    userInfo: state.userInfo,
+  }));
+  const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
 
   const items: NavLinkItem[] = [
@@ -65,10 +71,16 @@ const Nav: React.FC = () => {
       icon: <RectangleStackIconOutline className="w-6 h-6" />,
       activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
     },
-    ...(userId
+    {
+      href: '/search', // 검색 페이지로 이동
+      text: 'Search',
+      icon: <MagnifyingGlassIconOutline className="w-6 h-6" />,
+      activeIcon: <MagnifyingGlassIconSolid className="w-6 h-6" />,
+    },
+    ...(userInfo?.id
       ? [
           {
-            href: `/channel/${userId}`,
+            href: `/channel/${userInfo?.id}`,
             text: 'My Channel',
             icon: <UserIconOutline className="w-6 h-6" />,
             activeIcon: <UserIconSolid className="w-6 h-6" />,
@@ -76,11 +88,16 @@ const Nav: React.FC = () => {
         ]
       : []),
   ];
-
   const router = useRouter();
   const handleClick = () => {
     router.push('/login');
   };
+
+  useEffect(() => {
+    if (hasHydrated) {
+      setIsReady(true); // Zustand가 hydration이 완료되면 렌더링 시작
+    }
+  }, [hasHydrated, userInfo]);
 
   return (
     <>
@@ -108,7 +125,7 @@ const Nav: React.FC = () => {
             ))}
           </div>
           <div>
-            {!userId ? (
+            {isReady ? (!userInfo ? (
               <Button
                 radius="full"
                 variant="solid"
@@ -120,6 +137,8 @@ const Nav: React.FC = () => {
               </Button>
             ) : (
               <AccountNavItem />
+            )) : (
+              <div className="h-10 w-full mb-4"></div> // 로딩 중일 때 자리 차지용
             )}
           </div>
         </div>

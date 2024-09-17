@@ -6,44 +6,78 @@ import CategoryChannelCard from '@ui/CategoryChannelCard';
 import Header from '@ui/Header';
 import Account from '@ui/Account';
 import { useQuery } from '@tanstack/react-query';
-import { debounce } from 'lodash'; // lodash를 사용하여 debounce 적용
+import { debounce } from 'lodash';
 import apiClient from '@api/axios'
 import Link from 'next/link';
 import { useDebounce } from "@uidotdev/usehooks";
-// API 호출 함수
-const fetchSearchResults = async ( queryKey : string ) => {
+import useUserStore from '@store/useUserStore';
+import { stat } from 'fs';
+
+
+
+// Fetch search results
+const fetchSearchResults = async (queryKey: string) => {
   const response = await apiClient.get(`/search/displayName?q=${queryKey}`);
-  return response.data
+  return response.data;
 };
 
 export default function Page() {
-  const tabs=["내 카테고리","탐색"]
-  const [activeTab, setActiveTab] = useState(0); // 탭 상태 관리
-  const [isHeaderVisible, setHeaderVisible] = useState(true); // 헤더 보임 여부 관리
-  const [isSearching, setIsSearching] = useState(false); // 검색 상태 관리
-  const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
+  const tabs = ["내 카테고리", "탐색"];
+  const [activeTab, setActiveTab] = useState(0);
+  const [isHeaderVisible, setHeaderVisible] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchTerm = useDebounce(searchQuery, 500);
-  const handleSearchToggle = () => {
-    setHeaderVisible((prev) => !prev); // 헤더 표시 상태를 반전
-    setIsSearching((prev) => !prev);   // 검색 중인지 여부 설정
-  };
+  const [flag, setFlag] = useState('ALL'); // Default to "ALL"
+  const userInfo = useUserStore(state=>state.userInfo);
 
-  // 검색 입력이 변경될 때마다 호출 (debounced)
-  const handleSearchInput = debounce((input: string) => {
-    setSearchQuery(input);
-  }, 300); // 300ms의 debounce 적용
+    // Fetch categories b ased on the flag
+const fetchMyCategories = async (flag: string) => {
 
-  // React Query를 사용한 검색 API 호출
-  const { data: searchResults, isLoading, error } = useQuery({
-    queryKey: ['searchResults', debouncedSearchTerm], // queryKey로 검색 쿼리를 관리
-    queryFn: () => fetchSearchResults(debouncedSearchTerm), // 검색 API 호출 함수
-    enabled: !!debouncedSearchTerm, // searchQuery가 존재할 때만 요청 수행
-    staleTime: 5 * 60 *1000, // 5분 동안 캐시 상태 유지
+
+  const response = await apiClient.get(`/subscriptions/user/${userInfo?.id}/following`, {
+    params: { flag, isUserChannel:true  }  // Send flag as a query param
   });
 
-  // 탭 변경 핸들러
+
+  return response.data;
+};
+  // Toggle search bar visibility
+  const handleSearchToggle = () => {
+    setHeaderVisible((prev) => !prev);
+    setIsSearching((prev) => !prev);
+  };
+
+  // Handle search input with debounce
+  const handleSearchInput = debounce((input: string) => {
+    setSearchQuery(input);
+  }, 300);
+
+  // React Query to fetch search results
+  const { data: searchResults, isLoading, error } = useQuery({
+    queryKey: ['searchResults', debouncedSearchTerm],
+    queryFn: () => fetchSearchResults(debouncedSearchTerm),
+    enabled: !!debouncedSearchTerm,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // React Query to fetch categories for "My Category" tab with the flag
+  const { data: myCategories, isLoading: isLoadingCategories } = useQuery({
+    queryKey: ['myCategories', flag],  // Add flag to the query key
+    queryFn: () => fetchMyCategories(flag), 
+    enabled: !!userInfo, // Fetch categories with flag
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  // Tab change handler
   const handleTabChange = (index: number) => {
     setActiveTab(index);
+    // Change the flag based on the selected tab
+    if (index === 0) {
+      setFlag('ALL');  // Example: Set to "ALL" for "내 카테고리"
+    } else {
+      setFlag('USER');  // Example: Change to a different flag
+    }
   };
 
   return (
@@ -70,66 +104,25 @@ export default function Page() {
             <div className="p-4">
               {activeTab === 0 && (
                 <div>
-                  <CategoryChannelCard
-                    href="/community/react-developers"
-                    categoryChannelName="React Developers"
-                    badge="Technology"
-                    avatars={[
-                      "https://i.pravatar.cc/150?u=react-dev",
-                      "https://i.pravatar.cc/150?u=react-dev1",
-                      "https://i.pravatar.cc/150?u=react-dev2",
-                      "https://i.pravatar.cc/150?u=react-dev3",
-                    ]}
-                  />
-                  <CategoryChannelCard
-                    href="/community/javascript-masters"
-                    categoryChannelName="JavaScript Masters"
-                    badge="Programming"
-                    avatars={[
-                      "https://i.pravatar.cc/150?u=js-master",
-                      "https://i.pravatar.cc/150?u=js-master1",
-                      "https://i.pravatar.cc/150?u=js-master2",
-                      "https://i.pravatar.cc/150?u=js-master3",
-                    ]}
-                  />
-                  <CategoryChannelCard
-                    href="/community/frontend-gurus"
-                    categoryChannelName="Frontend Gurus"
-                    badge="Design"
-                    avatars={[
-                      "https://i.pravatar.cc/150?u=frontend-guru",
-                      "https://i.pravatar.cc/150?u=frontend-guru1",
-                      "https://i.pravatar.cc/150?u=frontend-guru2",
-                      "https://i.pravatar.cc/150?u=frontend-guru3",
-                    ]}
-                  />
+                  {isLoadingCategories ? (
+                    <p>Loading categories...</p>
+                  ) : (
+                    myCategories?.content.map((category: any) => (
+                      <CategoryChannelCard
+                        key={category.channelId}
+                        href={`/community/${category.channelId}`}
+                        categoryChannelName={category.channelName}
+                        badge={category.isUserChannel ? 'User Channel' : 'Category'}
+                        avatars={[category.channelImageUrl]} // Assuming you have a channel image
+                      />
+                    ))
+                  )}
                 </div>
               )}
 
               {activeTab === 1 && (
                 <div>
-                  <CategoryChannelCard
-                    href="/community/ux-ui-designers"
-                    categoryChannelName="UX/UI Designers"
-                    badge="Design"
-                    avatars={[
-                      "https://i.pravatar.cc/150?u=ux-ui",
-                      "https://i.pravatar.cc/150?u=ux-ui1",
-                      "https://i.pravatar.cc/150?u=ux-ui2",
-                      "https://i.pravatar.cc/150?u=ux-ui3",
-                    ]}
-                  />
-                  <CategoryChannelCard
-                    href="/community/fullstack-developers"
-                    categoryChannelName="Fullstack Developers"
-                    badge="Fullstack"
-                    avatars={[
-                      "https://i.pravatar.cc/150?u=fullstack-dev",
-                      "https://i.pravatar.cc/150?u=fullstack-dev1",
-                      "https://i.pravatar.cc/150?u=fullstack-dev2",
-                      "https://i.pravatar.cc/150?u=fullstack-dev3",
-                    ]}
-                  />
+                  {/* 탐색 탭 내용 */}
                 </div>
               )}
             </div>
@@ -144,7 +137,7 @@ export default function Page() {
             ) : error ? (
               <p>에러 발생: {error.message}</p>
             ) : (
-              searchResults?.map((result: any) => (
+              searchResults?.content.map((result: any) => (
                 <Link key={result.userId} href={`/channel/${result.user_id}`}>
                   <Account
                     className="px-2 py-2"

@@ -1,3 +1,4 @@
+"use client";
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 
@@ -20,65 +21,42 @@ export interface UserInfo {
 // UserStore 인터페이스 정의
 interface UserStore {
   userInfo: UserInfo | null;
-  setUserInfo: (info: UserInfo) => void;
+  setUserInfo: (info: UserInfo ) => void;
   clearUserInfo: () => void;
-  rehydrate: () => void; // 로컬 스토리지에서 상태를 가져오는 메서드
+  hasHydrated: boolean; // Hydration 완료 여부 상태
+  setHasHydrated: (state: boolean) => void; // Hydration 상태 업데이트 함수
 }
 
 // Zustand 스토어 생성
 const useUserStore = create<UserStore>()(
   devtools(
-  persist(
-    (set, get) => ({
-      userInfo: null,
-
-      // 유저 정보를 설정하고 상태를 업데이트
-      setUserInfo: (info) => {
-        set({ userInfo: info });
-      },
-
-      // 유저 정보를 초기화하고 상태를 업데이트
-      clearUserInfo: () => {
-        set({ userInfo: null });
-        localStorage.removeItem('user-storage'); // 로컬 스토리지에서 user-storage 키를 삭제
-      },
-
-      // 로컬 스토리지에서 상태를 가져와 상태를 초기화
-// 로컬 스토리지에서 상태를 가져와 상태를 초기화
-rehydrate: () => {
-  const storedState = localStorage.getItem('user-storage');
-  
-  // 로컬 스토리지에서 가져온 데이터 로그 출력
-  console.log('Stored state in localStorage:', storedState);
-
-  if (storedState) {
-    const parsedState = JSON.parse(storedState);
-
-    // 파싱된 상태 로그 출력
-    console.log('Parsed state:', parsedState);
-
-    if (parsedState.userInfo) {
-      set({
-        userInfo: parsedState.userInfo
-      });
-
-      // 상태가 설정된 후 로그 출력
-      console.log('User info set:', parsedState.userInfo);
-      console.log('Is logged in:', !!parsedState.userInfo.token);
-    }
-  } else {
-    console.log('No stored state found in localStorage.');
-  }
-},
-    }),
-    {
-      name: 'user-storage', // 로컬 스토리지에 저장될 이름
-      partialize: (state) => ({ userInfo: state.userInfo }), // 저장할 상태 선택
-    }
+    persist(
+      (set) => ({
+        userInfo: null,
+        hasHydrated: false, // 초기값 false
+        setUserInfo: (info) => {
+          set({ userInfo: info });
+        },
+        clearUserInfo: () => {
+          console.log("clearUserInfo called");
+          set({ userInfo: null });
+          localStorage.removeItem('user-storage');
+        },
+        setHasHydrated: (state: boolean) => {
+          set({ hasHydrated: state });
+        },
+      }),
+      {
+        name: 'user-storage',
+        partialize: (state) => ({ userInfo: state.userInfo }),
+        onRehydrateStorage: () => (state) => {
+          console.log("rehydrate success");
+          state?.setHasHydrated(true); // Hydration이 완료되면 상태를 true로 설정
+        },
+      }
+    ),
+    { name: 'UserStore' }
   )
-  ,
-    { name: 'UserStore' } 
-)
 );
 
 export default useUserStore;
