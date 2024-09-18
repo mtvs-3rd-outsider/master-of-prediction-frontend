@@ -394,7 +394,7 @@ const RightPanel = () => {
           />
           <PanelItemTrends title="Vercel" category="Development" stat="27.5K" />
         </Panel>
-        <Panel title="Who to follow" href="/">
+        {/* <Panel title="Who to follow" href="/">
           <PanelItem
             src="https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8Mjd8NzkwMjQ2NTJ8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60"
             name="Charles Deluvio"
@@ -413,7 +413,7 @@ const RightPanel = () => {
             username="robpotter"
             initials="RB"
           />
-        </Panel>
+        </Panel> */}
         <Footer />
       </div>
     </aside>
