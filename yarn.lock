@@ -3664,6 +3664,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nextui-org/skeleton@npm:^2.0.32":
+  version: 2.0.32
+  resolution: "@nextui-org/skeleton@npm:2.0.32"
+  dependencies:
+    "@nextui-org/react-utils": "npm:2.0.17"
+    "@nextui-org/shared-utils": "npm:2.0.8"
+  peerDependencies:
+    "@nextui-org/system": ">=2.0.0"
+    "@nextui-org/theme": ">=2.1.0"
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/7656e1061cfa54e704a77818a90bee341fd52f0332c14ce53786ad4a8c91059d51d3544ebc35332a7fa1fc2b4cb8d35352d5e8a63d8097bbd4d08f571028334b
+  languageName: node
+  linkType: hard
+
 "@nextui-org/snippet@npm:2.0.3":
   version: 2.0.3
   resolution: "@nextui-org/snippet@npm:2.0.3"
@@ -16187,6 +16202,7 @@ __metadata:
     "@nextui-org/modal": "npm:^2.0.40"
     "@nextui-org/radio": "npm:^2.1.4"
     "@nextui-org/select": "npm:^2.2.5"
+    "@nextui-org/skeleton": "npm:^2.0.32"
     "@nextui-org/storybook": "npm:^2.0.0"
     "@nextui-org/system": "npm:^2.2.5"
     "@nextui-org/tabs": "npm:^2.0.36"
