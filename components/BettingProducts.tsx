@@ -1,56 +1,57 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Skeleton } from "@nextui-org/skeleton";
 import BettingProduct from "./BettingProduct";
+import apiClient from "@handler/fetch/axios";
+
+/**
+ * 서버로부터 값을 가져와서 BettingProduct를 완성한다
+ */
+
+export interface BettingProductType {
+  userID: number;
+  userName: string;
+  displayName: string;
+  tierName: string;
+  userImg: string;
+  title: string;
+  imgUrls: string[];
+  bettingId: number;
+}
 
 const BettingProducts = () => {
+  const [bettings, setBettings] = useState<BettingProductType[]>([]);
+  const [offset, setOffset] = useState(0);
+
+  const getBettings = async () => {
+    const response = await apiClient.get("/betting-products");
+    setBettings(response.data);
+    console.log("response test: ", response.data);
+    setOffset(offset + 10);
+  };
+
+  useEffect(() => {
+    getBettings();
+  }, []);
   return (
     <>
       <Suspense fallback={<Loading />}>
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
-          <li>
-            <BettingProduct />
-          </li>
+          {bettings.map((node, i) => (
+            <li key={node.bettingId}>
+              <BettingProduct
+                userID={node.userID}
+                userName={node.userName}
+                displayName={node.displayName}
+                tierName={node.tierName}
+                userImg={node.userImg}
+                title={node.title}
+                imgUrls={node.imgUrls}
+                bettingId={node.bettingId}
+              />
+            </li>
+          ))}
         </ul>
       </Suspense>
       <div></div>

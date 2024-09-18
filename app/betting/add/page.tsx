@@ -9,6 +9,7 @@ import Footer from "@ui/Footer";
 import Link from "next/link";
 import { sendMultipartForm } from "@handler/fetch/axios";
 import { useRouter } from "next/router";
+import { AxiosError } from "axios";
 
 interface BettingOptions {
   imgUrl: string;
@@ -137,9 +138,14 @@ const BettingAddPage = () => {
         formData,
         "post"
       );
-      console.log("response data: ", response.data);
     } catch (error) {
-      console.log(error?.response?.data.errors);
+      if (error instanceof AxiosError) {
+        // AxiosError 타입으로 캐스팅하여 안전하게 접근
+        console.log("Error response data: ", error.response?.data.errors);
+      } else {
+        // 다른 에러 타입 처리
+        console.log("An unexpected error occurred: ", error);
+      }
     }
   };
   // router.push("/");
@@ -151,14 +157,22 @@ const BettingAddPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
-              className={`${isBlind ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-400 hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
+              className={`${
+                isBlind
+                  ? "bg-blue-500 hover:bg-blue-700"
+                  : "bg-gray-400 hover:bg-blackA10"
+              } text-white font-bold py-2 px-4 rounded-full`}
               onClick={() => setIsBlind(true)}
             >
               비공개
             </button>
             <button
               type="button"
-              className={`${!isBlind ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-400 hover:bg-blackA10"} text-white font-bold py-2 px-4 rounded-full`}
+              className={`${
+                !isBlind
+                  ? "bg-blue-500 hover:bg-blue-700"
+                  : "bg-gray-400 hover:bg-blackA10"
+              } text-white font-bold py-2 px-4 rounded-full`}
               onClick={() => setIsBlind(false)}
             >
               공개
@@ -380,7 +394,7 @@ const RightPanel = () => {
           />
           <PanelItemTrends title="Vercel" category="Development" stat="27.5K" />
         </Panel>
-        <Panel title="Who to follow" href="/">
+        {/* <Panel title="Who to follow" href="/">
           <PanelItem
             src="https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8Mjd8NzkwMjQ2NTJ8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60"
             name="Charles Deluvio"
@@ -399,7 +413,7 @@ const RightPanel = () => {
             username="robpotter"
             initials="RB"
           />
-        </Panel>
+        </Panel> */}
         <Footer />
       </div>
     </aside>
