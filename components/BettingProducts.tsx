@@ -4,21 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { Skeleton } from "@nextui-org/skeleton";
 import BettingProduct from "./BettingProduct";
 import apiClient from "@handler/fetch/axios";
-
-/**
- * 서버로부터 값을 가져와서 BettingProduct를 완성한다
- */
-
-export interface BettingProductType {
-  userID: number;
-  userName: string;
-  displayName: string;
-  tierName: string;
-  userImg: string;
-  title: string;
-  imgUrls: string[];
-  bettingId: number;
-}
+import { BettingProductType } from "@/types/BettingTypes";
 
 const BettingProducts = () => {
   const [bettings, setBettings] = useState<BettingProductType[]>([]);

@@ -1,6 +1,19 @@
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
+"use client";
 
-const SellOrder = () => {
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { useState } from "react";
+
+interface Props {
+  userPoint: number;
+}
+
+const SellOrder = ({ userPoint }: Props) => {
+  const [amount, setAmount] = useState(0);
+
+  const handleAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAmount = e.target.value;
+    setAmount(newAmount === "" ? 0 : Number(newAmount));
+  };
   return (
     <>
       <fieldset className="mb-[15px] w-full flex flex-col justify-start">
@@ -14,16 +27,18 @@ const SellOrder = () => {
           type="number"
           className="grow shrink-0 rounded px-2.5 text-[15px] leading-none text-violet11 shadow-[0_0_0_1px] shadow-violet7 h-[35px] focus:shadow-[0_0_0_2px] focus:shadow-violet8 outline-none"
           id="username"
-          defaultValue="0"
+          placeholder="0"
+          value={amount}
+          onChange={handleAmount}
         />
       </fieldset>
       <div className="flex w-full h-[25px] justify-between items-center relative z-[36] mt-4 mr-0 mb-0 ">
-        <span className="h-[25px] shrink-0 font-['Inter'] text-[14px] font-medium leading-[20px] text-[#5a6689] relative text-left whitespace-nowrap z-[36]">
+        <span className="shrink-0 font-['Inter'] text-[14px] font-medium leading-[20px] text-[#5a6689] relative text-left whitespace-nowrap">
           Total
         </span>
-        <div className="flex w-[77px] h-[25px] justify-between items-center shrink-0 relative z-[32]">
+        <div className="flex h-[25px]  items-center shrink-0 relative z-[32]">
           <span className="h-[20px] shrink-0 font-['Inter'] text-[14px] font-semibold leading-[20px] text-[#303648] relative text-left whitespace-nowrap z-[31]">
-            0.00
+            {amount}
           </span>
           <span className="h-[20px] shrink-0 font-['Inter'] text-[14px] font-medium leading-[20px] text-[#76809d] relative text-left whitespace-nowrap z-[32]">
             point
@@ -36,7 +51,7 @@ const SellOrder = () => {
         </span>
         <div className="flex w-[73px] h-[17px] justify-between items-center shrink-0 relative z-[35]">
           <span className="flex w-[38px] h-[16px] justify-end items-start shrink-0 font-['Inter'] text-[12px] font-medium leading-[16px] text-[#303648] relative text-right whitespace-nowrap z-[34]">
-            27000
+            {userPoint}
           </span>
           <span className="flex w-[33px] h-[16px] justify-end items-start shrink-0 font-['Inter'] text-[12px] font-medium leading-[16px] text-[#76809d] relative text-right whitespace-nowrap z-[35]">
             point

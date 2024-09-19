@@ -1,5 +1,6 @@
 "use client";
 
+import { BettingProductType } from "@/types/BettingTypes";
 import Account from "./Account";
 import {
   HeartIcon,
@@ -8,7 +9,6 @@ import {
   ArrowPathIcon,
   ChartBarSquareIcon,
 } from "@heroicons/react/24/outline";
-import { BettingProductType } from "./BettingProducts";
 import Link from "next/link";
 
 // TODO: 현재는 title에만 배팅 상세 페이지로 이동하지만 빈 공간에 Link 주는 방법으로 교체해야함
