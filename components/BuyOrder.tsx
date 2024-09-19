@@ -3,14 +3,18 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { useState } from "react";
 
-const BuyOrder = () => {
+interface Props {
+  userPoint: number;
+}
+
+const BuyOrder = ({ userPoint }: Props) => {
   const [amount, setAmount] = useState(0);
-  const [userPoint, setUserPoint] = useState(0);
 
   const handleAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newAmount = e.target.value;
     setAmount(newAmount === "" ? 0 : Number(newAmount));
   };
+
   return (
     <>
       <fieldset className="mb-[15px] w-full flex flex-col justify-start">
@@ -24,8 +28,7 @@ const BuyOrder = () => {
           type="number"
           className="grow shrink-0 rounded px-2.5 text-[15px] leading-none text-violet11 shadow-[0_0_0_1px] shadow-violet7 h-[35px] focus:shadow-[0_0_0_2px] focus:shadow-violet8 outline-none"
           id="username"
-          placeholder="0"
-          value={amount}
+          value={amount.toString()}
           onChange={handleAmount}
         />
       </fieldset>
@@ -48,7 +51,7 @@ const BuyOrder = () => {
         </span>
         <div className="flex w-[73px] h-[17px] justify-between items-center shrink-0 relative z-[35]">
           <span className="flex w-[38px] h-[16px] justify-end items-start shrink-0 font-['Inter'] text-[12px] font-medium leading-[16px] text-[#303648] relative text-right whitespace-nowrap z-[34]">
-            27000
+            {userPoint}
           </span>
           <span className="flex w-[33px] h-[16px] justify-end items-start shrink-0 font-['Inter'] text-[12px] font-medium leading-[16px] text-[#76809d] relative text-right whitespace-nowrap z-[35]">
             point
