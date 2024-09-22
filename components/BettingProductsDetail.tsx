@@ -90,7 +90,7 @@ function BettingProductDetail(props: BettingProductInfo) {
       </div>
       {/* options={bettingInfo?.options || ({} as BettingOptions[])} */}
       <BettingOptionList options={options || []} />
-      <BettingCommentActivityTabs />
+      <BettingCommentActivityTabs options={options || []} />
     </>
   );
 }
