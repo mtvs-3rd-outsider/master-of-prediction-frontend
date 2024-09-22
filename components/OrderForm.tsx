@@ -8,7 +8,9 @@ import useUserStore from "@store/useUserStore";
 import { useEffect, useState } from "react";
 import apiClient from "@handler/fetch/axios";
 import { BettingOptions } from "@/types/BettingTypes";
-import { BettingOptionChoiseStore } from "@/hooks/GlobalBettingOption";
+import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
+import { useParams } from "next/navigation";
+import { OrderHistoryType } from "@/types/BettingOrderType";
 
 interface OrderFormProps {
   className?: string;
@@ -18,16 +20,44 @@ interface OrderFormProps {
 export default function OrderForm({ className, options }: OrderFormProps) {
   // const userId = useUserStore.getState().userInfo?.id;
   const userId = 1;
-  const [userPoint, setUserPoint] = useState(0);
-  const { optionId, setOptionId } = BettingOptionChoiseStore();
-  const writeOption = optionId != 0 ? optionId - 1 : 0;
+  const [userPoint, setUserPoint] = useState<number>(0);
+  const { optionId } = BettingOptionChoiceStore();
+  const [orderHistory, setOrderHistory] = useState<OrderHistoryType[]>([]);
+  const bettingId = useParams().id;
+  const [optionsByOptionId, setOptionsByOptionId] = useState<BettingOptions>(
+    {} as BettingOptions
+  );
+  const [choiceOptionhistory, setChoiceOptionHistory] =
+    useState<OrderHistoryType>({} as OrderHistoryType);
 
   useEffect(() => {
-    apiClient(`/user-point/${userId}`).then((res) => setUserPoint(res.data));
-  }, [userId]);
+    options.map((option) => {
+      if (option.optionId == optionId) {
+        setOptionsByOptionId(option);
+      }
+    });
+  }, [optionId, options]);
 
-  console.log(options);
-  console.log(options[optionId]);
+  useEffect(() => {
+    setChoiceOptionHistory({} as OrderHistoryType);
+    orderHistory.map((history) => {
+      if (history.bettingOptionId == optionId) {
+        setChoiceOptionHistory(history);
+      }
+    });
+  }, [optionId, orderHistory]);
+
+  useEffect(() => {
+    apiClient
+      .get(`/user-point/${userId}`)
+      .then((res) => setUserPoint(res.data));
+    apiClient
+      .get(`/user/betting-products?userId=${userId}&bettingId=${bettingId}`)
+      .then((res) => {
+        console.log("res.data: ", res.data);
+        setOrderHistory(res.data);
+      });
+  }, [userId, bettingId]);
 
   return (
     <div
@@ -36,12 +66,12 @@ export default function OrderForm({ className, options }: OrderFormProps) {
       <div className="flex gap-4 py-4 px-4 ">
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
           <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${options[writeOption]?.imgUrl}`}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${optionsByOptionId?.imgUrl}`}
             className="h-full w-full object-cover object-center"
           />
         </div>
         <div className="flex justify-center items-center">
-          <p>{options[writeOption]?.content}</p>
+          <p>{optionsByOptionId?.content}</p>
         </div>
       </div>
       <Tabs.Root className="" defaultValue="tab1">
@@ -66,13 +96,28 @@ export default function OrderForm({ className, options }: OrderFormProps) {
           className="grow p-5 bg-white rounded-b-md outline-none  "
           value="tab1"
         >
-          <BuyOrder userPoint={userPoint} />
+          <BuyOrder
+            userPoint={userPoint}
+            setUserPoint={setUserPoint}
+            options={options}
+            setOrderHistory={setOrderHistory}
+            optionsByOptionId={optionsByOptionId}
+            choiceOptionhistory={choiceOptionhistory}
+          />
         </Tabs.Content>
         <Tabs.Content
           className="grow p-5 bg-white rounded-b-md outline-none "
           value="tab2"
         >
-          <SellOrder userPoint={userPoint} />
+          <SellOrder
+            userPoint={userPoint}
+            setUserPoint={setUserPoint}
+            options={options}
+            orderHistory={orderHistory}
+            setOrderHistory={setOrderHistory}
+            optionsByOptionId={optionsByOptionId}
+            choiceOptionhistory={choiceOptionhistory}
+          />
         </Tabs.Content>
       </Tabs.Root>
     </div>

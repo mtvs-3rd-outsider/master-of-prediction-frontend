@@ -1,4 +1,4 @@
-import { BettingOptionChoiseStore } from "@/hooks/GlobalBettingOption";
+import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 import { BettingOptions } from "@/types/BettingTypes";
 import { useEffect, useState } from "react";
 import {
@@ -20,7 +20,7 @@ interface Props {
 
 const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
   const [state, setState] = useState(false);
-  const { optionId, setOptionId } = BettingOptionChoiseStore();
+  const { optionId, setOptionId } = BettingOptionChoiceStore();
 
   const handleClick = () => {
     setState(!state);
@@ -28,9 +28,8 @@ const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
   };
 
   useEffect(() => {
-    setState(false);
-    if (optionId === currentOptionId) {
-      setState(true);
+    if (optionId !== currentOptionId) {
+      setState(false);
     }
   }, [optionId, currentOptionId]);
 
@@ -55,19 +54,19 @@ const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
           <p>{content}</p>
         </div>
         <div className="flex-1 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              // data={data.chartData}
+          {/* <ResponsiveContainer width="100%" height="100%">
+            <LineChart */}
+          {/* // data={data.chartData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
-              {/* <XAxis dataKey="name" hide={true} />
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} /> */}
+          {/* <XAxis dataKey="name" hide={true} />
               <YAxis hide={true} /> */}
-              {/* <Tooltip /> */}
-              {/* <Legend /> */}
-              <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
+          {/* <Tooltip /> */}
+          {/* <Legend /> */}
+          {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
             </LineChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer> */}
         </div>
         <div className="flex-1 flex items-center">
           <p>2,509.75</p>
@@ -76,19 +75,19 @@ const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
       {/* <div style={{ width: "300px", height: "300px" }}> */}
       {state && (
         <div className="w-full h-44">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              // data={data.chartData}
+          {/* <ResponsiveContainer width="100%" height="100%">
+            <LineChart */}
+          {/* // data={data.chartData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
+            > */}
+          {/* <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
               <XAxis dataKey="name" hide={false} />
               <YAxis hide={false} />
-              <Tooltip />
-              {/* <Legend /> */}
-              <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
+              <Tooltip /> */}
+          {/* <Legend /> */}
+          {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
             </LineChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer> */}
         </div>
       )}
     </>
