@@ -1,13 +1,14 @@
+import { BettingOptions } from "@/types/BettingTypes";
 import { create } from "zustand";
 
-interface BettingOptionChoiseState {
+interface BettingOptionChoiceState {
   optionId: number;
   setOptionId: (id: number) => void;
 }
 
-export const BettingOptionChoiseStore = create<BettingOptionChoiseState>()(
+export const BettingOptionChoiceStore = create<BettingOptionChoiceState>()(
   (set) => ({
-    optionId: 0,
+    optionId: 1,
     setOptionId: (id: number) => set({ optionId: id }),
   })
 );
