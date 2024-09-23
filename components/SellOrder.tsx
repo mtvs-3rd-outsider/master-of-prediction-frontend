@@ -71,7 +71,6 @@ const SellOrder = ({
       })
       .then((res) => {
         if (res.status <= 299) {
-          console.log("res data: ", res.data);
           setUserPoint(userPoint + amount);
           setAmount(0);
           // optionId를 찾고 point를 찾아 더한다, 없으면 추가

@@ -1,4 +1,5 @@
-// "use client";
+"use client";
+
 import Search from "@ui/Search";
 import Panel from "@ui/Panel";
 import PanelItemTrends from "@ui/PanelItemTrends";

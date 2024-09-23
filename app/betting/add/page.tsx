@@ -3,12 +3,11 @@
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import Search from "@ui/Search";
 import Panel from "@ui/Panel";
-import PanelItem from "@ui/PanelItem";
 import PanelItemTrends from "@ui/PanelItemTrends";
 import Footer from "@ui/Footer";
 import Link from "next/link";
 import { sendMultipartForm } from "@handler/fetch/axios";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 
 interface BettingOptions {
@@ -19,7 +18,6 @@ interface BettingOptions {
 }
 
 const BettingAddPage = () => {
-  // const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<File[]>([]);
   const [mainPreviewUrls, setMainPreviewUrls] = useState<string[]>([]);
@@ -29,6 +27,7 @@ const BettingAddPage = () => {
     { imgUrl: "", image: undefined, content: "", fileInputRef: useRef(null) },
   ]);
   const [currentDateTime, setCurrentDateTime] = useState("");
+  const pathname = usePathname();
   const router = useRouter();
 
   /**

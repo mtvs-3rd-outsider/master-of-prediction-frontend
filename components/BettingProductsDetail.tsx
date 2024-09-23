@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
 import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
 import { BettingOptions, BettingProductInfo } from "@/types/BettingTypes";
+import Image from "next/image";
 
 function BettingProductDetail(props: BettingProductInfo) {
   const { user, product, productImages, options, optionsRatio } = props;
@@ -53,12 +54,20 @@ function BettingProductDetail(props: BettingProductInfo) {
                 key={url}
                 className="flex-shrink-0 overflow-hidden rounded-md border border-gray-200 my-4 scroll-snap-align-start"
               >
-                <img
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${url}`}
+                <Image
+                  alt=""
+                  // layout="fill"
+                  width={100}
+                  height={60}
+                  src={url}
+                  className="h-28 w-28  object-scale-down object-center"
+                />
+                {/* <img
+                  src={`${url}`}
                   className="h-28 w-28  object-scale-down object-center"
                   width={500}
                   height={500}
-                />
+                /> */}
               </div>
             ))}
           </div>
