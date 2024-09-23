@@ -43,8 +43,8 @@ export default function CreateFeedPage() {
   
       const response = await sendMultipartForm('/feeds', formData, 'post');
   
-      if (response.data.success) {
-        router.push('/');
+      if (response.status < 300) {
+        router.push('/hot-topic');
       } else {
         throw new Error(response.data.message || '피드 생성에 실패했습니다.');
       }

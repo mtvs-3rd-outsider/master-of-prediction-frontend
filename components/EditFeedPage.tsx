@@ -68,8 +68,8 @@ export default function EditFeedPage({ feedId }: EditFeedPageProps) {
   
       const response = await sendMultipartForm(`/feeds/${feedId}`, formData, 'put');
   
-      if (response.data.success) {
-        router.push(`/feed/${feedId}`);
+      if (response.status<300) {
+        router.push('/hot-topic');
       } else {
         throw new Error(response.data.message || '피드 수정에 실패했습니다.');
       }

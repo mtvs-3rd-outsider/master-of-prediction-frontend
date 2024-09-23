@@ -20,8 +20,7 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId }) => {
     if (window.confirm('피드를 삭제하시겠습니까?')) {
       try {
         const response = await axios.delete(`/feeds/${feedId}`);
-        if (response.status === 200) {
-          alert(response.data.message);
+        if (response.status <300) {
           router.push('/');
         }
       } catch (error) {
