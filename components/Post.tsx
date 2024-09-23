@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DropdownMenuDemo from '@rd/DropdownMenu';
 import HoverCard from '@rd/HoverCard';
 import {
@@ -32,11 +32,11 @@ interface Props {
   mediaFiles?: string[];
   youtubeUrls?: string[];
   children?: React.ReactNode;
-  commentsCount: number
-  likesCount: number
-  quoteCount: number
+  commentsCount: number;
+  likesCount: number;
+  quoteCount: number;
   onClick: () => void;
-
+  isLikedByUser: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
 }
 
 const Post: React.FC<Props> = ({
@@ -46,7 +46,7 @@ const Post: React.FC<Props> = ({
   username,
   date,
   children,
-  src,  // 이제 UserDTO의 userImg를 사용할 수 있습니다.
+  src,
   initials,
   followers,
   following,
@@ -55,13 +55,20 @@ const Post: React.FC<Props> = ({
   mediaFiles,
   youtubeUrls,
   commentsCount,
-  likesCount,
+  likesCount: initialLikesCount,
   quoteCount,
   onClick,
+  isLikedByUser,
   ...props
-}) =>{
-  const [isLiked, setIsLiked] = useState(false);
-  const userInfo = useUserStore(state=>state?.userInfo);
+}) => {
+  const [isLiked, setIsLiked] = useState(isLikedByUser);
+  const [likesCount, setLikesCount] = useState(initialLikesCount);
+  const userInfo = useUserStore(state => state?.userInfo);
+
+  useEffect(() => {
+    setIsLiked(isLikedByUser);
+    setLikesCount(initialLikesCount);
+  }, [isLikedByUser, initialLikesCount]);
 
   const toggleLike = async (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
@@ -73,19 +80,20 @@ const Post: React.FC<Props> = ({
 
     try {
       const response = await axios.post(`/feeds/${id}/${userInfo.id}`);
-      setIsLiked(response.data);
+      const newIsLiked = response.data;
+      setIsLiked(newIsLiked);
+      setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
     } catch (error) {
       console.error('Error toggling like:', error);
       alert('좋아요 처리 중 오류가 발생했습니다.');
     }
   };
 
-  
-  return(
-  <div 
-    className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer" 
-    onClick={onClick}
-  >
+  return (
+    <div 
+      className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer" 
+      onClick={onClick}
+    >
     <div className="flex-shrink-0">
       <HoverCard
         src={src}  // UserDTO의 userImg를 사용
@@ -136,13 +144,13 @@ const Post: React.FC<Props> = ({
             {quoteCount}
           </li>
           <li onClick={toggleLike}>
-    {isLiked ? (
-      <HeartIconSolid className="w-5 h-5 text-red-500" />
-    ) : (
-      <HeartIconOutline className="w-5 h-5" />
-    )}
-    {likesCount}
-  </li>
+            {isLiked ? (
+              <HeartIconSolid className="w-5 h-5 text-red-500" />
+            ) : (
+              <HeartIconOutline className="w-5 h-5" />
+            )}
+            {likesCount}
+          </li>
           <li>
             <ArrowUpTrayIcon className="w-5 h-5" />
           </li>
