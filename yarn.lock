@@ -2755,6 +2755,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nextui-org/button@npm:^2.0.38":
+  version: 2.0.38
+  resolution: "@nextui-org/button@npm:2.0.38"
+  dependencies:
+    "@nextui-org/react-utils": "npm:2.0.17"
+    "@nextui-org/ripple": "npm:2.0.33"
+    "@nextui-org/shared-utils": "npm:2.0.8"
+    "@nextui-org/spinner": "npm:2.0.34"
+    "@nextui-org/use-aria-button": "npm:2.0.10"
+    "@react-aria/button": "npm:3.9.5"
+    "@react-aria/focus": "npm:3.17.1"
+    "@react-aria/interactions": "npm:3.21.3"
+    "@react-aria/utils": "npm:3.24.1"
+    "@react-types/button": "npm:3.9.4"
+    "@react-types/shared": "npm:3.23.1"
+  peerDependencies:
+    "@nextui-org/system": ">=2.0.0"
+    "@nextui-org/theme": ">=2.1.0"
+    framer-motion: ">=10.17.0"
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/e9eba95813947e85df7da05385e69a9b7fafe956c552b46ce289ae39a037c0853078a9be1763774419d6a0d993f48dd7c23ea51cfcfe623457e72bdc762abfd6
+  languageName: node
+  linkType: hard
+
 "@nextui-org/calendar@npm:2.0.11":
   version: 2.0.11
   resolution: "@nextui-org/calendar@npm:2.0.11"
@@ -3562,6 +3587,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nextui-org/ripple@npm:2.0.33":
+  version: 2.0.33
+  resolution: "@nextui-org/ripple@npm:2.0.33"
+  dependencies:
+    "@nextui-org/react-utils": "npm:2.0.17"
+    "@nextui-org/shared-utils": "npm:2.0.8"
+  peerDependencies:
+    "@nextui-org/system": ">=2.0.0"
+    "@nextui-org/theme": ">=2.1.0"
+    framer-motion: ">=10.17.0"
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/a8ede61b461044f1036c1707b8267f1c7bffbf3db804f9c24d1d9f1f0e43a55280733078eccfe2cd9cfb71fc80bfd361f6aada5086c9f18993f148295fdf3fbc
+  languageName: node
+  linkType: hard
+
 "@nextui-org/scroll-shadow@npm:2.1.19":
   version: 2.1.19
   resolution: "@nextui-org/scroll-shadow@npm:2.1.19"
@@ -3740,6 +3781,21 @@ __metadata:
     react: ">=18"
     react-dom: ">=18"
   checksum: 10c0/7504bbc508e5dc5fdde3837914b335447443186376f8fef119db40599d4e41533154fd088c59623d1175a7b085c7e0408cd99047fdbae14c26b10b552a4d70fb
+  languageName: node
+  linkType: hard
+
+"@nextui-org/spinner@npm:2.0.34":
+  version: 2.0.34
+  resolution: "@nextui-org/spinner@npm:2.0.34"
+  dependencies:
+    "@nextui-org/react-utils": "npm:2.0.17"
+    "@nextui-org/shared-utils": "npm:2.0.8"
+    "@nextui-org/system-rsc": "npm:2.1.6"
+  peerDependencies:
+    "@nextui-org/theme": ">=2.1.0"
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10c0/5d7a2be836a5cb3965bdd790b11f644ea82bc83bec337863484a8122fc04d9ea87c5641b5a6cd172ccb76dc39d3a5e7fd2d4ede296996105c80b8a90567b2114
   languageName: node
   linkType: hard
 
@@ -16193,6 +16249,7 @@ __metadata:
     "@fullhuman/postcss-purgecss": "npm:^6.0.0"
     "@heroicons/react": "npm:^2.1.5"
     "@next/bundle-analyzer": "npm:^14.2.5"
+    "@nextui-org/button": "npm:^2.0.38"
     "@nextui-org/chip": "npm:^2.0.32"
     "@nextui-org/date-picker": "npm:^2.1.6"
     "@nextui-org/dropdown": "npm:^2.1.29"

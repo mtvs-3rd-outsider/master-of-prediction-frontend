@@ -29,6 +29,7 @@ const BettingAddPage = () => {
     { imgUrl: "", image: undefined, content: "", fileInputRef: useRef(null) },
   ]);
   const [currentDateTime, setCurrentDateTime] = useState("");
+  const router = useRouter();
 
   /**
    * 마감 날짜 내일로 자동 설정
@@ -138,6 +139,7 @@ const BettingAddPage = () => {
         formData,
         "post"
       );
+      router.push(`/betting/${response.data}`);
     } catch (error) {
       if (error instanceof AxiosError) {
         // AxiosError 타입으로 캐스팅하여 안전하게 접근

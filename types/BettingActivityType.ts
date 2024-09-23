@@ -9,3 +9,14 @@ export interface BettingActivityType {
   content: string;
   imgUrl: string;
 }
+
+export interface TopHolderType {
+  userName: string;
+  displayName: string | null;
+  tierName: string;
+  userImg: string | null;
+  point: number;
+  bettingOptionId: number;
+}
+
+export type BettingTopHolders = Record<number, TopHolderType[]>;

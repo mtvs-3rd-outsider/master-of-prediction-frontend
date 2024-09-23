@@ -1,24 +1,40 @@
 "use client";
 
-import { BettingOptions } from "@/types/BettingTypes";
+import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
 import BettingOption from "./BettingOption";
 
 interface Props {
   options: BettingOptions[] | [];
+  optionsRatio: OptionsRatio[] | [];
 }
 
-const BettingOptionList = ({ options }: Props) => {
+const BettingOptionList = ({ options, optionsRatio }: Props) => {
   return (
     <>
+      <div className="flex py-4 shadow justify-around px-8">
+        <span className="text-lg font-bold">content</span>
+        <span className="text-lg font-bold">totalPoints</span>
+        <span className="text-lg font-bold">Ratio</span>
+      </div>
       <ul role="list" className=" divide-y divide-gray-200">
-        {options.map((option) => (
-          <BettingOption
-            key={option.optionId}
-            content={option.content}
-            imgUrl={option.imgUrl}
-            currentOptionId={option.optionId}
-          />
-        ))}
+        {options.map((option) => {
+          // optionsRatio에서 option.optionId와 일치하는 항목 찾기
+          const matchingRatio = optionsRatio.find(
+            (ratio) => ratio.bettingOptionId === option.optionId
+          );
+
+          // matchingRatio가 존재하면 BettingOption 출력
+          return matchingRatio ? (
+            <BettingOption
+              key={option.optionId}
+              content={option.content}
+              imgUrl={option.imgUrl}
+              currentOptionId={option.optionId}
+              ratio={matchingRatio}
+            />
+          ) : null; // matchingRatio가 없으면 null을 반환
+        })}
+
         {/* <BettingOption data={option_data2} /> */}
       </ul>
     </>

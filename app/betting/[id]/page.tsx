@@ -13,17 +13,27 @@ import {
   BettingOptions,
   BettingProduct,
   BettingProductInfo,
+  OptionsRatio,
 } from "@/types/BettingTypes";
 
 function BettingDetailPage() {
   // 배팅 정보를 불러와서 각 노드에 전달
   const params = useParams();
   const [bettingInfo, setBettingInfo] = useState<BettingProductInfo>();
+  const [optionsRatio, setOptionsRatio] = useState<OptionsRatio[]>(
+    [] as OptionsRatio[]
+  );
 
   useEffect(() => {
     apiClient(`betting-products/${params.id}`).then((res) => {
       setBettingInfo(res.data);
     });
+
+    apiClient(`/betting-products/options/ratio?bettingId=${params.id}`).then(
+      (res) => {
+        setOptionsRatio(res.data);
+      }
+    );
   }, [params.id]);
 
   return (
@@ -34,6 +44,7 @@ function BettingDetailPage() {
           product={bettingInfo?.product || ({} as BettingProduct)}
           options={bettingInfo?.options || []}
           productImages={bettingInfo?.productImages || []}
+          optionsRatio={optionsRatio}
         />
         {/* TODO: 작은 화면일때 주문 디자인 추가 */}
         {/* <OrderForm className="xl:hidden mx-auto" /> */}

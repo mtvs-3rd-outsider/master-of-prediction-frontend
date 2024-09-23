@@ -29,6 +29,7 @@ export interface BettingProductInfo {
   product: BettingProduct;
   productImages: string[];
   options: BettingOptions[];
+  optionsRatio: OptionsRatio[];
 }
 
 export interface BettingProductType {
@@ -40,4 +41,10 @@ export interface BettingProductType {
   title: string;
   imgUrls: string[];
   bettingId: number;
+}
+
+export interface OptionsRatio {
+  bettingOptionId: number;
+  totalPoints: number;
+  percentage: string;
 }
