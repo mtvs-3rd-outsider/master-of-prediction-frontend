@@ -1,5 +1,5 @@
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
-import { BettingOptions } from "@/types/BettingTypes";
+import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
 import { useEffect, useState } from "react";
 import {
   LineChart,
@@ -16,9 +16,10 @@ interface Props {
   content: string;
   imgUrl: string;
   currentOptionId: number;
+  ratio: OptionsRatio;
 }
 
-const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
+const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
 
@@ -53,7 +54,8 @@ const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
         <div className="flex-1 m-auto">
           <p>{content}</p>
         </div>
-        <div className="flex-1 w-full">
+        <div className="flex-1 flex items-center">
+          {/* <div className="flex-1 w-full"> */}
           {/* <ResponsiveContainer width="100%" height="100%">
             <LineChart */}
           {/* // data={data.chartData}
@@ -67,9 +69,10 @@ const BettingOption = ({ content, imgUrl, currentOptionId }: Props) => {
           {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
             </LineChart>
           </ResponsiveContainer> */}
+          <p>{ratio.totalPoints}p</p>
         </div>
         <div className="flex-1 flex items-center">
-          <p>2,509.75</p>
+          <p>{ratio.percentage}</p>
         </div>
       </li>
       {/* <div style={{ width: "300px", height: "300px" }}> */}

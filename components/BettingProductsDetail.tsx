@@ -17,7 +17,7 @@ import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
 import { BettingOptions, BettingProductInfo } from "@/types/BettingTypes";
 
 function BettingProductDetail(props: BettingProductInfo) {
-  const { user, product, productImages, options } = props;
+  const { user, product, productImages, options, optionsRatio } = props;
 
   return (
     <>
@@ -89,8 +89,8 @@ function BettingProductDetail(props: BettingProductInfo) {
         </div>
       </div>
       {/* options={bettingInfo?.options || ({} as BettingOptions[])} */}
-      <BettingOptionList options={options || []} />
-      <BettingCommentActivityTabs />
+      <BettingOptionList options={options || []} optionsRatio={optionsRatio} />
+      <BettingCommentActivityTabs options={options || []} />
     </>
   );
 }
