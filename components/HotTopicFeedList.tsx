@@ -1,3 +1,5 @@
+"use client";  // 클라이언트 컴포넌트로 명시
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
@@ -10,6 +12,7 @@ const HotTopicFeedList: React.FC = () => {
   const [lastId, setLastId] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const { ref, inView } = useInView();
+  const router = useRouter();
 
   const loadMoreFeeds = useCallback(async () => {
     if (!hasMore) return;
@@ -40,10 +43,12 @@ const HotTopicFeedList: React.FC = () => {
       loadMoreFeeds();
     }
   }, [inView, loadMoreFeeds]);
-  const router = useRouter();
-  const handlePostClick = (id: string) => {
+
+  const handlePostClick = useCallback((id: number) => {
+    console.log("Clicked feed with id:", id);  // 디버깅을 위한 로그
     router.push(`/feed/${id}`);
-  };
+  }, [router]);
+
   return (
     <div>
       {feeds.map((feed) => (
@@ -51,18 +56,21 @@ const HotTopicFeedList: React.FC = () => {
           key={`feed-${feed.id}`}
           id={feed.id.toString()}
           content={feed.content}
-          name={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+          name={feed.user?.displayName || feed.guest?.guestId || 'Unknown'}
           username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
           date={new Date(feed.createdAt).toLocaleString()}
           src={feed.user?.userImg || ''}
           initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
           description={feed.title}
-          followers={feed.likesCount.toString()}
-          following={feed.commentsCount.toString()}
+          followers={""}
+          following={""}
           viewCount={feed.viewCount.toString()}
+          commentsCount={feed.commentsCount}
+          likesCount={feed.likesCount}
+          quoteCount={feed.quoteCount}
           mediaFiles={feed.mediaFileUrls}
           youtubeUrls={feed.youtubeUrls}
-          
+          onClick={() => handlePostClick(feed.id)}
         />
       ))}
       <div ref={ref}>

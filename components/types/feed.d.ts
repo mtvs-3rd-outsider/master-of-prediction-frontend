@@ -1,22 +1,24 @@
+// @components/types/feed.ts
+
 export interface HotTopicFeedResponseDTO {
   id: number;
   authorType: 'USER' | 'GUEST';
   title: string;
   content: string;
-  createdAt: string;  // LocalDateTime -> string으로 변경
+  createdAt: string;
   updatedAt: string;
   viewCount: number;
   channelType: 'MYCHANNEL' | 'CATEGORYCHANNEL';
   user?: {
-    userId: string;
     userName: string;
+    displayName: string;
     userImg: string;
   };
   guest?: {
     guestId: string;
   };
   mediaFileUrls: string[];
-  youtubeUrls: string[]; 
+  youtubeUrls: string[];
   likesCount: number;
   commentsCount: number;
   quoteCount: number;
