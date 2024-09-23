@@ -10,6 +10,7 @@ import {
   ChartBarSquareIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import Image from "next/image";
 
 // TODO: 현재는 title에만 배팅 상세 페이지로 이동하지만 빈 공간에 Link 주는 방법으로 교체해야함
 const BettingProduct = (props: BettingProductType) => {
@@ -22,8 +23,6 @@ const BettingProduct = (props: BettingProductType) => {
     tierName,
     bettingId,
   } = props;
-  console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
-  console.log(process.env.NEXT_PUBLIC_IMAGE_BASE_URL);
   return (
     <>
       <div>
@@ -55,12 +54,21 @@ const BettingProduct = (props: BettingProductType) => {
                 key={url}
                 className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 my-4 scroll-snap-align-start"
               >
-                <img
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${url}`}
-                  className="h-full w-full object-scale-down object-center"
-                  width={500}
-                  height={500}
-                />
+                {url && (
+                  // <img
+                  //   src={`${url}`}
+                  //   className="h-full w-full object-scale-down object-center"
+                  //   width={500}
+                  //   height={500}
+                  // />
+                  <Image
+                    alt=""
+                    src={url}
+                    className="h-full w-full object-scale-down object-center"
+                    width={500}
+                    height={500}
+                  />
+                )}
               </div>
             ))}
           </div>

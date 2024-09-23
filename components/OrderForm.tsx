@@ -11,6 +11,7 @@ import { BettingOptions } from "@/types/BettingTypes";
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 import { useParams } from "next/navigation";
 import { OrderHistoryType } from "@/types/BettingOrderType";
+import Image from "next/image";
 
 interface OrderFormProps {
   className?: string;
@@ -21,7 +22,7 @@ export default function OrderForm({ className, options }: OrderFormProps) {
   // const userId = useUserStore.getState().userInfo?.id;
   const userId = 1;
   const [userPoint, setUserPoint] = useState<number>(0);
-  const { optionId } = BettingOptionChoiceStore();
+  const { optionId, setOptionId } = BettingOptionChoiceStore();
   const [orderHistory, setOrderHistory] = useState<OrderHistoryType[]>([]);
   const bettingId = useParams().id;
   const [optionsByOptionId, setOptionsByOptionId] = useState<BettingOptions>(
@@ -54,10 +55,11 @@ export default function OrderForm({ className, options }: OrderFormProps) {
     apiClient
       .get(`/user/betting-products?userId=${userId}&bettingId=${bettingId}`)
       .then((res) => {
-        console.log("res.data: ", res.data);
         setOrderHistory(res.data);
       });
   }, [userId, bettingId]);
+
+  console.log("test: ", optionsByOptionId?.imgUrl);
 
   return (
     <div
@@ -65,10 +67,16 @@ export default function OrderForm({ className, options }: OrderFormProps) {
     >
       <div className="flex gap-4 py-4 px-4 ">
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-          <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${optionsByOptionId?.imgUrl}`}
-            className="h-full w-full object-cover object-center"
-          />
+          {optionsByOptionId?.imgUrl && (
+            <Image
+              alt=""
+              layout="responsive"
+              width={100}
+              height={60}
+              src={`${optionsByOptionId?.imgUrl}`}
+              className="h-full w-full object-cover object-center"
+            />
+          )}
         </div>
         <div className="flex justify-center items-center">
           <p>{optionsByOptionId?.content}</p>

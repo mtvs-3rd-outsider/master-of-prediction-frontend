@@ -1,5 +1,6 @@
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   LineChart,
@@ -43,13 +44,23 @@ const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
         onClick={handleClick}
       >
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-          <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${imgUrl}`}
+          {imgUrl && (
+            <Image
+              alt=""
+              layout="responsive"
+              width={100}
+              height={60}
+              src={`${imgUrl}`}
+              className="h-full w-full object-cover object-center"
+            />
+          )}
+          {/* <img
+            src={`${imgUrl}`}
             alt=""
             className="h-full w-full object-cover object-center"
             width={500}
             height={500}
-          />
+          /> */}
         </div>
         <div className="flex-1 m-auto">
           <p>{content}</p>
@@ -69,10 +80,10 @@ const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
           {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
             </LineChart>
           </ResponsiveContainer> */}
-          <p>{ratio.totalPoints}p</p>
+          <p>{ratio === undefined ? "0" : ratio.totalPoints}p</p>
         </div>
         <div className="flex-1 flex items-center">
-          <p>{ratio.percentage}</p>
+          <p>{ratio === undefined ? "0" : ratio.percentage}</p>
         </div>
       </li>
       {/* <div style={{ width: "300px", height: "300px" }}> */}

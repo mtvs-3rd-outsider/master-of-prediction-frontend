@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { Skeleton } from "@nextui-org/skeleton";
 import BettingProduct from "./BettingProduct";
 import apiClient from "@handler/fetch/axios";
@@ -8,18 +8,18 @@ import { BettingProductType } from "@/types/BettingTypes";
 
 const BettingProducts = () => {
   const [bettings, setBettings] = useState<BettingProductType[]>([]);
-  const [offset, setOffset] = useState(0);
+  // const [offset, setOffset] = useState(0);
 
-  const getBettings = async () => {
+  const getBettings = useCallback(async () => {
     const response = await apiClient.get("/betting-products");
     setBettings(response.data);
-    console.log("response test: ", response.data);
-    setOffset(offset + 10);
-  };
+    // setOffset(offset + 10);
+    // }, [offset]);
+  }, []);
 
   useEffect(() => {
     getBettings();
-  }, []);
+  }, [getBettings]);
   return (
     <>
       <Suspense fallback={<Loading />}>

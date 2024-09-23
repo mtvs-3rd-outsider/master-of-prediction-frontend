@@ -23,8 +23,11 @@ const BettingOptionList = ({ options, optionsRatio }: Props) => {
             (ratio) => ratio.bettingOptionId === option.optionId
           );
 
+          console.log("matchingRatio: ", matchingRatio);
+
           // matchingRatio가 존재하면 BettingOption 출력
-          return matchingRatio ? (
+          // return matchingRatio ? (
+          return (
             <BettingOption
               key={option.optionId}
               content={option.content}
@@ -32,7 +35,7 @@ const BettingOptionList = ({ options, optionsRatio }: Props) => {
               currentOptionId={option.optionId}
               ratio={matchingRatio}
             />
-          ) : null; // matchingRatio가 없으면 null을 반환
+          ); // matchingRatio가 없으면 null을 반환
         })}
 
         {/* <BettingOption data={option_data2} /> */}

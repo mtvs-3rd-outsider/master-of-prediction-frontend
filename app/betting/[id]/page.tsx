@@ -15,6 +15,7 @@ import {
   BettingProductInfo,
   OptionsRatio,
 } from "@/types/BettingTypes";
+import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 
 function BettingDetailPage() {
   // 배팅 정보를 불러와서 각 노드에 전달
@@ -23,10 +24,12 @@ function BettingDetailPage() {
   const [optionsRatio, setOptionsRatio] = useState<OptionsRatio[]>(
     [] as OptionsRatio[]
   );
+  const { setOptionId } = BettingOptionChoiceStore();
 
   useEffect(() => {
     apiClient(`betting-products/${params.id}`).then((res) => {
       setBettingInfo(res.data);
+      setOptionId(res.data?.options[0]?.optionId);
     });
 
     apiClient(`/betting-products/options/ratio?bettingId=${params.id}`).then(
@@ -34,7 +37,7 @@ function BettingDetailPage() {
         setOptionsRatio(res.data);
       }
     );
-  }, [params.id]);
+  }, [params.id, setOptionId]);
 
   return (
     <>
@@ -46,6 +49,7 @@ function BettingDetailPage() {
           productImages={bettingInfo?.productImages || []}
           optionsRatio={optionsRatio}
         />
+        <OrderForm options={bettingInfo?.options || []} className="xl:hidden" />
         {/* TODO: 작은 화면일때 주문 디자인 추가 */}
         {/* <OrderForm className="xl:hidden mx-auto" /> */}
       </main>
