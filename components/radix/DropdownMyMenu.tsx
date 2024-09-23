@@ -5,13 +5,16 @@ import NavItem from '@ui/NavItem';
 import { TrashIcon, PencilSquareIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import axios from '@handler/fetch/axios';
-
 interface DropdownMenuMyDemoProps {
-  feedId: string;
+  feedId: string|number;
 }
-
 const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId }) => {
   const router = useRouter();
+
+  if (!feedId) {
+    console.error('feedId is undefined or null');
+    return null;
+  }
 
   const handleRemove = async () => {
     if (window.confirm('피드를 삭제하시겠습니까?')) {
@@ -19,18 +22,18 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId }) => {
         const response = await axios.delete(`/feeds/${feedId}`);
         if (response.status === 200) {
           alert(response.data.message);
-          router.push('/'); // 홈페이지로 리다이렉트
+          router.push('/');
         }
       } catch (error) {
         console.error('Error deleting feed:', error);
-        alert('An error occurred while deleting the feed.');
+        alert('피드 삭제 중 오류가 발생했습니다.');
       }
     }
   };
 
-  const onEdit = async (e: React.MouseEvent) => {
-	e.stopPropagation();
-	router.push(`/edit-feed/${feedId}`); // 홈페이지로 리다이렉트
+  const onEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/edit-feed/${feedId}`);
   };
   return (
     <DropdownMenuPrimitive.Root>
