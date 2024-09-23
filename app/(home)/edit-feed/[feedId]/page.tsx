@@ -1,5 +1,11 @@
-import EditPeedPage from '@components/EditFeedPage';
+import EditFeedPage from '@components/EditFeedPage';
 
-export default function CreateFeedRoute() {
-  return <EditPeedPage />;
+interface EditFeedRouteProps {
+  params: {
+    feedId: string;
+  };
+}
+
+export default function EditFeedRoute({ params }: EditFeedRouteProps) {
+  return <EditFeedPage feedId={params.feedId} />;
 }

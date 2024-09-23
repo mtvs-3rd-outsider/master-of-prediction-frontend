@@ -1,60 +1,89 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import EditFeedForm from '@components/EditFeedForm';
 import useUserStore from '@store/useUserStore';
 import { sendMultipartForm } from '@/handler/fetch/axios';
-import EditFeedForm from '@components/EditFeedForm';
+import { getFeedById } from '@/handler/feedApi';
+import { FeedResponseDTO } from '@components/types/feedResponseDTO';
 
-export default function EditPeedPage() {
+interface EditFeedPageProps {
+  feedId: string;
+}
+
+export default function EditFeedPage({ feedId }: EditFeedPageProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedData, setFeedData] = useState<FeedResponseDTO | null>(null);
   const userInfo = useUserStore((state) => state.userInfo);
+
+  useEffect(() => {
+    const loadFeedData = async () => {
+      try {
+        const data = await getFeedById(Number(feedId));
+        setFeedData(data);
+      } catch (error) {
+        console.error('Error loading feed:', error);
+        alert('피드 정보를 불러오는데 실패했습니다.');
+        router.push('/');
+      }
+    };
+
+    loadFeedData();
+  }, [feedId, router]);
 
   const handleSubmit = async (content: string, media: File[], youtubeUrls: string[]) => {
     if (!userInfo) {
       alert('로그인이 필요합니다.');
       return;
     }
+
+    if (!feedData) {
+      alert('피드 정보가 없습니다.');
+      return;
+    }
   
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      const feedData = {
-        authorType: 'USER',
-        title: content.substring(0, 50),
+      const updatedFeedData = {
+        ...feedData,
         content,
-        channelType: 'MYCHANNEL',
+        title: content.substring(0, 50),
         user: {
           userId: userInfo.id
         }
       };
   
-      formData.append('feedData', new Blob([JSON.stringify(feedData)], { type: 'application/json' }));
+      formData.append('feedData', new Blob([JSON.stringify(updatedFeedData)], { type: 'application/json' }));
       
       media.forEach((file) => {
         formData.append('files', file);
       });
 
-      // YouTube URL들을 FormData에 추가
-      youtubeUrls.forEach((url, index) => {
-        formData.append(`youtubeUrls`, url);
+      youtubeUrls.forEach((url) => {
+        formData.append('youtubeUrls', url);
       });
   
-      const response = await sendMultipartForm('/feeds', formData, 'post');
+      const response = await sendMultipartForm(`/feeds/${feedId}`, formData, 'put');
   
       if (response.data.success) {
-        router.push('/');
+        router.push(`/feed/${feedId}`);
       } else {
         throw new Error(response.data.message || '피드 수정에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Error creating feed:', error);
+      console.error('Error updating feed:', error);
       alert(error instanceof Error ? error.message : '피드 수정에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return <EditFeedForm onSubmit={handleSubmit} />;
+  if (!feedData) {
+    return <div>Loading...</div>;
+  }
+
+  return <EditFeedForm onSubmit={handleSubmit} initialData={feedData} isSubmitting={isSubmitting} />;
 }
