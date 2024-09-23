@@ -234,6 +234,7 @@ const Feed: React.FC = () => {
                 followers={followers}
                 following={following}
                 viewCount={viewCount}
+                
               >
                 {image}
               </Post>

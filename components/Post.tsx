@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import DropdownMenuDemo from '@rd/DropdownMenu';
 import HoverCard from '@rd/HoverCard';
 import {
@@ -10,6 +11,11 @@ import {
 } from '@heroicons/react/24/outline';
 import Userinfo from '@components/UserInfo';
 import MediaGrid from '@components/MediaGrid';
+import useUserStore from '@store/useUserStore';
+import axios from '@handler/fetch/axios';
+import DropdownMenuMyDemo from './radix/DropdownMyMenu';
+import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 
 interface Props {
   id: string;
@@ -26,6 +32,11 @@ interface Props {
   mediaFiles?: string[];
   youtubeUrls?: string[];
   children?: React.ReactNode;
+  commentsCount: number;
+  likesCount: number;
+  quoteCount: number;
+  onClick: () => void;
+  isLikedByUser: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
 }
 
 const Post: React.FC<Props> = ({
@@ -43,12 +54,49 @@ const Post: React.FC<Props> = ({
   viewCount,
   mediaFiles,
   youtubeUrls,
+  commentsCount,
+  likesCount: initialLikesCount,
+  quoteCount,
+  onClick,
+  isLikedByUser,
   ...props
-}) => (
-  <div className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4">
+}) => {
+  const [isLiked, setIsLiked] = useState(isLikedByUser);
+  const [likesCount, setLikesCount] = useState(initialLikesCount);
+  const userInfo = useUserStore(state => state?.userInfo);
+
+  useEffect(() => {
+    setIsLiked(isLikedByUser);
+    setLikesCount(initialLikesCount);
+  }, [isLikedByUser, initialLikesCount]);
+
+  const toggleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+
+    if (!userInfo?.id) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/feeds/${id}/${userInfo.id}`);
+      const newIsLiked = response.data;
+      setIsLiked(newIsLiked);
+      setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      alert('좋아요 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  return (
+    <div 
+      className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer" 
+      onClick={onClick}
+    >
     <div className="flex-shrink-0">
       <HoverCard
-        src={src}
+        src={src}  // UserDTO의 userImg를 사용
         alt={name}
         initials={initials}
         name={name}
@@ -66,9 +114,13 @@ const Post: React.FC<Props> = ({
           date={date}
           tierName="novice"
         />
-        <div className="">
-          <DropdownMenuDemo />
-        </div>
+       <div className="">
+  {userInfo?.userName === username ? (
+    <DropdownMenuMyDemo feedId={id} />
+  ) : (
+    <DropdownMenuDemo />
+  )}
+</div>
       </div>
       <div className="text-sm text-slate-900 mb-4">{content}</div>
       {(mediaFiles && mediaFiles.length > 0) || (youtubeUrls && youtubeUrls.length > 0) ? (
@@ -85,14 +137,19 @@ const Post: React.FC<Props> = ({
           </li>
           <li>
             <ChatBubbleOvalLeftIcon className="w-5 h-5" />
-            {following}
+            {commentsCount}
           </li>
           <li>
-            <ArrowPathIcon className="w-5 h-5" />1
+            <ArrowPathIcon className="w-5 h-5" />
+            {quoteCount}
           </li>
-          <li>
-            <HeartIcon className="w-5 h-5" />
-            {followers}
+          <li onClick={toggleLike}>
+            {isLiked ? (
+              <HeartIconSolid className="w-5 h-5 text-red-500" />
+            ) : (
+              <HeartIconOutline className="w-5 h-5" />
+            )}
+            {likesCount}
           </li>
           <li>
             <ArrowUpTrayIcon className="w-5 h-5" />
@@ -101,6 +158,6 @@ const Post: React.FC<Props> = ({
       </div>
     </div>
   </div>
-);
+)};
 
 export default Post;
