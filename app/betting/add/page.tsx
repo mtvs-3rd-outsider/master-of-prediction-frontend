@@ -225,6 +225,7 @@ const BettingAddPage = () => {
               <option value="1">정치</option>
               <option value="2">경제</option>
               <option value="3">스포츠</option>
+              <option value="4">일상</option>
             </select>
           </div>
           <div className="block w-full mb-6">
@@ -254,7 +255,10 @@ const BettingAddPage = () => {
 				overflow-x-scroll overflow-y-hidden whitespace-nowrap scrolling-touch ms-overflow-none "
             >
               {mainPreviewUrls.map((url, i) => (
-                <div key={i} className="w-full">
+                <div
+                  key={i}
+                  // className="w-full"
+                >
                   <div className="shrink-0 bg-[#efe8e8] rounded-[10px] relative overflow-hidden w-36 h-36">
                     <img
                       src={url}
