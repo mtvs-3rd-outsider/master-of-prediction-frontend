@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/button";
 import { CameraIcon, MinusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import apiClient from "@handler/fetch/axios";
+import Image  from "next/image";
 
 export default function Component() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -125,7 +126,7 @@ export default function Component() {
             onClick={() => handleButtonClick(false)}
           >
             {preview ? (
-              <img
+              <Image
                 src={preview}
                 alt="Selected preview"
                 className="w-full h-full object-cover rounded"
@@ -155,7 +156,7 @@ export default function Component() {
             onClick={() => handleButtonClick(true)}
           >
             {bannerPreview ? (
-              <img
+              <Image
                 src={bannerPreview}
                 alt="Banner preview"
                 className="absolute top-0 left-0 w-full h-full object-cover rounded"

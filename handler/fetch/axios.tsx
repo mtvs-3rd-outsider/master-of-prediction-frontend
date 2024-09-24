@@ -1,6 +1,7 @@
 "use client";
 import axios from 'axios';
 import useUserStore from '@store/useUserStore'; // Zustand 스토어 가져오기
+import { toast } from 'react-hot-toast'; // react-hot-toast 가져오기
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
@@ -17,10 +18,10 @@ export default apiClient;
 apiClient.interceptors.request.use(
   (config) => {
     const token = useUserStore.getState().userInfo?.token; // Zustand에서 토큰 가져오기
-    console.log(token)
-  console.log(config.baseURL);
-  console.log(config.url);
-  console.log(config.method)
+    console.log(token);
+    console.log(config.baseURL);
+    console.log(config.url);
+    console.log(config.method);
 
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -52,19 +53,19 @@ apiClient.interceptors.response.use(
 
       // 에러 상태 코드에 따라 적절한 조치를 취합니다.
       if (status === 401) {
-        alert('Unauthorized access, please log in again.');
+        toast.error('Unauthorized access, please log in again.');
       } else if (status === 403) {
-        alert('You do not have permission to perform this action.');
+        toast.error('You do not have permission to perform this action.');
       } else if (status === 500) {
-        alert('Internal server error, please try again later.');
+        toast.error('Internal server error, please try again later.');
       } 
-      alert(message);
+      toast.error(message);
     } else if (error.request) {
       console.error("No response from server:", error.request);
-      alert('No response from server, please check your network.');
+      toast.error('No response from server, please check your network.');
     } else {
       console.error("Request setup error:", error.message);
-      alert('Error in setting up request: ' + error.message);
+      toast.error('Error in setting up request: ' + error.message);
     }
 
     return Promise.reject(error); // 에러를 다시 던져 특정 컴포넌트에서 추가 처리 가능

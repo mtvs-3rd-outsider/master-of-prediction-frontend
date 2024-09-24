@@ -9,7 +9,7 @@ import Link from "next/link";
 import { sendMultipartForm } from "@handler/fetch/axios";
 import { usePathname, useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-
+import Image from "next/image";
 interface BettingOptions {
   imgUrl: string;
   image?: File;
@@ -260,12 +260,10 @@ const BettingAddPage = () => {
                   // className="w-full"
                 >
                   <div className="shrink-0 bg-[#efe8e8] rounded-[10px] relative overflow-hidden w-36 h-36">
-                    <img
+                    <Image
                       src={url}
-                      width="100%"
-                      height="100%"
                       alt={`image${i}`}
-                      className="object-cover"
+                      className="object-cover w-full h-full"
                     />
                     <span
                       className="absolute bg-red-700 text-green-100 px-2 py-1 text-xs font-bold rounded-full top-1 right-2 cursor-pointer"
@@ -293,12 +291,10 @@ const BettingAddPage = () => {
                     className="border rounded-md border-gray-400 w-28 h-28 overflow-hidden"
                     onClick={() => handleOptionImageClick(i)}
                   >
-                    <img
+                    <Image
                       src={imgUrl}
-                      width="100%"
-                      height="100%"
                       alt=""
-                      className="object-cover"
+                      className="object-cover w-full h-full"
                     />
                     <input
                       ref={fileInputRef}

@@ -11,6 +11,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { NextApiRequest, NextApiResponse } from "next";
 import apiClient from "@handler/fetch/axios";
+import { Toaster } from 'react-hot-toast';
 export default function LoginPage() {
   
   const [email, setEmail] = useState("");
@@ -65,6 +66,8 @@ export default function LoginPage() {
 
   return (
     <main className=" w-full border-x border-slate-200">
+
+    <Toaster /> 
       <section className="flex flex-col md:flex-row h-screen items-center w-full">
         <div className="bg-blue-600 hidden lg:block lg:w-1/2 xl:w-2/3 h-full relative">
           <Image

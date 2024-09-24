@@ -9,13 +9,13 @@ import useUserStore from '@store/useUserStore';
 import useOptimisticMutation from '@handler/useOptimisticMutation';
 import apiClient from '@handler/fetch/axios';
 interface Props {
-  id: string,
+  id?: string,
   name: string;
   username: string;
   src: string;
   initials: string;
-  isUserChannel: boolean;
-  following:boolean;
+  isUserChannel?: boolean;
+  following?:boolean;
 
 }
 

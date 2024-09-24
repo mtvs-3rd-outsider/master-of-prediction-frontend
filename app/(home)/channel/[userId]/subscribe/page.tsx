@@ -7,12 +7,12 @@ import SubscribePanel from '@components/SubscribePanel';
 import PanelItem from '@ui/PanelItem';
 import apiClient from '@api/axios'; // 예시 API 함수
 import { usePathname } from "next/navigation";
-export const fetchFollowers = async (path: string) => {
+ const fetchFollowers = async (path: string) => {
   const response = await apiClient.get(`/subscriptions/channel/${path}/subscribers?isUserChannel=true`);
   return response.data;
 };
 
-export const fetchFollowings = async (path: string) => {
+ const fetchFollowings = async (path: string) => {
   const response = await apiClient.get(`/subscriptions/user/${path}/following?isUserChannel=true`);
   return response.data;
 };

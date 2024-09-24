@@ -17,7 +17,7 @@ import DropdownMenuMyDemo from './radix/DropdownMyMenu';
 import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 
-interface Props {
+export interface PostItem {
   id: string;
   content: string;
   name: string;
@@ -39,7 +39,7 @@ interface Props {
   isLikedByUser: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
 }
 
-const Post: React.FC<Props> = ({
+const Post: React.FC<PostItem> = ({
   id,
   content,
   name,
@@ -54,11 +54,11 @@ const Post: React.FC<Props> = ({
   viewCount,
   mediaFiles,
   youtubeUrls,
-  commentsCount,
-  likesCount: initialLikesCount,
-  quoteCount,
-  onClick,
-  isLikedByUser,
+  commentsCount = 0, // 기본값 설정
+  likesCount: initialLikesCount = 0, 
+  quoteCount = 0,    // 기본값 설정
+  onClick = () => {}, // 기본값 설정
+  isLikedByUser = false, // 기본값 설정
   ...props
 }) => {
   const [isLiked, setIsLiked] = useState(isLikedByUser);

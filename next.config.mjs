@@ -4,14 +4,15 @@ import {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
 } from "next/constants.js";
-
+import createNextIntlPlugin from 'next-intl/plugin';
 const require = createRequire(import.meta.url);
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
+const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withBundleAnalyzer({
+const nextConfig = withNextIntl(withBundleAnalyzer({
   compress: true,
   reactStrictMode: false,
       // styled-components 설정 추가
@@ -64,7 +65,7 @@ const nextConfig = withBundleAnalyzer({
   },
 
 
-});
+}));
 const nextConfigFunction = async (phase) => {
   if (phase === PHASE_DEVELOPMENT_SERVER || phase === PHASE_PRODUCTION_BUILD) {
     const withPWA = (await import("@ducanh2912/next-pwa")).default({

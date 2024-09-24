@@ -10,7 +10,6 @@ import moment from "moment";
 import { RSocketClient, BufferEncoders, encodeAndAddWellKnownMetadata, MESSAGE_RSOCKET_ROUTING, MESSAGE_RSOCKET_COMPOSITE_METADATA } from "rsocket-core";
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import { Textarea } from "@nextui-org/input";
-import sanitizeHtml from "sanitize-html";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import useUserStore from "@store/useUserStore";
@@ -128,7 +127,7 @@ export default function ChatUI() {
         clientRef.current.close();
       }
     };
-  }, [endpoint]);
+  }, [endpoint, roomId]);
 
   const handleScroll = () => {
     if (chatContainerRef.current) {
@@ -184,7 +183,7 @@ export default function ChatUI() {
     } else if (!isAtBottom) {
       setShowNewMessageAlert(true); // 스크롤이 맨 아래가 아닌 경우 알림 표시
     }
-  }, [messages]);
+  }, [isAtBottom, messages]);
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-white">

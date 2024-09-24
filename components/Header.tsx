@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const Header = ({ title, children, hide }: { title: string; children?: React.ReactNode; hide: boolean }) => (
+const Header = ({ title, children, hide }: { title: string; children?: React.ReactNode; hide?: boolean }) => (
   <>
     {!hide && (
       <div className="sticky bg-white/75 z-10 backdrop-blur-md top-0">

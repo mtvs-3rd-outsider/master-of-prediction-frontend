@@ -7,7 +7,6 @@ import { Flowable } from "rsocket-flowable";
 import { Button } from "@nextui-org/button";
 import { Textarea } from "@nextui-org/input";
 import { Avatar } from "@nextui-org/avatar";
-import sanitizeHtml from "sanitize-html";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 const ChatPage = () => {

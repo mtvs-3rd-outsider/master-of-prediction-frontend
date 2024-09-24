@@ -17,7 +17,7 @@ interface Props {
   content: string;
   imgUrl: string;
   currentOptionId: number;
-  ratio: OptionsRatio;
+  ratio?: OptionsRatio;
 }
 
 const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {

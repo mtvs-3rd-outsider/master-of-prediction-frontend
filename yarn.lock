@@ -1996,7 +1996,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/fast-memoize@npm:2.2.0":
+"@formatjs/fast-memoize@npm:2.2.0, @formatjs/fast-memoize@npm:^2.2.0":
   version: 2.2.0
   resolution: "@formatjs/fast-memoize@npm:2.2.0"
   dependencies:
@@ -2026,7 +2026,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-localematcher@npm:0.5.4":
+"@formatjs/intl-localematcher@npm:0.5.4, @formatjs/intl-localematcher@npm:^0.5.4":
   version: 0.5.4
   resolution: "@formatjs/intl-localematcher@npm:0.5.4"
   dependencies:
@@ -14542,7 +14542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"intl-messageformat@npm:^10.1.0, intl-messageformat@npm:^10.5.3":
+"intl-messageformat@npm:^10.1.0, intl-messageformat@npm:^10.5.14, intl-messageformat@npm:^10.5.3":
   version: 10.5.14
   resolution: "intl-messageformat@npm:10.5.14"
   dependencies:
@@ -16257,6 +16257,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     moment: "npm:^2.30.1"
     next: "npm:^14.2.11"
+    next-intl: "npm:^3.20.0"
     next-pwa: "npm:^5.6.0"
     nextui-cli: "npm:^0.3.4"
     open: "npm:^10.1.0"
@@ -17362,6 +17363,20 @@ __metadata:
   version: 2.0.2
   resolution: "netmask@npm:2.0.2"
   checksum: 10c0/cafd28388e698e1138ace947929f842944d0f1c0b87d3fa2601a61b38dc89397d33c0ce2c8e7b99e968584b91d15f6810b91bef3f3826adf71b1833b61d4bf4f
+  languageName: node
+  linkType: hard
+
+"next-intl@npm:^3.20.0":
+  version: 3.20.0
+  resolution: "next-intl@npm:3.20.0"
+  dependencies:
+    "@formatjs/intl-localematcher": "npm:^0.5.4"
+    negotiator: "npm:^0.6.3"
+    use-intl: "npm:^3.20.0"
+  peerDependencies:
+    next: ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/8af1535f73fc925e3d1196ce64992b188842f6b18f56cfbe5d9693a59367fa8db4d80ef1dff0ec8cd10fa6950a9ad968a48519ea32dc91e3e597010c3ebd05aa
   languageName: node
   linkType: hard
 
@@ -22848,6 +22863,18 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/e64ce52f4b18c020407636784192726807404a2552609acf7497b66a2b7070674fb5d2b950d426c4aa85f353e2bbecb02ebf9c5b865cd06797938c70bcbf5d26
+  languageName: node
+  linkType: hard
+
+"use-intl@npm:^3.20.0":
+  version: 3.20.0
+  resolution: "use-intl@npm:3.20.0"
+  dependencies:
+    "@formatjs/fast-memoize": "npm:^2.2.0"
+    intl-messageformat: "npm:^10.5.14"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/80ddd8cb48ca950298bb13e8a05ea09d595c26fb9d4929536d57aa87928ed91385fdde81bd77735ac1c519412d2c63a05fb1f90610797faa2304eb10c3c9f54e
   languageName: node
   linkType: hard
 

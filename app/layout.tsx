@@ -45,6 +45,11 @@ const APP_NAME = "PWA App";
   export const viewport: Viewport = {
     themeColor: "#FFFFFF",
   };
+  if (process.env.NODE_ENV !== 'development') {
+    // 개발 환경이 아닐 때 console.log와 console.error를 무시
+    console.log = () => {};
+    console.error = () => {};
+  }
 export default function RootLayout({
   children,
 }: {
