@@ -47,7 +47,7 @@ export default function ChatUI() {
     const client = new RSocketClient({
       transport: new RSocketWebSocketClient(
         {
-          url: "ws://localhost:7000/rsocket", // RSocket 서버 URL
+          url: process.env.NEXT_PUBLIC_RSOCKET_URL!, // RSocket 서버 URL
         },
         BufferEncoders
       ),
@@ -154,6 +154,7 @@ export default function ChatUI() {
       sent: new Date().toISOString(),
       roomId: roomId, // 채팅방 ID는 고정값으로 설정
     };
+    
     // 메시지를 RSocket으로 전송
     if (content && sourceRef.current) {
       messageInputRef.current.value = "";

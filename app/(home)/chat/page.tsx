@@ -48,7 +48,7 @@ const ChatPage = () => {
     const client = new RSocketClient({
       transport: new RSocketWebSocketClient(
         {
-          url: "ws://localhost:7000/rsocket",
+          url: process.env.NEXT_PUBLIC_RSOCKET_URL!,
         },
         BufferEncoders
       ),

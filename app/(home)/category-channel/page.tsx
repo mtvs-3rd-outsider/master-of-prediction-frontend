@@ -110,7 +110,7 @@ const fetchMyCategories = async (flag: string) => {
                     myCategories?.content.map((category: any) => (
                       <CategoryChannelCard
                         key={category.channelId}
-                        href={`/community/${category.channelId}`}
+                        href={`/category-channel/${category.channelId}`}
                         categoryChannelName={category.channelName}
                         badge={category.isUserChannel ? 'User Channel' : 'Category'}
                         avatars={[category.channelImageUrl]} // Assuming you have a channel image
