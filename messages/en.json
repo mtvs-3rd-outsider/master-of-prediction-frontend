@@ -8,11 +8,10 @@
   "내 채널": "My Channel",
   "로그인": "Login",
 
-  "문제가_발생했습니다": "Something went wrong",
-  "인증되지_않은_접근_로그인": "Unauthorized access, please log in again.",
-  "권한_없음": "You do not have permission to perform this action.",
-  "서버_내부_오류": "Internal server error, please try again later.",
-  "서버_응답_없음": "No response from server, please check your network.",
-  "요청_설정_오류": "Error in setting up request: {message}"
+    "인증되지_않은_접근_로그인": "Unauthorized access. Please log in.",
+    "권한_없음": "You do not have the necessary permissions.",
+    "서버_내부_오류": "Internal server error. Please try again later.",
+    "문제가_발생했습니다": "An error occurred. Please try again.",
+    "요청이_성공적으로_처리되었습니다": "Your request was successfully processed."
   
 }

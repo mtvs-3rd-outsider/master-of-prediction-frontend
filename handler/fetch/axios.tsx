@@ -21,11 +21,20 @@ export default apiClient;
 apiClient.interceptors.request.use(
   (config) => {
     const token = useUserStore.getState().userInfo?.token; // Zustand에서 토큰 가져오기
+    const lang = useTranslationStore.getState().lang; // 언어 가져오기 (Zustand에서 관리)
     console.log(token);
     console.log(config.baseURL);
     console.log(config.url);
+    console.log(lang);
     console.log(config.method);
-
+   // 언어 쿼리 파라미터 동적으로 추가
+   if (lang) {
+    config.params = { ...(config.params || {}), lang }; // 기존 파라미터가 있을 경우 병합
+  }
+  if (lang) {
+    document.cookie = `lang=${lang}; path=/;`; // 쿠키에 lang 값을 저장
+  }
+  console.log(lang)
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     } else {
@@ -42,22 +51,30 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터 추가
 // 응답 인터셉터
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const messages = useTranslationStore.getState().messages;
+    // 200번대 응답일 경우 성공 토스트 표시 (백엔드에서 받은 메시지 사용)
+    if (response.status >= 200 && response.status < 300 && response.data?.message) {
+      toast.success(response.data?.message);
+    }
+    return response;
+  },
   (error) => {
     const messages = useTranslationStore.getState().messages; // Zustand에서 번역 메시지 가져오기
-
-    // 상태 코드에 따라 번역된 에러 메시지를 표시
     const status = error.response?.status;
-    if (status === 401) {
-      toast.error(messages['인증되지_않은_접근_로그인']);
+    const customMessage = error.response?.data?.message; // 백엔드에서 커스텀 메시지를 전달받음
+
+    // 500번대 오류 처리
+    if (status >= 500 && status < 600) {
+      toast.error(customMessage || messages['서버_내부_오류']);
+    } else if (status === 401) {
+      toast.error(customMessage || messages['인증되지_않은_접근_로그인']);
     } else if (status === 403) {
-      toast.error(messages['권한_없음']);
-    } else if (status === 500) {
-      toast.error(messages['서버_내부_오류']);
+      toast.error(customMessage ||messages['권한_없음']);
     } else {
-      toast.error(messages['문제가_발생했습니다']);
+      toast.error(customMessage || messages['문제가_발생했습니다']);
     }
-    
+
     return Promise.reject(error);
   }
 );
