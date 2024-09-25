@@ -24,7 +24,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { Button } from "@nextui-org/button";
 import useUserStore from "@store/useUserStore";
-
+import { useTranslations } from 'next-intl';
 interface NavLinkItem {
   href: string;
   text: string;
@@ -33,6 +33,7 @@ interface NavLinkItem {
 }
 
 const Nav: React.FC = () => {
+  const t = useTranslations();
   const { hasHydrated, userInfo } = useUserStore((state) => ({
     hasHydrated: state.hasHydrated,
     userInfo: state.userInfo,
@@ -43,37 +44,37 @@ const Nav: React.FC = () => {
   const items: NavLinkItem[] = [
     {
       href: "/betting",
-      text: "Bettings",
+      text: t('배팅'), // 'bettings'를 '배팅'으로 변경
       icon: <CircleStackIconOutline className="w-6 h-6" />,
       activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
     },
     {
       href: "/hot-topic",
-      text: "Hot Topic",
+      text: t('핫토픽'), // 'hotTopic'을 '핫토픽'으로 변경
       icon: <FireIconOutline className="w-6 h-6" />,
       activeIcon: <FireIconSolid className="w-6 h-6" />,
     },
     {
       href: "/notifications",
-      text: "Notifications",
+      text: t('알림'), // 'notifications'를 '알림'으로 변경
       icon: <BellIconOutline className="w-6 h-6" />,
       activeIcon: <BellIconSolid className="w-6 h-6" />,
     },
     {
       href: "/messages",
-      text: "Messages",
+      text: t('메시지'), // 'messages'를 '메시지'로 변경
       icon: <EnvelopeIconOutline className="w-6 h-6" />,
       activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
     },
     {
       href: "/category-channel",
-      text: "Category Channel",
+      text: t('카테고리 채널'), // 'categoryChannel'을 '카테고리 채널'로 변경
       icon: <RectangleStackIconOutline className="w-6 h-6" />,
       activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
     },
     {
-      href: "/search", // 검색 페이지로 이동
-      text: "Search",
+      href: "/search",
+      text: t('검색'), // 'search'를 '검색'으로 변경
       icon: <MagnifyingGlassIconOutline className="w-6 h-6" />,
       activeIcon: <MagnifyingGlassIconSolid className="w-6 h-6" />,
     },
@@ -81,13 +82,14 @@ const Nav: React.FC = () => {
       ? [
           {
             href: `/channel/${userInfo?.id}`,
-            text: "My Channel",
+            text: t('내 채널'), // 'myChannel'을 '내 채널'로 변경
             icon: <UserIconOutline className="w-6 h-6" />,
             activeIcon: <UserIconSolid className="w-6 h-6" />,
           },
         ]
       : []),
   ];
+  
   const router = useRouter();
   const handleClick = () => {
     router.push("/login");

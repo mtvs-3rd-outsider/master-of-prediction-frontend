@@ -21,7 +21,7 @@ import useUserStore from "@store/useUserStore";
 import apiClient from "@handler/fetch/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useOptimisticMutation from "@handler/useOptimisticMutation";
-import { MyChannelProps } from "@/app/(home)/channel/[userId]/page";
+import { MyChannelProps } from "@/app/[locale]/(home)/channel/[userId]/page";
 
 
 // 구독 상태를 서버에서 가져오는 함수

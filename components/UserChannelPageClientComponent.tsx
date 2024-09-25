@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import MyChannel from '@components/MyChannel';
 import Tabs from '@components/StickyTabs';
-import { MyChannelProps } from '@/app/(home)/channel/[userId]/page';
+import { MyChannelProps } from '@/app/[locale]/(home)/channel/[userId]/page';
 
 interface UserChannelPageProps {
   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
