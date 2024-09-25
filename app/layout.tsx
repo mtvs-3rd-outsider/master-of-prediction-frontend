@@ -2,6 +2,9 @@
 
 import type { Metadata, Viewport } from "next";
 import Head from 'next/head';
+import {NextIntlClientProvider} from 'next-intl';
+import { getMessages } from "next-intl/server";
+import { Toaster } from "react-hot-toast";
 const APP_NAME = "PWA App";
   const APP_DEFAULT_TITLE = "My Awesome PWA App";
   const APP_TITLE_TEMPLATE = "%s - PWA App";
@@ -45,23 +48,24 @@ const APP_NAME = "PWA App";
   export const viewport: Viewport = {
     themeColor: "#FFFFFF",
   };
-  if (process.env.NODE_ENV !== 'development') {
-    // 개발 환경이 아닐 때 console.log와 console.error를 무시
-    console.log = () => {};
-    console.error = () => {};
-  }
-export default function RootLayout({
+ 
+export default async  function RootLayout({
   children,
+  params: {locale}
 }: {
   children: React.ReactNode;
+  params: {locale: string};
 }) {
-  
-  
+  const messages = await getMessages();
+
   return (
     <>
-<html lang="en" suppressHydrationWarning={true}>
+<html lang={locale} suppressHydrationWarning={true}>
       <body  suppressHydrationWarning={true}>
-      {children}
+      <NextIntlClientProvider messages={messages}>
+
+          {children}
+        </NextIntlClientProvider>
       </body>
       </html>
     </>
