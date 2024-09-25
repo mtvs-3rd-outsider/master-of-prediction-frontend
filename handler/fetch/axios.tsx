@@ -2,6 +2,9 @@
 import axios from 'axios';
 import useUserStore from '@store/useUserStore'; // Zustand 스토어 가져오기
 import { toast } from 'react-hot-toast'; // react-hot-toast 가져오기
+import { useTranslations } from 'next-intl'; // next-intl에서 가져오기
+import { useTranslationStore } from '@store/useTranslationStore';
+
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
@@ -37,41 +40,27 @@ apiClient.interceptors.request.use(
 );
 
 // 응답 인터셉터 추가
+// 응답 인터셉터
 apiClient.interceptors.response.use(
-  (response) => {
-    // 응답 전체를 로그로 출력
-    console.log("Response:", response.data);
-    return response; // 응답 데이터를 그대로 반환
-  },
+  (response) => response,
   (error) => {
-    // 응답 에러를 전역적으로 처리
-    if (error.response) {
-      const status = error.response.status;
-      const message = error.response.data.message || 'Something went wrong';
+    const messages = useTranslationStore.getState().messages; // Zustand에서 번역 메시지 가져오기
 
-      console.error(`Error ${status}:`, message); // 상태 코드와 메시지 출력
-
-      // 에러 상태 코드에 따라 적절한 조치를 취합니다.
-      if (status === 401) {
-        toast.error('Unauthorized access, please log in again.');
-      } else if (status === 403) {
-        toast.error('You do not have permission to perform this action.');
-      } else if (status === 500) {
-        toast.error('Internal server error, please try again later.');
-      } 
-      toast.error(message);
-    } else if (error.request) {
-      console.error("No response from server:", error.request);
-      toast.error('No response from server, please check your network.');
+    // 상태 코드에 따라 번역된 에러 메시지를 표시
+    const status = error.response?.status;
+    if (status === 401) {
+      toast.error(messages['인증되지_않은_접근_로그인']);
+    } else if (status === 403) {
+      toast.error(messages['권한_없음']);
+    } else if (status === 500) {
+      toast.error(messages['서버_내부_오류']);
     } else {
-      console.error("Request setup error:", error.message);
-      toast.error('Error in setting up request: ' + error.message);
+      toast.error(messages['문제가_발생했습니다']);
     }
-
-    return Promise.reject(error); // 에러를 다시 던져 특정 컴포넌트에서 추가 처리 가능
+    
+    return Promise.reject(error);
   }
 );
-
 // 특정 요청을 보낼 때 headers 설정을 동적으로 변경하는 예시
 export const sendMultipartForm = async (url: string, formData: FormData, method: 'post' | 'put') => {
   return apiClient({

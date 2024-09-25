@@ -18,6 +18,8 @@ const nextConfig = withNextIntl(withBundleAnalyzer({
       // styled-components 설정 추가
       compiler: {
         styledComponents: true,
+        removeConsole: true,
+        
       },
   images: {
     formats: ["image/webp", "image/avif"], // webp와 avif 포맷 추가
