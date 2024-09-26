@@ -1,4 +1,4 @@
-"use client";  // 클라이언트 컴포넌트로 명시
+"use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -11,14 +11,18 @@ const HotTopicFeedList: React.FC = () => {
   const [feeds, setFeeds] = useState<HotTopicFeedResponseDTO[]>([]);
   const [lastId, setLastId] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const { ref, inView } = useInView();
+  const [loading, setLoading] = useState(false);
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
   const router = useRouter();
 
   const loadMoreFeeds = useCallback(async () => {
-    if (!hasMore) return;
+    if (!hasMore || loading) return;
 
+    setLoading(true);
     try {
-      const newFeeds = lastId
+      const newFeeds = lastId !== null
         ? await getNextHotTopicFeeds(lastId)
         : await getInitialHotTopicFeeds();
 
@@ -35,17 +39,24 @@ const HotTopicFeedList: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading hot topic feeds:', error);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
     }
-  }, [lastId, hasMore]);
+  }, [lastId, hasMore, loading]);
 
   useEffect(() => {
-    if (inView) {
+    loadMoreFeeds();
+  }, []); // 초기 로딩을 위한 빈 의존성 배열
+
+  useEffect(() => {
+    if (inView && hasMore) {
       loadMoreFeeds();
     }
-  }, [inView, loadMoreFeeds]);
+  }, [inView, hasMore, loadMoreFeeds]);
 
   const handlePostClick = useCallback((id: number) => {
-    console.log("Clicked feed with id:", id);  // 디버깅을 위한 로그
+    console.log("Clicked feed with id:", id);
     router.push(`/feed/${id}`);
   }, [router]);
 
@@ -71,10 +82,12 @@ const HotTopicFeedList: React.FC = () => {
           mediaFiles={feed.mediaFileUrls}
           youtubeUrls={feed.youtubeUrls}
           onClick={() => handlePostClick(feed.id)}
+          isLikedByUser={false}
         />
       ))}
       <div ref={ref}>
-        {hasMore ? 'Loading more...' : 'No more feeds'}
+        {loading && 'Loading more...'}
+        {!loading && !hasMore && 'No more feeds'}
       </div>
     </div>
   );
