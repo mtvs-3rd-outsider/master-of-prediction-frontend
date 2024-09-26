@@ -5,6 +5,7 @@ import NavItem from '@ui/NavItem';
 import { TrashIcon, PencilSquareIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import axios from '@handler/fetch/axios';
+import { commonColors } from '@nextui-org/theme';
 interface DropdownMenuMyDemoProps {
   feedId: string|number;
 }
@@ -16,12 +17,13 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId }) => {
     return null;
   }
 
-  const handleRemove = async () => {
+  const handleRemove = async (e: React.MouseEvent) => {
+    e.stopPropagation();  // 이벤트 전파 중지
     if (window.confirm('피드를 삭제하시겠습니까?')) {
       try {
         const response = await axios.delete(`/feeds/${feedId}`);
         if (response.status <300) {
-          router.push('/');
+           window.location.reload();
         }
       } catch (error) {
         console.error('Error deleting feed:', error);
@@ -31,7 +33,7 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId }) => {
   };
 
   const onEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation();  // 이벤트 전파 중지
     router.push(`/edit-feed/${feedId}`);
   };
   return (
