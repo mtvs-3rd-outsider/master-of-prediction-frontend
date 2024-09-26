@@ -8,12 +8,16 @@ import PanelItem from '@ui/PanelItem';
 import apiClient from '@api/axios'; // 예시 API 함수
 import { usePathname } from "next/navigation";
  const fetchFollowers = async (path: string) => {
+  console.log(path)
   const response = await apiClient.get(`/subscriptions/channel/${path}/subscribers?isUserChannel=true`);
   return response.data;
 };
 
  const fetchFollowings = async (path: string) => {
+
   const response = await apiClient.get(`/subscriptions/user/${path}/following?isUserChannel=true`);
+  console.log(response.data);
+
   return response.data;
 };
 const HomePage: React.FC = () => {
@@ -21,7 +25,7 @@ const HomePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const pathName = usePathname();
   const parts = pathName.split('/');
-  const channelId = parts[2]; // "2" 추출
+  const channelId = parts[parts.length - 2]; // "2" 추출
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
@@ -33,7 +37,7 @@ const HomePage: React.FC = () => {
     queryKey:['followers', channelId], 
     queryFn:() => fetchFollowers(channelId), 
      enabled: activeTab === 0 ,
-     staleTime: 1000 * 60 * 5,  // 5분 동안 데이터가 fresh 상태로 유지
+     staleTime: 0,  // 5분 동안 데이터가 fresh 상태로 유지
     }
   );
 
@@ -41,10 +45,10 @@ const HomePage: React.FC = () => {
   const { data: followingsData, isLoading: followingsLoading } = useQuery({
     queryKey:['followings', channelId], 
     queryFn:() => fetchFollowings(channelId), 
-    enabled: activeTab === 1 
+    enabled: activeTab === 1 ,
+    staleTime: 0, 
   }
   );
-
   return (
     <>
     
@@ -91,7 +95,7 @@ const HomePage: React.FC = () => {
                   username={following.channelName}
                   initials={following.displayName}
                   isUserChannel={following.userChannel}
-                  following={following.isFollowing}
+                  following={following.following}
                 />
               ))
             )}

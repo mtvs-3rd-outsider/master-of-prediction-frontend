@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from 'react';
+import React, {useEffect, useRef, useState } from 'react';
 import StickyTabsWrapper from '@components/StickyTabs';
 import Search from '@ui/CustomSearch';
 import CategoryChannelCard from '@ui/CategoryChannelCard';
 import Header from '@ui/Header';
 import Account from '@ui/Account';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery,useInfiniteQuery  } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import apiClient from '@api/axios'
 import Link from 'next/link';
@@ -28,9 +28,10 @@ export default function Page() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchTerm = useDebounce(searchQuery, 500);
-  const [flag, setFlag] = useState('ALL'); // Default to "ALL"
+  const [flag, setFlag] = useState('CATEGORY'); // Default to "ALL"
   const userInfo = useUserStore(state=>state.userInfo);
-
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
     // Fetch categories b ased on the flag
 const fetchMyCategories = async (flag: string) => {
 
@@ -40,6 +41,16 @@ const fetchMyCategories = async (flag: string) => {
   });
 
 
+  return response.data;
+};
+
+const fetchCategories = async ({ pageParam = 0 }) => {
+  const response = await apiClient.get('/category-channels', {
+    params: {
+      page: pageParam,
+      size: 10,
+    },
+  });
   return response.data;
 };
   // Toggle search bar visibility
@@ -68,17 +79,64 @@ const fetchMyCategories = async (flag: string) => {
     enabled: !!userInfo, // Fetch categories with flag
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
+  // React Query to fetch categories for "My Category" tab with the flag
+  const {
+    fetchNextPage,
+    fetchPreviousPage,
+    hasNextPage,
+    hasPreviousPage,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+    data,
+    error:infiniteError,
+    status
+
+  } = useInfiniteQuery(
+    {
+      queryKey: ['categories'],
+      queryFn: fetchCategories,
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, allPages) => lastPage.nextCursor,
+      getPreviousPageParam: (firstPage, allPages) => firstPage.prevCursor,
+  }
+  );
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observerRef.current.observe(loadMoreRef.current);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [hasNextPage, fetchNextPage]);
+
+
+  console.log(data);
 
   // Tab change handler
   const handleTabChange = (index: number) => {
     setActiveTab(index);
     // Change the flag based on the selected tab
     if (index === 0) {
-      setFlag('ALL');  // Example: Set to "ALL" for "내 카테고리"
+      setFlag('CATEGORY');  // Example: Set to "ALL" for "내 카테고리"
     } else {
-      setFlag('USER');  // Example: Change to a different flag
+      setFlag('CATEGORY');  // Example: Change to a different flag
     }
   };
+
+
 
   return (
     <>
@@ -105,8 +163,8 @@ const fetchMyCategories = async (flag: string) => {
               {activeTab === 0 && (
                 <div>
                   {isLoadingCategories ? (
-                    <p>Loading categories...</p>
-                  ) : (
+                    <p>Loading categories...</p>) :
+                 (
                     myCategories?.content.map((category: any) => (
                       <CategoryChannelCard
                         key={category.channelId}
@@ -121,9 +179,31 @@ const fetchMyCategories = async (flag: string) => {
               )}
 
               {activeTab === 1 && (
-                <div>
-                  {/* 탐색 탭 내용 */}
-                </div>
+               <div>
+               {status === 'pending' ? (
+                    <p>Loading categories...</p>
+                  ) : status === 'error' ?  <p>Error: {infiniteError.message}</p>: (
+                  data?.pages.map((page, pageIndex) =>(
+                    <React.Fragment key={pageIndex}>
+                      {page.content.map((category:any)=>( ((category: any) => (
+                   <CategoryChannelCard
+                     key={category.channelId}
+                     href={`/category-channel/${category.channelId}`}
+                     categoryChannelName={category.displayName}
+                     badge={ 'Category'}
+                     avatars={[category.imageUrl]} // Assuming you have a channel image
+                   />
+                 ))
+                      ))
+                      }
+                    </React.Fragment>
+                  ))
+                 
+               )}
+               <div ref={loadMoreRef}>
+        {isFetchingNextPage ? <p>Loading more...</p> : <p>Load more...</p>}
+      </div>
+             </div>
               )}
             </div>
           </>

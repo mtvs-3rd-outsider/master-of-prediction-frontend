@@ -18,7 +18,7 @@ const nextConfig = withNextIntl(withBundleAnalyzer({
       // styled-components 설정 추가
       compiler: {
         styledComponents: true,
-        removeConsole: true,
+        // removeConsole: true,
         
       },
   images: {

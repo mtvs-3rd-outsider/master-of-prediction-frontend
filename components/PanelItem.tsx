@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@rd/Avatar';
 import { Button } from '@nextui-org/button';
 import UserInfo from '@components/UserInfo';
@@ -19,10 +19,12 @@ interface Props {
 
 }
 
-const PanelItem = ({ id, name, username, src, initials ,following,isUserChannel}: Props) => {
+const PanelItem = ({ id, name, username, src, initials ,following,isUserChannel }: Props) => {
   const [isFollowing, setIsFollowing] = useState(following);
+  console.log(isFollowing);
   const userInfo = useUserStore(state=>state?.userInfo)
-
+  const [isAnonymous, setIsAnonymous] = useState(userInfo?.id == undefined);
+  const [isMine, setIsMine] = useState(userInfo?.id == id && isUserChannel);
   const handleToggle = () => {
     setIsFollowing(!isFollowing);
   };
@@ -37,12 +39,12 @@ if(isUserChannel)
 const followMutation = useOptimisticMutation(
   {
     queryKey:["channel-subscribe",id],
-    mutationFn:()=> fetchSubscribe(),
+    mutationFn:()=> fetchSubscribe(!isFollowing ? "unsubscribe":"subscribe"),
     onMutateFn:handleToggle
   }
 );
-  const fetchSubscribe = async ()=>{
-    await apiClient.post("/channel/subscription", { channelId: id, isUserChannel });
+  const fetchSubscribe = async (actionType :string)=>{
+    await apiClient.post("/channel/subscription", { channelId: id, isUserChannel ,actionType: actionType});
   }
   const userId: number | undefined = userInfo?.id;
   return (
@@ -54,14 +56,17 @@ const followMutation = useOptimisticMutation(
           <Avatar src={src} alt={name} initials={initials} />
         </div>
         <div className=" flex flex-col ">
+        {
+            (isUserChannel) &&
           <TierBadge name="nostradamus" />
+        }
           <p className="text-base font-semibold">{name}</p>
           <p className="text-sm text-slate-600 font-medium">@{username}</p>
         </div>
       </div>
       <div>
         {
-          (userInfo?.id != undefined && userInfo?.id.toString() != id) &&
+          !(isAnonymous ||isMine)  &&
           <Button
           radius="full"
           size="md"

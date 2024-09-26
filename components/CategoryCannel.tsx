@@ -44,8 +44,8 @@ const fetchIsOwner = async (channelId: number, userId: number) => {
 
 const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
 
-  const subscribeToChannel = async (channelId: number) => {
-    await apiClient.post("/channel/subscription", { channelId: channelId, isUserChannel:false  });
+  const subscribeToChannel = async (channelId: number,actionType:string) => {
+    await apiClient.post("/channel/subscription", { channelId: channelId, isUserChannel:false ,actionType:actionType});
   };
   
   // 구독 API 호출 함수
@@ -58,7 +58,7 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
   const pathname = usePathname();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isSubscribed, setIsSubscribed] = useState(false);
-
+  const [subscriberCount , setSubscriberCount ]= useState<number>(channel.userCount!);
   // 사용자 ID는 전역 상태나 로그인 상태에서 가져올 수 있다고 가정
   const userInfo = { id: 1 }; // 예시 사용자 정보, 실제로는 로그인 정보를 기반으로 가져와야 함
   const userId = userInfo.id;
@@ -88,23 +88,20 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
 // 구독/구독 취소 API 요청을 처리하는 mutation
 const subscribeMutation  = useOptimisticMutation({
   queryKey:  ["subscriptionStatus-channel", channel?.channelId], // 쿼리 키를 명확하게 설정
-  mutationFn: subscribeToChannel,
+  mutationFn:()=> subscribeToChannel(channel?.channelId!,isSubscribed ? "subscribe" : "unsubscribe"),
     onMutateFn: async () => {
       // 낙관적 업데이트: 버튼 클릭 시 즉시 상태 변경
       setIsSubscribed((prev) => !prev);
+      setSubscriberCount((prev) => prev + (isSubscribed ? -1 : 1)); // 낙관적 followingCount 업데이트
     },
     onErrorFn: (error) => {
       // 에러가 발생하면 이전 상태로 롤백
       setIsSubscribed((prev) => !prev);
+      setSubscriberCount((prev) => prev + (isSubscribed ? -1 : 1)); // 낙관적 followingCount 업데이트
     }
 });
 
 const handleSubscribeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.preventDefault(); // 기본 동작 방지
-  event.stopPropagation(); // 이벤트 전파 방지
-
-
-
   subscribeMutation.mutate(channel?.channelId); // 순수한 데이터만 전송
 };
 
@@ -148,11 +145,9 @@ const handleSubscribeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
           <Button
             radius="full"
             variant={isSubscribed ? "bordered" :"solid"}
-            className="font-bold px-3 py-2"
+            className="font-bold px-3 py-2 z-20"
             color="primary"
-        
             onClick={handleSubscribeClick}
-            disabled={isSubscribed}
           >
             {isSubscribed ? "구독 중" : "구독"}
           </Button>

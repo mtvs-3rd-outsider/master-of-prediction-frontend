@@ -20,11 +20,11 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
 
   // Floating Action Button의 경로를 반환하는 함수
   const getFabUrl = () => {
-    if (pathname.startsWith('/category-channel')) {
+    if (pathname.includes('/category-channel')) {
       return '/category-channel/regist'; // 카테고리 채널 경로
-    } else if (pathname.startsWith('/channel')) {
+    } else if (pathname.includes('/channel')) {
       return '/channel/regist'; // 프로필 페이지 경로
-    } else if (pathname.startsWith('/hot-topic')) {
+    } else if (pathname.includes('/hot-topic')) {
       return '/hot-topic/create-feed'; // 핫토픽 feed 등록 경로
     } else {
       return null; // 기본 경로 또는 URL에 따라 렌더링하지 않음
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
         </TanstackQueryProvider>
 
         {/* FloatingActionButton: 로그인 상태에서만 렌더링, 특정 경로에만 표시 */}
-        {pathname.startsWith('/category-channel') && !userInfo ? null : (
+        {pathname.includes('/category-channel') && !userInfo ? null : (
           fabUrl && <FloatingActionButton href={fabUrl} />
         )}
       </div>

@@ -32,14 +32,14 @@ interface UserChannelPageProps {
 const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
 
   const fetchFollowers = async (channelId?: string) => {
-    const response = await apiClient.get(`/channel/${channelId}/follower-count`);
+    const response = await apiClient.get(`/subscriptions/channel/${channelId}/subscribers/count?isUserChannel=true`);
     setFollowerCount(response.data);
     return response.data;
   };
   
   // 팔로잉 목록을 가져오는 함수
   const fetchFollowing = async (channelId?: string) => {
-    const response = await apiClient.get(`/channel/${channelId}/following-count`);
+    const response = await apiClient.get(`/subscriptions/user/${channelId}/following/count?isUserChannel=true`);
     setFollowingCount(response.data);
     return response.data;
   };
@@ -71,15 +71,14 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
       queryKey: ['subscriptionStatus',user?.userId], // queryKey로 검색 쿼리를 관리
       queryFn: () => fetchSubscriptionStatus(user?.userId), // 검색 API 호출 함수
       enabled: isLoggedIn && !isMyChannel, // searchQuery가 존재할 때만 요청 수행
-      staleTime: 5*60*1000 , // 5분 동안 캐시 상태 유지
+      staleTime: 0 , // 5분 동안 캐시 상태 유지
       refetchOnMount:"always",
-      
     });
     const {  isLoading: isFollowersLoading } = useQuery({
       queryKey: ["followerCount", user?.userId],
       queryFn: () => fetchFollowers(user?.userId),
       enabled: !!user?.userId,  // userId가 있을 때만 호출
-      staleTime: 5 * 60 * 1000, // 캐시 시간 5분
+      staleTime: 0, // 캐시 시간 5분
       refetchOnMount:"always",
     });
     
@@ -87,21 +86,22 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
       queryKey: ["followingCount", user?.userId],
       queryFn: () => fetchFollowing(user?.userId),
       enabled: !!user?.userId,  // userId가 있을 때만 호출
-      staleTime: 5 * 60 * 1000, // 캐시 시간 5분
+      staleTime: 0, // 캐시 시간 5분
       refetchOnMount:"always",
 
     });
 
-    const fetchSubscripition=   async () => {
+    const fetchSubscripition=   async (actionType :string) => {
         return apiClient.post(`/channel/subscription`,{
           channelId: user?.userId,
           isUserChannel: true,
+          actionType: actionType
         });
   }
 // 구독/구독 취소 API 요청을 처리하는 mutation
 const toggleSubscription  = useOptimisticMutation({
   queryKey:  ["subscriptionStatus", user?.userId], // 쿼리 키를 명확하게 설정
-  mutationFn: fetchSubscripition,
+  mutationFn: ()=> fetchSubscripition(!isSubscribed ? "unsubscribe" : "subscribe"),
     onMutateFn: async () => {
       // 낙관적 업데이트: 버튼 클릭 시 즉시 상태 변경
       setIsSubscribed((prev) => !prev);
@@ -182,7 +182,7 @@ const handleSubscribeToggle = () => {
 
         <div>
           <div className="inline-flex gap-1">
-            <TierIcon name={"견습생"} size={35} className="px-2" />{" "}
+            <TierIcon name={user.tier_name} size={35} className="px-2" />{" "}
             <h1 className="text-md m-auto font-bold">{user.display_name ||user.user_name }</h1>{" "}
             <p className="text-xs mb-1 mt-auto text-gray-600">@{user.user_name}</p>
           </div>
@@ -209,11 +209,11 @@ const handleSubscribeToggle = () => {
           {user.joined_date && <IconText icon={CalendarIcon} text={user.joined_date} />}
           {user.user_gender && <IconText icon={SwatchIcon} text={user.user_gender} />}
         </div>
-        {/* <div className="mt-4 flex space-x-1">
-          <span className="text-xs font-bold">{user.points}</span>
+        <div className="mt-4 flex space-x-1">
+          <span className="text-xs font-bold">{user.user_point}</span>
           <span className="text-xs text-gray-600"> 내 포인트</span>
         </div>
-        <div className="mt-2 flex space-x-4">
+        {/* <div className="mt-2 flex space-x-4">
           <div>
             <span className="text-xs font-bold">{user.transactions}</span>{" "}
             <span className="text-xs text-gray-600"> 거래량</span>

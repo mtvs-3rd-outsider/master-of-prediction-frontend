@@ -21,13 +21,15 @@ export type MyChannelProps = {
   birthdate: string;
   joined_date: string;   // 변경됨
   user_gender: string;
-  points: number;
+  user_point: number;
   transactions: number;
   profit_rate: string;   // 변경됨
   position_value: string; // 변경됨
   trade_count: number;   // 변경됨
   following_count: number; // 변경됨
   follower_count: number;  // 변경됨
+  tier_name:string;
+  tier_level:number;
 };
 
 export default async function Page({ params }: { params: { userId: string } }) {
