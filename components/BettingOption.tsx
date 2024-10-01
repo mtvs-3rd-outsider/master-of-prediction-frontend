@@ -1,7 +1,10 @@
+"use client";
+
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
+import { BettingOrderStatisticsDTO } from "@/types/BettingOrderHistoryData";
 import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,6 +14,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  TooltipProps,
 } from "recharts";
 
 interface Props {
@@ -18,9 +22,46 @@ interface Props {
   imgUrl: string;
   currentOptionId: number;
   ratio?: OptionsRatio;
+  data?: BettingOrderStatisticsDTO[];
+}
+interface CustomPayload {
+  orderTime: string;
+  ratio: number;
 }
 
-const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
+const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
+  active,
+  payload,
+}) => {
+  if (active && payload && payload.length) {
+    // payload[0].payload에서 값을 가져와 사용
+    const { orderTime, ratio } = payload[0].payload as CustomPayload;
+
+    return (
+      <div
+        className="custom-tooltip"
+        style={{
+          backgroundColor: "#fff",
+          padding: "10px",
+          border: "1px solid #ccc",
+        }}
+      >
+        <p className="label">{orderTime}</p>
+        <p className="intro">{ratio}%</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const BettingOption = ({
+  content,
+  imgUrl,
+  currentOptionId,
+  ratio,
+  data,
+}: Props) => {
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
 
@@ -34,6 +75,22 @@ const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
       setState(false);
     }
   }, [optionId, currentOptionId]);
+
+  const uniqueDates = useMemo(() => {
+    const dateSet = new Set();
+    return (
+      data &&
+      data
+        .filter((item) => {
+          if (!dateSet.has(item.orderDate)) {
+            dateSet.add(item.orderDate);
+            return true;
+          }
+          return false;
+        })
+        .map((item) => item.orderDate)
+    );
+  }, [data]);
 
   return (
     <>
@@ -68,18 +125,24 @@ const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
         <div className="flex-1 flex items-center">
           {/* <div className="flex-1 w-full"> */}
           {/* <ResponsiveContainer width="100%" height="100%">
-            <LineChart */}
-          {/* // data={data.chartData}
+            <LineChart
+              data={data}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} /> */}
-          {/* <XAxis dataKey="name" hide={true} />
-              <YAxis hide={true} /> */}
-          {/* <Tooltip /> */}
-          {/* <Legend /> */}
-          {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
+              <XAxis dataKey="name" hide={true} />
+              <YAxis hide={true} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="ratio"
+                stroke="#8884d8"
+                dot={false}
+              />
             </LineChart>
           </ResponsiveContainer> */}
+
           <p>{ratio === undefined ? "0" : ratio.totalPoints}p</p>
         </div>
         <div className="flex-1 flex items-center">
@@ -89,19 +152,31 @@ const BettingOption = ({ content, imgUrl, currentOptionId, ratio }: Props) => {
       {/* <div style={{ width: "300px", height: "300px" }}> */}
       {state && (
         <div className="w-full h-44">
-          {/* <ResponsiveContainer width="100%" height="100%">
-            <LineChart */}
-          {/* // data={data.chartData}
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            > */}
-          {/* <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
-              <XAxis dataKey="name" hide={false} />
-              <YAxis hide={false} />
-              <Tooltip /> */}
-          {/* <Legend /> */}
-          {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={false} />
+            >
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={3} />
+              <XAxis
+                axisLine={false}
+                dataKey="orderDate"
+                tickLine={false}
+                hide={false}
+                interval={0}
+                ticks={uniqueDates}
+              />
+              <YAxis hide={false} axisLine={false} tickLine={true} />
+              <Tooltip content={<CustomTooltip />} />
+
+              <Line
+                type="monotone"
+                dataKey="ratio"
+                stroke="#8884d8"
+                dot={false}
+              />
             </LineChart>
-          </ResponsiveContainer> */}
+          </ResponsiveContainer>
         </div>
       )}
     </>
