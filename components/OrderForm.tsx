@@ -59,8 +59,6 @@ export default function OrderForm({ className, options }: OrderFormProps) {
       });
   }, [userId, bettingId]);
 
-  console.log("test: ", optionsByOptionId?.imgUrl);
-
   return (
     <div
       className={`${className} flex flex-col w-full shadow-[0_2px_10px] shadow-blackA2`}

@@ -2,13 +2,55 @@
 
 import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
 import BettingOption from "./BettingOption";
+import { useEffect, useState } from "react";
+import { BettingOrderStatisticsDTO } from "@/types/BettingOrderHistoryData";
+import apiClient from "@handler/fetch/axios";
+import { useParams } from "next/navigation";
 
 interface Props {
   options: BettingOptions[] | [];
   optionsRatio: OptionsRatio[] | [];
 }
 
+interface BettingOrderHistoryDataProps {
+  [key: string]: BettingOrderStatisticsDTO[];
+}
+
+const removeDuplicateOrderDates = (
+  data: BettingOrderStatisticsDTO[]
+): BettingOrderStatisticsDTO[] => {
+  const seenOrderDates = new Set<string>();
+
+  return data.map((item) => {
+    if (seenOrderDates.has(item.orderDate)) {
+      return { ...item, orderDate: "" };
+    } else {
+      seenOrderDates.add(item.orderDate);
+      return item;
+    }
+  });
+};
 const BettingOptionList = ({ options, optionsRatio }: Props) => {
+  const [optionDatas, setOptionDatas] =
+    useState<BettingOrderHistoryDataProps | null>(null);
+  const bettingId = useParams().id;
+
+  useEffect(() => {
+    apiClient
+      .get<BettingOrderHistoryDataProps>(
+        `/betting-products/orders?bettingId=${bettingId}`
+      )
+      .then((res) => {
+        // const processedData: BettingOrderHistoryDataProps = {};
+        // for (const [key, value] of Object.entries(res.data)) {
+        //   processedData[key] = removeDuplicateOrderDates(value);
+        // }
+        // console.log("processData: ", processedData);
+        // setOptionDatas(processedData);
+        setOptionDatas(res.data);
+      });
+  }, [bettingId]);
+
   return (
     <>
       <div className="flex py-4 shadow justify-around px-8">
@@ -23,10 +65,6 @@ const BettingOptionList = ({ options, optionsRatio }: Props) => {
             (ratio) => ratio.bettingOptionId === option.optionId
           );
 
-          console.log("matchingRatio: ", matchingRatio);
-
-          // matchingRatio가 존재하면 BettingOption 출력
-          // return matchingRatio ? (
           return (
             <BettingOption
               key={option.optionId}
@@ -34,6 +72,11 @@ const BettingOptionList = ({ options, optionsRatio }: Props) => {
               imgUrl={option.imgUrl}
               currentOptionId={option.optionId}
               ratio={matchingRatio}
+              data={
+                optionDatas != undefined && optionDatas != null
+                  ? optionDatas[`${option.optionId}`]
+                  : []
+              }
             />
           ); // matchingRatio가 없으면 null을 반환
         })}
