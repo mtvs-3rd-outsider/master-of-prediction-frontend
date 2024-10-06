@@ -68,7 +68,7 @@
     "react-markdown": "^9.0.1",
     "react-quill": "^2.0.0",
     "react-textarea-autosize": "^8.5.3",
-    "recharts": "^2.12.7",
+    "recharts": "^2.13.0-alpha.5",
     "remark-gfm": "^4.0.0",
     "rsocket-core": "^0.0.29-alpha.0",
     "rsocket-flowable": "^0.0.29-alpha.0",

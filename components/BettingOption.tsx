@@ -111,38 +111,11 @@ const BettingOption = ({
               className="h-full w-full object-cover object-center"
             />
           )}
-          {/* <img
-            src={`${imgUrl}`}
-            alt=""
-            className="h-full w-full object-cover object-center"
-            width={500}
-            height={500}
-          /> */}
         </div>
         <div className="flex-1 m-auto">
           <p>{content}</p>
         </div>
         <div className="flex-1 flex items-center">
-          {/* <div className="flex-1 w-full"> */}
-          {/* <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0} />
-              <XAxis dataKey="name" hide={true} />
-              <YAxis hide={true} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="ratio"
-                stroke="#8884d8"
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer> */}
-
           <p>{ratio === undefined ? "0" : ratio.totalPoints}p</p>
         </div>
         <div className="flex-1 flex items-center">
