@@ -24,20 +24,21 @@ const BettingProducts = () => {
     <>
       <Suspense fallback={<Loading />}>
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
-          {bettings.map((node, i) => (
-            <li key={node.bettingId}>
-              <BettingProduct
-                userID={node.userID}
-                userName={node.userName}
-                displayName={node.displayName}
-                tierName={node.tierName}
-                userImg={node.userImg}
-                title={node.title}
-                imgUrls={node.imgUrls}
-                bettingId={node.bettingId}
-              />
-            </li>
-          ))}
+          {Array.isArray(bettings) &&
+            bettings.map((node, i) => (
+              <li key={node.bettingId}>
+                <BettingProduct
+                  userID={node.userID}
+                  userName={node.userName}
+                  displayName={node.displayName}
+                  tierName={node.tierName}
+                  userImg={node.userImg}
+                  title={node.title}
+                  imgUrls={node.imgUrls}
+                  bettingId={node.bettingId}
+                />
+              </li>
+            ))}
         </ul>
       </Suspense>
       <div></div>
