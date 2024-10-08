@@ -1,104 +1,163 @@
 "use client";
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import BackButton from '@components/BackButton';
 import Tabs from '@components/Tabs';
 import SubscribePanel from '@components/SubscribePanel';
 import PanelItem from '@ui/PanelItem';
 import apiClient from '@api/axios'; // 예시 API 함수
 import { usePathname } from "next/navigation";
- const fetchFollowers = async (path: string) => {
-  console.log(path)
-  const response = await apiClient.get(`/subscriptions/channel/${path}/subscribers?isUserChannel=true`);
+import { useInView } from 'react-intersection-observer';
+
+// Fetch followers
+const fetchFollowers = async (pageParam = 0, queryKey :string[]) => {
+  const channelId = queryKey[1];
+  const response = await apiClient.get(`/subscriptions/channel/${channelId}/subscribers`, {
+    params: {
+      isUserChannel: true,
+      page: pageParam,
+      size: 15,
+    },
+  });
   return response.data;
 };
 
- const fetchFollowings = async (path: string) => {
-
-  const response = await apiClient.get(`/subscriptions/user/${path}/following?isUserChannel=true`);
-  console.log(response.data);
-
+// Fetch followings
+const fetchFollowings = async (pageParam = 0, queryKey :string[] ) => {
+  const channelId = queryKey[1];
+  const response = await apiClient.get(`/subscriptions/user/${channelId}/following`, {
+    params: {
+      isUserChannel: true,
+      page: pageParam,
+      size: 15,
+    },
+  });
   return response.data;
 };
+
 const HomePage: React.FC = () => {
   const tabs = ['Followers', 'Followings'];
   const [activeTab, setActiveTab] = useState(0);
   const pathName = usePathname();
   const parts = pathName.split('/');
   const channelId = parts[parts.length - 2]; // "2" 추출
+  const { ref: loadMoreRef, inView: isInView } = useInView({
+    threshold: 0.5,
+    triggerOnce: false,
+  });
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
   };
 
-  // Followers 탭에 대한 API 호출
-  const { data: followersData, isLoading: followersLoading } = useQuery({
+  // Infinite Query for followers
+  const {
+    data: followersData,
+    isLoading: followersLoading,
+    fetchNextPage: fetchNextFollowers,
+    hasNextPage: hasNextFollowers,
+    isFetchingNextPage: isFetchingNextFollowers,
+  } = useInfiniteQuery({
+    queryKey: ['followers', channelId],
+    queryFn: ({ pageParam = 1 ,queryKey })=> fetchFollowers(pageParam,queryKey),
 
-    queryKey:['followers', channelId], 
-    queryFn:() => fetchFollowers(channelId), 
-     enabled: activeTab === 0 ,
-     staleTime: 0,  // 5분 동안 데이터가 fresh 상태로 유지
+    getNextPageParam: (lastPage) => {
+      return !lastPage.last ? lastPage.number + 1 : undefined;
+    },
+    initialPageParam: 0,
+    enabled: activeTab === 0,
+  });
+
+  // Infinite Query for followings
+  const {
+    data: followingsData,
+    isLoading: followingsLoading,
+    fetchNextPage: fetchNextFollowings,
+    hasNextPage: hasNextFollowings,
+    isFetchingNextPage: isFetchingNextFollowings,
+  } = useInfiniteQuery({
+    queryKey: ['followings', channelId],
+    queryFn: ({ pageParam = 1 ,queryKey })=> fetchFollowings(pageParam,queryKey),
+    getNextPageParam: (lastPage) => {
+      return !lastPage.last ? lastPage.number + 1 : undefined;
+    },
+    initialPageParam: 0,
+    enabled: activeTab === 1,
+  });
+
+  useEffect(() => {
+    if (isInView) {
+      if (activeTab === 0 && hasNextFollowers) {
+        fetchNextFollowers();
+      } else if (activeTab === 1 && hasNextFollowings) {
+        fetchNextFollowings();
+      }
     }
-  );
+  }, [isInView, activeTab, hasNextFollowers, hasNextFollowings, fetchNextFollowers, fetchNextFollowings]);
 
-  // Followings 탭에 대한 API 호출
-  const { data: followingsData, isLoading: followingsLoading } = useQuery({
-    queryKey:['followings', channelId], 
-    queryFn:() => fetchFollowings(channelId), 
-    enabled: activeTab === 1 ,
-    staleTime: 0, 
-  }
-  );
   return (
     <>
-    
       <main className="relative col-span-5 w-full border-x border-slate-200">
         <div className="top-0 left-0 p-4 flex justify-start w-full">
           <BackButton />
         </div>
         <Tabs tabNames={tabs} onTabChange={handleTabChange} />
 
-        {/* Followers 탭 */}
+        {/* Followers Tab */}
         {activeTab === 0 && (
           <SubscribePanel title="" href="/">
             {followersLoading ? (
               <div>Loading followers...</div>
             ) : (
-              followersData.content.map((follower: any) => (
-                <PanelItem
-                  key={follower.userId}
-                  id={follower.userId}
-                  src={follower.userAvatarUrl}
-                  name={follower.displayName}
-                  username={follower.userName}
-                  initials={follower.displayName}
-                  isUserChannel={true}
-                  following={follower.following}
-                />
+              followersData?.pages.map((page, pageIndex) => (
+                <React.Fragment key={pageIndex}>
+                  {page.content.map((follower: any) => (
+                    <PanelItem
+                      key={follower.userId}
+                      id={follower.userId}
+                      src={follower.userAvatarUrl}
+                      name={follower.displayName}
+                      username={follower.userName}
+                      initials={follower.displayName}
+                      isUserChannel={true}
+                      following={follower.following}
+                    />
+                  ))}
+                </React.Fragment>
               ))
             )}
+            <div ref={loadMoreRef}>
+              {isFetchingNextFollowers ? 'Loading more...' : hasNextFollowers ? 'Load More' : ''}
+            </div>
           </SubscribePanel>
         )}
 
-        {/* Followings 탭 */}
+        {/* Followings Tab */}
         {activeTab === 1 && (
           <SubscribePanel title="" href="/">
             {followingsLoading ? (
               <div>Loading followings...</div>
             ) : (
-              followingsData.content.map((following: any) => (
-                <PanelItem
-                  key={following.channelId}
-                  id={following.channelId}
-                  src={following.channelImageUrl}
-                  name={following.displayName}
-                  username={following.channelName}
-                  initials={following.displayName}
-                  isUserChannel={following.userChannel}
-                  following={following.following}
-                />
+              followingsData?.pages.map((page, pageIndex) => (
+                <React.Fragment key={pageIndex}>
+                  {page.content.map((following: any) => (
+                    <PanelItem
+                      key={following.channelId}
+                      id={following.channelId}
+                      src={following.channelImageUrl}
+                      name={following.displayName}
+                      username={following.channelName}
+                      initials={following.displayName}
+                      isUserChannel={following.userChannel}
+                      following={following.following}
+                    />
+                  ))}
+                </React.Fragment>
               ))
             )}
+            <div ref={loadMoreRef}>
+              {isFetchingNextFollowings ? 'Loading more...' : hasNextFollowings ? 'Load More' : ''}
+            </div>
           </SubscribePanel>
         )}
       </main>
