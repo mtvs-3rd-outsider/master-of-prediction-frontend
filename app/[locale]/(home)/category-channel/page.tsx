@@ -12,12 +12,18 @@ import Link from 'next/link';
 import { useDebounce } from "@uidotdev/usehooks";
 import useUserStore from '@store/useUserStore';
 import { stat } from 'fs';
+import { useInView } from 'react-intersection-observer';
 
 
 
 // Fetch search results
-const fetchSearchResults = async (queryKey: string) => {
-  const response = await apiClient.get(`/search/displayName?q=${queryKey}`);
+const fetchSearchResults = async (pageParam:number ,queryKey: string[]) => {
+  const response = await apiClient.get(`/search/category/displayName`,{
+    params: { 
+      q: queryKey[1],
+      page: pageParam,
+      size: 5,
+      }} );
   return response.data;
 };
 
@@ -30,25 +36,32 @@ export default function Page() {
   const debouncedSearchTerm = useDebounce(searchQuery, 500);
   const [flag, setFlag] = useState('CATEGORY'); // Default to "ALL"
   const userInfo = useUserStore(state=>state.userInfo);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const { ref: loadMoreRef, inView: isInView } = useInView({
+    threshold: 0.5, // 50%가 보일 때 트리거
+    triggerOnce: false, // 여러 번 트리거되도록 설정
+  });
+
+
     // Fetch categories b ased on the flag
-const fetchMyCategories = async (flag: string) => {
-
-
+const fetchMyCategories = async (pageParam: number) => {
+  const flag:string = "CATEGORY";
   const response = await apiClient.get(`/subscriptions/user/${userInfo?.id}/following`, {
-    params: { flag, isUserChannel:true  }  // Send flag as a query param
+    params: { 
+      flag , isUserChannel:true,
+      page: pageParam,
+      size: 5,
+      }  // Send flag as a query param
   });
 
 
   return response.data;
 };
 
-const fetchCategories = async ({ pageParam = 0 }) => {
+const fetchCategories = async (pageParam  :number) => {
   const response = await apiClient.get('/category-channels', {
     params: {
       page: pageParam,
-      size: 10,
+      size: 5,
     },
   });
   return response.data;
@@ -65,20 +78,78 @@ const fetchCategories = async ({ pageParam = 0 }) => {
   }, 300);
 
   // React Query to fetch search results
-  const { data: searchResults, isLoading, error } = useQuery({
-    queryKey: ['searchResults', debouncedSearchTerm],
-    queryFn: () => fetchSearchResults(debouncedSearchTerm),
-    enabled: !!debouncedSearchTerm,
-    staleTime: 5 * 60 * 1000,
-  });
+  // const { data: searchResults, isLoading, error } = useQuery({
+  //   queryKey: ['searchResults', debouncedSearchTerm],
+  //   queryFn: () => fetchSearchResults(debouncedSearchTerm),
+  //   enabled: !!debouncedSearchTerm,
+  //   staleTime: 5 * 60 * 1000,
+  // });
+  const {
+    fetchNextPage: fetchNextPageSearch,
+    fetchPreviousPage: fetchPreviousPageSearch,
+    hasNextPage : hasNextPageSearch,
+    hasPreviousPage:hasPreviousPageSearch,
+    isFetchingNextPage: isFetchingNextPageSearch,
+    isFetchingPreviousPage:isFetchingPreviousPageSearch,
+    data: search,
+    error:infiniteErrorSearch,
+    status:statusSearch
 
+  } = useInfiniteQuery(
+    {
+      queryKey: ['searchResults',debouncedSearchTerm],
+      queryFn: ({ pageParam = 1 ,queryKey })=> fetchSearchResults(pageParam,queryKey),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, allPages) => {
+      // lastPage는 Spring Page 객체입니다.
+      console.log(lastPage);
+      if (!lastPage.last) {
+        return lastPage.number + 1; // 다음 페이지 번호를 반환
+      } else {
+        return undefined; // 더 이상 페이지가 없으면 undefined 반환
+      }
+      },
+      enabled: !!debouncedSearchTerm,
+      staleTime: 5 * 60 * 1000,
+    }
+  );
   // React Query to fetch categories for "My Category" tab with the flag
-  const { data: myCategories, isLoading: isLoadingCategories } = useQuery({
-    queryKey: ['myCategories', flag],  // Add flag to the query key
-    queryFn: () => fetchMyCategories(flag), 
-    enabled: !!userInfo, // Fetch categories with flag
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
+  // const { data: myCategories, isLoading: isLoadingCategories } = useQuery({
+  //   queryKey: ['myCategories', flag],  // Add flag to the query key
+  //   queryFn: () => fetchMyCategories(flag), 
+  //   enabled: !!userInfo, // Fetch categories with flag
+  //   staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  // });
+  const {
+    fetchNextPage: fetchNextPageMyCategories,
+    fetchPreviousPage: fetchPreviousPageMyCategories,
+    hasNextPage : hasNextPageMyCategories,
+    hasPreviousPage:hasPreviousPageMyCategories,
+    isFetchingNextPage: isFetchingNextPageMyCategories,
+    isFetchingPreviousPage:isFetchingPreviousPageMyCategories,
+    data: myCategories,
+    error:infiniteErrorMyCategories,
+    status:statusMyCategories
+
+  } = useInfiniteQuery(
+    {
+      queryKey: ['mycategories',flag],
+      queryFn: ({ pageParam = 1})=> fetchMyCategories(pageParam),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, allPages) => {
+      // lastPage는 Spring Page 객체입니다.
+      console.log(lastPage);
+      if (!lastPage.last) {
+        return lastPage.number + 1; // 다음 페이지 번호를 반환
+      } else {
+        return undefined; // 더 이상 페이지가 없으면 undefined 반환
+      }
+      },
+      enabled: !!userInfo
+  }
+  );
+
+
   // React Query to fetch categories for "My Category" tab with the flag
   const {
     fetchNextPage,
@@ -94,33 +165,42 @@ const fetchCategories = async ({ pageParam = 0 }) => {
   } = useInfiniteQuery(
     {
       queryKey: ['categories'],
-      queryFn: fetchCategories,
+      queryFn: ({ pageParam = 1 })=> fetchCategories(pageParam),
       initialPageParam: 0,
-      getNextPageParam: (lastPage, allPages) => lastPage.nextCursor,
-      getPreviousPageParam: (firstPage, allPages) => firstPage.prevCursor,
+      getNextPageParam: (lastPage, allPages) => {
+      // lastPage는 Spring Page 객체입니다.
+      console.log(lastPage);
+      if (!lastPage.last) {
+        return lastPage.number + 1; // 다음 페이지 번호를 반환
+      } else {
+        return undefined; // 더 이상 페이지가 없으면 undefined 반환
+      }
+      },
   }
   );
 
   useEffect(() => {
-    if (!loadMoreRef.current || !hasNextPage) return;
+    console.log("hasNextPage",hasNextPage)
+    console.log("isInView",isInView)
+    if (isInView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [isInView, hasNextPage, fetchNextPage]);
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 1 }
-    );
-
-    observerRef.current.observe(loadMoreRef.current);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [hasNextPage, fetchNextPage]);
+  useEffect(() => {
+    console.log("hasNextPage",hasNextPageMyCategories)
+    console.log("isInView",isInView)
+    if (isInView && hasNextPageMyCategories) {
+      fetchNextPageMyCategories();
+    }
+  }, [isInView, hasNextPageMyCategories, fetchNextPageMyCategories]);
+  useEffect(() => {
+    console.log("hasNextPage",hasNextPageSearch)
+    console.log("isInView",isInView)
+    if (isInView && hasNextPageSearch) {
+      fetchNextPageSearch();
+    }
+  }, [isInView, hasNextPageSearch, fetchNextPageSearch]);
 
 
   console.log(data);
@@ -128,12 +208,6 @@ const fetchCategories = async ({ pageParam = 0 }) => {
   // Tab change handler
   const handleTabChange = (index: number) => {
     setActiveTab(index);
-    // Change the flag based on the selected tab
-    if (index === 0) {
-      setFlag('CATEGORY');  // Example: Set to "ALL" for "내 카테고리"
-    } else {
-      setFlag('CATEGORY');  // Example: Change to a different flag
-    }
   };
 
 
@@ -162,19 +236,35 @@ const fetchCategories = async ({ pageParam = 0 }) => {
             <div className="p-4">
               {activeTab === 0 && (
                 <div>
-                  {isLoadingCategories ? (
-                    <p>Loading categories...</p>) :
+                  {statusMyCategories === 'pending' ? (
+                    <p>Loading categories...</p>
+                  ) : statusMyCategories === 'error' ?  <p>Error: {infiniteErrorMyCategories.message}</p>: 
                  (
-                    myCategories?.content.map((category: any) => (
-                      <CategoryChannelCard
-                        key={category.channelId}
-                        href={`/category-channel/${category.channelId}`}
-                        categoryChannelName={category.channelName}
-                        badge={category.isUserChannel ? 'User Channel' : 'Category'}
-                        avatars={[category.channelImageUrl]} // Assuming you have a channel image
-                      />
-                    ))
+
+
+                  myCategories?.pages.map((page, pageIndex) =>(
+                    <React.Fragment key={pageIndex}>
+                      {page.content.map( ((category: any) => (
+                   <CategoryChannelCard
+                     key={category.channelId}
+                     href={`/category-channel/${category.channelId}`}
+                     categoryChannelName={category.channelName}
+                     badge={ category.isUserChannel ? 'User Channel' : 'Category'}
+                     avatars={[category.channelImageUrl]} // Assuming you have a channel image
+                   />
+                 ))
+                      )
+                      }
+                    </React.Fragment>
+                  ))
+                   
                   )}
+                  <div ref={loadMoreRef}>
+                
+                {isFetchingNextPageMyCategories ? 'Loading more...' : hasNextPageMyCategories
+                     ? 'Load More'
+                     : ''}
+              </div>
                 </div>
               )}
 
@@ -185,7 +275,7 @@ const fetchCategories = async ({ pageParam = 0 }) => {
                   ) : status === 'error' ?  <p>Error: {infiniteError.message}</p>: (
                   data?.pages.map((page, pageIndex) =>(
                     <React.Fragment key={pageIndex}>
-                      {page.content.map((category:any)=>( ((category: any) => (
+                      {page.content.map( ((category: any) => (
                    <CategoryChannelCard
                      key={category.channelId}
                      href={`/category-channel/${category.channelId}`}
@@ -194,14 +284,18 @@ const fetchCategories = async ({ pageParam = 0 }) => {
                      avatars={[category.imageUrl]} // Assuming you have a channel image
                    />
                  ))
-                      ))
+                      )
                       }
                     </React.Fragment>
                   ))
                  
                )}
+   
                <div ref={loadMoreRef}>
-        {isFetchingNextPage ? <p>Loading more...</p> : <p>Load more...</p>}
+                
+        {isFetchingNextPage ? 'Loading more...' : hasNextPage
+             ? 'Load More'
+             : ''}
       </div>
              </div>
               )}
@@ -212,23 +306,37 @@ const fetchCategories = async ({ pageParam = 0 }) => {
         {/* 검색 중일 때 검색 결과 표시 */}
         {isSearching && (
           <div className="p-4">
-            {isLoading ? (
-              <p>검색 중...</p>
-            ) : error ? (
-              <p>에러 발생: {error.message}</p>
-            ) : (
-              searchResults?.content.map((result: any) => (
-                <Link key={result.userId} href={`/channel/${result.user_id}`}>
-                  <Account
-                    className="px-2 py-2"
-                    userName={result.user_name}
-                    avatarUrl={result.avatar_img}
-                    displayName={result.display_name}
-                    tier={result.tier}
-                  />
-                </Link>
-              ))
-            )}
+
+{statusSearch === 'pending' ? (
+                    <p>Loading categories...</p>
+                  ) : statusSearch === 'error' ?  <p>Error: {infiniteErrorSearch.message}</p>: 
+                 (
+
+
+                  search?.pages.map((page, pageIndex) =>(
+                    <React.Fragment key={pageIndex}>
+                      {page.content.map( ((category: any) => (
+                   <CategoryChannelCard
+                     key={category.category_channel_id}
+                     href={`/category-channel/${category.category_channel_id}`}
+                     categoryChannelName={category.display_name}
+                     badge={ 'Category'}
+                     avatars={[category.image_url]} // Assuming you have a channel image
+                   />
+                 ))
+                      )
+                      }
+                    </React.Fragment>
+                  ))
+                   
+                  )}
+                   <div ref={loadMoreRef}>
+                
+                {isFetchingNextPageSearch ? 'Loading more...' : hasNextPageSearch
+                     ? 'Load More'
+                     : ''}
+              </div>
+            
           </div>
         )}
       </main>

@@ -1,4 +1,5 @@
 "use client";
+import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 
@@ -14,14 +15,14 @@ export interface UserInfo {
   location?: string;
   token?: string;
   birthday?: string;
-  avatarUrl?: string ;
+  avatarUrl?: string;
   tier?: string;
 }
 
 // UserStore 인터페이스 정의
 interface UserStore {
   userInfo: UserInfo | null;
-  setUserInfo: (info: UserInfo ) => void;
+  setUserInfo: (info: UserInfo) => void;
   clearUserInfo: () => void;
   hasHydrated: boolean; // Hydration 완료 여부 상태
   setHasHydrated: (state: boolean) => void; // Hydration 상태 업데이트 함수
@@ -35,6 +36,10 @@ const useUserStore = create<UserStore>()(
         userInfo: null,
         hasHydrated: false, // 초기값 false
         setUserInfo: (info) => {
+          if (!info.token) {
+            toast.error("User information cannot be set without a valid token.");
+            return; // Exit early if there's no token
+          }
           set({ userInfo: info });
         },
         clearUserInfo: () => {

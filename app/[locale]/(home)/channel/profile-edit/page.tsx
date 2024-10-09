@@ -23,6 +23,7 @@ import {useDateFormatter} from "@react-aria/i18n";
 import { set } from "lodash";
 import {urlToFile, fetchImageUrl} from "@handler/fetch/img";
 import {Textarea} from "@nextui-org/input";
+import toast from "react-hot-toast";
   // 사용 예시
 
   
@@ -61,8 +62,8 @@ const ProfileEditPage: React.FC =  () => {
       }
     },
     onSuccessFn:  async (data: any, variables: any, context: any) => {
-      alert("Profile updated successfully!");
-    
+      toast.success("Profile updated successfully!");
+      
       // 데이터를 바로 업데이트
       const userInfoResponse = await apiClient.get(`/users/${userId}`);
       const setUserInfo = useUserStore.getState().setUserInfo;
