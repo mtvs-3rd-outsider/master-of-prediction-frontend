@@ -26,12 +26,21 @@ function BettingProductDetail(props: BettingProductInfo) {
         <div className="flex flex-1 items-center gap-x-2">
           {user && (
             <>
-              <Account
-                userName={user.userName}
-                displayName={user.displayName}
-                tier={user.tierName}
-                avatarUrl={user.userImg}
-              />
+              {product.isBlind == false ? (
+                <Account
+                  userName={user.userName}
+                  displayName={user.displayName}
+                  tier={user.tierName}
+                  avatarUrl={user.userImg}
+                />
+              ) : (
+                <Account
+                  userName={""}
+                  displayName={product.blindName}
+                  tier={""}
+                  avatarUrl={"/images/logo.png"}
+                />
+              )}
               {user.userID == product.userId && <Button>정산하기</Button>}
             </>
           )}
@@ -62,12 +71,6 @@ function BettingProductDetail(props: BettingProductInfo) {
                   src={url}
                   className="h-28 w-28  object-scale-down object-center"
                 />
-                {/* <img
-                  src={`${url}`}
-                  className="h-28 w-28  object-scale-down object-center"
-                  width={500}
-                  height={500}
-                /> */}
               </div>
             ))}
           </div>
@@ -99,7 +102,10 @@ function BettingProductDetail(props: BettingProductInfo) {
       </div>
       {/* options={bettingInfo?.options || ({} as BettingOptions[])} */}
       <BettingOptionList options={options || []} optionsRatio={optionsRatio} />
-      <BettingCommentActivityTabs options={options || []} />
+      <BettingCommentActivityTabs
+        options={options || []}
+        isBlind={product.isBlind}
+      />
     </>
   );
 }

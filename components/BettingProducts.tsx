@@ -12,9 +12,8 @@ const BettingProducts = () => {
 
   const getBettings = useCallback(async () => {
     const response = await apiClient.get("/betting-products");
-    setBettings(response.data);
-    // setOffset(offset + 10);
-    // }, [offset]);
+    console.log(response.data);
+    setBettings(response.data.content);
   }, []);
 
   useEffect(() => {
@@ -36,6 +35,7 @@ const BettingProducts = () => {
                   title={node.title}
                   imgUrls={node.imgUrls}
                   bettingId={node.bettingId}
+                  blindName={node.blindName}
                 />
               </li>
             ))}

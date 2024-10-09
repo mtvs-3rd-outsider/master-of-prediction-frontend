@@ -22,17 +22,27 @@ const BettingProduct = (props: BettingProductType) => {
     imgUrls,
     tierName,
     bettingId,
+    blindName,
   } = props;
   return (
     <>
       <div>
         <div className="flex flex-1 items-center gap-x-2 px-4 py-4">
-          <Account
-            userName={userName}
-            avatarUrl={userImg}
-            displayName={displayName}
-            tier={tierName}
-          />
+          {blindName === null ? (
+            <Account
+              userName={userName}
+              avatarUrl={userImg}
+              displayName={displayName}
+              tier={tierName}
+            />
+          ) : (
+            <Account
+              userName={""}
+              avatarUrl={"/images/logo.png"}
+              displayName={blindName}
+              tier={""}
+            />
+          )}
         </div>
         {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
         <div className="px-4">
@@ -55,12 +65,6 @@ const BettingProduct = (props: BettingProductType) => {
                 className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 my-4 scroll-snap-align-start"
               >
                 {url && (
-                  // <img
-                  //   src={`${url}`}
-                  //   className="h-full w-full object-scale-down object-center"
-                  //   width={500}
-                  //   height={500}
-                  // />
                   <Image
                     alt=""
                     src={url}

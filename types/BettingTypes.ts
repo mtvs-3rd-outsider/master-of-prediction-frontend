@@ -14,6 +14,7 @@ export interface BettingProduct {
   title: string;
   content: string;
   userId: number;
+  blindName: string;
 }
 
 // 옵션 타입 정의
@@ -41,6 +42,7 @@ export interface BettingProductType {
   title: string;
   imgUrls: string[];
   bettingId: number;
+  blindName: string | null;
 }
 
 export interface OptionsRatio {

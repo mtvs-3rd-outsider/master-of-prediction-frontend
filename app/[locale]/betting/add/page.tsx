@@ -341,13 +341,14 @@ const BettingAddPage = () => {
             <div className="block w-full mb-6">
               <label
                 className="block mb-2 text-sm font-bold text-gray-600 w-full"
-                htmlFor="privateId"
+                htmlFor="blindName"
               >
                 익명 아이디
               </label>
               <input
                 className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                id="privateId"
+                id="blindName"
+                name="blindName"
                 type="text"
                 placeholder="설정할 익명 아이디"
               />

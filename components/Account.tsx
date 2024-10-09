@@ -1,9 +1,9 @@
-import Avatar from '@rd/Avatar';
-import TierIcon from '@components/TierIcon';
-import Link from 'next/link';
-import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';  // Heroicons에서 아이콘 가져오기
-import DropdownNext from '@ui/DropdownAccountNavItem';
-import useUserStore from '@store/useUserStore';
+import Avatar from "@rd/Avatar";
+import TierIcon from "@components/TierIcon";
+import Link from "next/link";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
+import DropdownNext from "@ui/DropdownAccountNavItem";
+import useUserStore from "@store/useUserStore";
 
 interface AccountProps {
   userName?: string;
@@ -13,7 +13,13 @@ interface AccountProps {
   className?: string; // className 속성을 추가
 }
 
-const Account = ({ userName, avatarUrl, displayName, tier,className }: AccountProps) => {
+const Account = ({
+  userName,
+  avatarUrl,
+  displayName,
+  tier,
+  className,
+}: AccountProps) => {
   return (
     <div className={`flex flex-1 items-center gap-x-2 ${className}`}>
       <div className="flex items-center gap-x-3 flex-1">
@@ -34,7 +40,9 @@ const Account = ({ userName, avatarUrl, displayName, tier,className }: AccountPr
           </div>
 
           <p className="text-base font-semibold">{displayName || userName}</p>
-          <p className="text-sm text-slate-600 font-medium">@{userName}</p>
+          {userName != "" && (
+            <p className="text-sm text-slate-600 font-medium">@{userName}</p>
+          )}
         </div>
       </div>
     </div>

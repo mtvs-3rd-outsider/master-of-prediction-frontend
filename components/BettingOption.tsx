@@ -64,6 +64,7 @@ const BettingOption = ({
 }: Props) => {
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
+  const [optionRatio, setOptionRatio] = useState<number>(0);
 
   const handleClick = () => {
     setState(!state);
@@ -90,6 +91,10 @@ const BettingOption = ({
         })
         .map((item) => item.orderDate)
     );
+  }, [data]);
+
+  useEffect(() => {
+    setOptionRatio(data ? data[data?.length - 1]?.ratio : 0);
   }, [data]);
 
   return (
@@ -119,7 +124,7 @@ const BettingOption = ({
           <p>{ratio === undefined ? "0" : ratio.totalPoints}p</p>
         </div>
         <div className="flex-1 flex items-center">
-          <p>{ratio === undefined ? "0" : ratio.percentage}</p>
+          <p>{optionRatio}%</p>
         </div>
       </li>
       {/* <div style={{ width: "300px", height: "300px" }}> */}
