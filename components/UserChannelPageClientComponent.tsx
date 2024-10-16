@@ -109,6 +109,7 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user, 
                   title={node.title}
                   imgUrls={node.imgUrls}
                   bettingId={node.bettingId}
+                  blindName={node.blindName}
                 />
               </li>
                  ))

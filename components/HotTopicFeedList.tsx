@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
@@ -11,18 +9,14 @@ const HotTopicFeedList: React.FC = () => {
   const [feeds, setFeeds] = useState<HotTopicFeedResponseDTO[]>([]);
   const [lastId, setLastId] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const { ref, inView } = useInView({
-    threshold: 0,
-  });
+  const { ref, inView } = useInView();
   const router = useRouter();
 
   const loadMoreFeeds = useCallback(async () => {
-    if (!hasMore || loading) return;
+    if (!hasMore) return;
 
-    setLoading(true);
     try {
-      const newFeeds = lastId !== null
+      const newFeeds = lastId
         ? await getNextHotTopicFeeds(lastId)
         : await getInitialHotTopicFeeds();
 
@@ -39,55 +33,48 @@ const HotTopicFeedList: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading hot topic feeds:', error);
-      setHasMore(false);
-    } finally {
-      setLoading(false);
     }
-  }, [lastId, hasMore, loading]);
+  }, [lastId, hasMore]);
 
   useEffect(() => {
-    loadMoreFeeds();
-  }, []); // 초기 로딩을 위한 빈 의존성 배열
-
-  useEffect(() => {
-    if (inView && hasMore) {
+    if (inView) {
       loadMoreFeeds();
     }
-  }, [inView, hasMore, loadMoreFeeds]);
+  }, [inView, loadMoreFeeds]);
 
-  const handlePostClick = useCallback((id: number) => {
-    console.log("Clicked feed with id:", id);
+  const handlePostClick = useCallback((id: string) => {
     router.push(`/feed/${id}`);
   }, [router]);
 
   return (
     <div>
       {feeds.map((feed) => (
-        <Post
-          key={`feed-${feed.id}`}
-          id={feed.id.toString()}
-          content={feed.content}
-          name={feed.user?.displayName || feed.guest?.guestId || 'Unknown'}
-          username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
-          date={new Date(feed.createdAt).toLocaleString()}
-          src={feed.user?.userImg || ''}
-          initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
-          description={feed.title}
-          followers={""}
-          following={""}
-          viewCount={feed.viewCount.toString()}
-          commentsCount={feed.commentsCount}
-          likesCount={feed.likesCount}
-          quoteCount={feed.quoteCount}
-          mediaFiles={feed.mediaFileUrls}
-          youtubeUrls={feed.youtubeUrls}
-          onClick={() => handlePostClick(feed.id)}
-          isLikedByUser={false}
-        />
+        <div key={`feed-container-${feed.id}`}>
+          <Post
+            key={`feed-${feed.id}`}
+            id={feed.id.toString()}
+            content={feed.content}
+            name={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+            username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+            date={new Date(feed.createdAt).toLocaleString()}
+            src={feed.user?.userImg || ''}
+            initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
+            description={feed.title}
+            followers={feed.likesCount.toString()}
+            following={feed.commentsCount.toString()}
+            viewCount={feed.viewCount.toString()}
+            mediaFiles={feed.mediaFileUrls}
+            youtubeUrls={feed.youtubeUrls}
+            commentsCount={feed.commentsCount}
+            likesCount={feed.likesCount}
+            quoteCount={0} // 예시 값, 실제 데이터에 맞게 수정 필요
+            onClick={() => handlePostClick(feed.id.toString())}
+            isLikedByUser={feed.isLikedByUser || false} 
+          />
+        </div>
       ))}
       <div ref={ref}>
-        {loading && 'Loading more...'}
-        {!loading && !hasMore && 'No more feeds'}
+        {hasMore ? 'Loading more...' : 'No more feeds'}
       </div>
     </div>
   );

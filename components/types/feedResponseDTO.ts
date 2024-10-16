@@ -27,6 +27,7 @@ export interface FeedResponseDTO {
     likesCount: number;
     commentsCount: number;
     quoteCount: number;
+    isLikedByUser: boolean; // 이 줄을 추가
   }
   
   export interface UserDTO {

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import Header from '@ui/Header';
-import Feed from '@ui/Feed';
+// import Feed from '@ui/Feed';
 import Search from '@ui/Search';
 import Panel from '@ui/Panel';
 import PanelItem from '@ui/PanelItem';
@@ -47,7 +47,7 @@ const HomePage: React.FC = () => {
     <>
       <main className="col-span-5 w-full border-x border-slate-200">
         <Header title="Home" />
-        <Feed />
+        {/* <Feed /> */}
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
         <div className="sticky top-0">
