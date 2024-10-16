@@ -11,9 +11,9 @@ const handle = app.getRequestHandler();
 const PORT = 3000;
 
 const httpsOptions = {
-  key: fs.readFileSync('./ssl/private.key'),
-  cert: fs.readFileSync('./ssl/certificate.crt'),
-  ca: fs.readFileSync('./ssl/ca_bundle.crt'),
+  key: fs.readFileSync('./master-of-prediction.shop/privkey1.pem'),
+  cert: fs.readFileSync('./master-of-prediction.shop/cert1.pem'),
+  ca: fs.readFileSync('./master-of-prediction.shop/fullchain1.pem'),
 };
 
 // CORS 설정 미들웨어
@@ -21,15 +21,15 @@ const corsMiddleware = (req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://master-of-prediction.shop:8081',
-    'https://monitor.master-of-prediction.shop:3001'
+    'https://master-of-prediction.shop:3334'
   ];
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
-  res.setHeader('Access-Control-Allow-Methods', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // Preflight 요청에 대한 처리
@@ -46,7 +46,7 @@ const corsMiddleware = (req, res, next) => {
 const requestHandler = (req, res) => {
   const parsedUrl = parse(req.url, true);
   
-  // CORS 미들웨어 적용
+  // CORS 미들웨어 적용 
   corsMiddleware(req, res, () => {
     handle(req, res, parsedUrl);
   });
@@ -54,14 +54,14 @@ const requestHandler = (req, res) => {
 
 app.prepare().then(() => {
   // HTTP 서버
-  http.createServer(requestHandler).listen(PORT, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${PORT}`);
-  });
+  // http.createServer(requestHandler).listen(PORT, (err) => {
+  //   if (err) throw err;
+  //   console.log(`> Ready on http://localhost:${PORT}`);
+  // });
 
   // HTTPS 서버
-  https.createServer(httpsOptions, requestHandler).listen(PORT + 1, (err) => {
+  https.createServer(httpsOptions, requestHandler).listen(PORT , (err) => {
     if (err) throw err;
-    console.log(`> HTTPS: Ready on https://localhost:${PORT + 1}`);
+    console.log(`> HTTPS: Ready on https://localhost:${PORT}`);
   });
 });
