@@ -5,6 +5,8 @@ import Head from 'next/head';
 import {NextIntlClientProvider} from 'next-intl';
 import { getMessages, unstable_setRequestLocale } from "next-intl/server";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
+import GoogleAdsense from "@ui/GoogleAdsense";
 const APP_NAME = "PWA App";
   const APP_DEFAULT_TITLE = "My Awesome PWA App";
   const APP_TITLE_TEMPLATE = "%s - PWA App";
@@ -65,6 +67,14 @@ export default async  function RootLayout({
   return (
     <>
 <html lang={locale} suppressHydrationWarning={true}>
+<head>
+        {/* <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2358632947348636"
+          crossOrigin="anonymous"
+        ></Script> */}
+        <GoogleAdsense pId="2358632947348636" />
+      </head>
       <body  suppressHydrationWarning={true}>
       <NextIntlClientProvider messages={messages}>
 
