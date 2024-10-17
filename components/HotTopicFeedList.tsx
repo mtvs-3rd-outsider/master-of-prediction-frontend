@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import Post from '@ui/Post';
-import { getInitialHotTopicFeeds, getNextHotTopicFeeds } from '@handler/hotTopicApi';
+import { getHotTopicFeeds } from '@handler/hotTopicApi';
 import { HotTopicFeedResponseDTO } from '@components/types/feed';
 
 const HotTopicFeedList: React.FC = () => {
   const [feeds, setFeeds] = useState<HotTopicFeedResponseDTO[]>([]);
-  const [lastId, setLastId] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { ref, inView } = useInView();
   const router = useRouter();
@@ -16,25 +16,20 @@ const HotTopicFeedList: React.FC = () => {
     if (!hasMore) return;
 
     try {
-      const newFeeds = lastId
-        ? await getNextHotTopicFeeds(lastId)
-        : await getInitialHotTopicFeeds();
+      const response = await getHotTopicFeeds(page);
+      const newFeeds = response.content;
 
       if (newFeeds.length === 0) {
         setHasMore(false);
       } else {
-        setFeeds((prevFeeds) => {
-          const uniqueNewFeeds = newFeeds.filter(
-            (newFeed) => !prevFeeds.some((prevFeed) => prevFeed.id === newFeed.id)
-          );
-          return [...prevFeeds, ...uniqueNewFeeds];
-        });
-        setLastId(newFeeds[newFeeds.length - 1].id);
+        setFeeds((prevFeeds) => [...prevFeeds, ...newFeeds]);
+        setPage((prevPage) => prevPage + 1);
+        setHasMore(!response.last);
       }
     } catch (error) {
       console.error('Error loading hot topic feeds:', error);
     }
-  }, [lastId, hasMore]);
+  }, [page, hasMore]);
 
   useEffect(() => {
     if (inView) {
@@ -69,7 +64,7 @@ const HotTopicFeedList: React.FC = () => {
             likesCount={feed.likesCount}
             quoteCount={0} // 예시 값, 실제 데이터에 맞게 수정 필요
             onClick={() => handlePostClick(feed.id.toString())}
-            isLikedByUser={feed.isLikedByUser || false} 
+            isLike={feed.isLike || false} 
           />
         </div>
       ))}
