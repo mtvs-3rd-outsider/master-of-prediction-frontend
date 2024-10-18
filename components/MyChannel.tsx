@@ -22,6 +22,7 @@ import apiClient from "@handler/fetch/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useOptimisticMutation from "@handler/useOptimisticMutation";
 import { MyChannelProps } from "@/app/[locale]/(home)/channel/[userId]/page";
+import DropdownNext from "./DropdownAccountNavItem";
 
 
 // 구독 상태를 서버에서 가져오는 함수
@@ -132,14 +133,7 @@ const handleSubscribeToggle = () => {
       <div className="relative pt-2 flex justify-end gap-2 z-10">
       {isMyChannel ? (
           <>
-            <Button
-              isIconOnly
-              radius="full"
-              variant="light"
-              aria-label="Options"
-            >
-              <EllipsisHorizontalIcon className="h-6 w-6" />
-            </Button>
+            <DropdownNext />
             <Link href="profile-edit">
               <Button
                 radius="full"

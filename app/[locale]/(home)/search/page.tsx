@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import StickyTabsWrapper from '@components/StickyTabs';
 import Search from '@ui/CustomSearch';
-import CategoryChannelCard from '@ui/CategoryChannelCard';
 import Header from '@ui/Header';
 import Account from '@ui/Account';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
