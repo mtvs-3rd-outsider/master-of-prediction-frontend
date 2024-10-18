@@ -11,9 +11,9 @@ async function fetchCategoryData(categoryId: string) {
 export default async function Page({ params }: { params: { categoryId: string } }) {
   // 서버에서 데이터 패칭
   const categoryData = await fetchCategoryData(params.categoryId);
-
+  console.log(categoryData)
   // 탭 데이터
-  const tabs = ['Posts', 'Replies', 'Activity'];
+  const tabs = ['Posts'];
 
   return (
     <>

@@ -17,9 +17,10 @@ import Link from "next/link";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import apiClient from "@api/axios";
 import useOptimisticMutation from "@handler/useOptimisticMutation";
+import useUserStore from "@store/useUserStore";
 
 type CategoryChannelDTO = Partial<{
-  channelId: number;
+  channelId: string;
   displayName: string;
   description: string;
   communityRule: string;
@@ -33,7 +34,7 @@ type CategoryChannelProps = {
 };
 
 // 소유권 확인 API 호출 함수
-const fetchIsOwner = async (channelId: number, userId: number) => {
+const fetchIsOwner = async (channelId: string, userId: string) => {
   const { data } = await apiClient.get(`/category-channels/${channelId}/ownership?userId=${userId}`);
   return data;
 };
@@ -44,7 +45,7 @@ const fetchIsOwner = async (channelId: number, userId: number) => {
 
 const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
 
-  const subscribeToChannel = async (channelId: number,actionType:string) => {
+  const subscribeToChannel = async (channelId: string,actionType:string) => {
     await apiClient.post("/channel/subscription", { channelId: channelId, isUserChannel:false ,actionType:actionType});
   };
   
@@ -60,15 +61,15 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriberCount , setSubscriberCount ]= useState<number>(channel.userCount!);
   // 사용자 ID는 전역 상태나 로그인 상태에서 가져올 수 있다고 가정
-  const userInfo = { id: 1 }; // 예시 사용자 정보, 실제로는 로그인 정보를 기반으로 가져와야 함
-  const userId = userInfo.id;
+  const userInfo = useUserStore(state=>state.userInfo); // 예시 사용자 정보, 실제로는 로그인 정보를 기반으로 가져와야 함
+  const userId = userInfo!.id;
 
   const isLoggedIn = Boolean(userId);
 
   // useQuery로 소유권 확인
   const { data: isOwner, isLoading: isOwnerLoading } = useQuery({
     queryKey: ['isOwner', channel?.channelId, userId],
-    queryFn: () => fetchIsOwner(channel?.channelId!, userId),
+    queryFn: () => fetchIsOwner(channel?.channelId!, userId!),
     enabled: !!channel?.channelId && !!userId,
     refetchOnMount: "always",
     staleTime: 0,
@@ -131,7 +132,8 @@ const handleSubscribeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         {isOwnerLoading || isSubscriptionLoading ? (
           <p>Loading...</p>
         ) : isOwner ? (
-          <Link href="category-edit">
+          <>
+            <Link href="category-edit">
             <Button
               radius="full"
               variant="solid"
@@ -141,6 +143,18 @@ const handleSubscribeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
               카테고리 수정
             </Button>
           </Link>
+          <Button
+            radius="full"
+            variant={isSubscribed ? "bordered" :"solid"}
+            className="font-bold px-3 py-2 z-20"
+            color="primary"
+            onClick={handleSubscribeClick}
+          >
+            {isSubscribed ? "구독 중" : "구독"}
+          </Button>
+          </>
+        
+          
         ) : (
           <Button
             radius="full"
@@ -177,12 +191,12 @@ const handleSubscribeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
               <IconText icon={LinkIcon} text="규칙 보기" />
             </Button>
           )}
-          {channel?.userCount && channel.userCount > 0 && (
+          {/* {channel?.userCount && channel.userCount > 0 && (
             <IconText
               icon={UserGroupIcon}
               text={`구독자 ${channel.userCount}명`}
             />
-          )}
+          )} */}
         </div>
       </div>
 

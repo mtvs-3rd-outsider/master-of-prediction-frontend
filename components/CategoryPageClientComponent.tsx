@@ -28,8 +28,7 @@ const CategoryPageClientComponent: React.FC<CategoryPageProps> = ({ category, ta
       {/* 선택된 탭에 따라 표시할 콘텐츠 */}
       <div className="mt-4">
         {activeTab === 0 && <div>포스트 콘텐츠...</div>} {/* 포스트 탭 */}
-        {activeTab === 1 && <div>댓글 콘텐츠...</div>} {/* 댓글 탭 */}
-        {activeTab === 2 && <div>활동 내역 콘텐츠...</div>} {/* 활동 내역 탭 */}
+        {activeTab === 1 && <div>활동 내역 콘텐츠...</div>} {/* 활동 내역 탭 */}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import useUserStore from '@store/useUserStore';
 import BettingProduct from './BettingProduct';
 import BettingList from './BettingList';
+import ChannelFeedList from './ChannelFeedList';
 
 interface UserChannelPageProps {
   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
@@ -36,7 +37,9 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user, 
 
       {/* 탭에 따라 표시할 콘텐츠 */}
       <div className="tab-content">
-        {activeTab === 0 && <div>Post content...</div>}
+        {activeTab === 0 && <div>
+          <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/>
+          </div>}
         {activeTab === 1 &&  <div>
              <BettingList/>
              </div>}
