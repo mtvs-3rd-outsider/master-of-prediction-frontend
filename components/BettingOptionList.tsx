@@ -66,18 +66,20 @@ const BettingOptionList = ({ options, optionsRatio }: Props) => {
           );
 
           return (
-            <BettingOption
-              key={option.optionId}
-              content={option.content}
-              imgUrl={option.imgUrl}
-              currentOptionId={option.optionId}
-              ratio={matchingRatio}
-              data={
-                optionDatas != undefined && optionDatas != null
-                  ? optionDatas[`${option.optionId}`]
-                  : []
-              }
-            />
+            <>
+              <BettingOption
+                key={option.optionId}
+                content={option.content}
+                imgUrl={option.imgUrl}
+                currentOptionId={option.optionId}
+                ratio={matchingRatio}
+                data={
+                  optionDatas != undefined && optionDatas != null
+                    ? optionDatas[`${option.optionId}`]
+                    : []
+                }
+              />
+            </>
           ); // matchingRatio가 없으면 null을 반환
         })}
 

@@ -16,9 +16,27 @@ import {
 import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
 import { BettingOptions, BettingProductInfo } from "@/types/BettingTypes";
 import Image from "next/image";
+import apiClient from "@handler/fetch/axios";
+import { useParams } from "next/navigation";
+import { AxiosError } from "axios";
 
 function BettingProductDetail(props: BettingProductInfo) {
   const { user, product, productImages, options, optionsRatio } = props;
+  const params = useParams();
+
+  const handleSettlement = async () => {
+    try {
+      const response = await apiClient.post(
+        `/betting-products/settlement?productId=${params.id}&optionId=${options[0].optionId}`
+      );
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        // AxiosError 타입일 경우 처리
+        console.error("Response data:", error.response?.data?.error); // 서버 응답 데이터
+      }
+      // alert("서버오류 정산실패.");
+    }
+  };
 
   return (
     <>
@@ -41,7 +59,9 @@ function BettingProductDetail(props: BettingProductInfo) {
                   avatarUrl={"/images/logo.png"}
                 />
               )}
-              {user.userID == product.userId && <Button>정산하기</Button>}
+              {user.userID == product.userId && (
+                <button onClick={handleSettlement}>정산하기</button>
+              )}
             </>
           )}
         </div>

@@ -129,8 +129,8 @@ const BettingOption = ({
       </li>
       {/* <div style={{ width: "300px", height: "300px" }}> */}
       {state && (
-        <div className="w-full h-44">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full h-56">
+          <ResponsiveContainer width="100%" height="90%">
             <LineChart
               data={data}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -155,6 +155,14 @@ const BettingOption = ({
               />
             </LineChart>
           </ResponsiveContainer>
+          <div className="flex gap-4 h-auto">
+            <button className="rounded-lg hover:bg-gray-400 px-4">1H</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">6H</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">1D</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">1W</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">1M</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">ALL</button>
+          </div>
         </div>
       )}
     </>
