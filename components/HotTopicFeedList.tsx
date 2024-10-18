@@ -3,10 +3,10 @@ import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import Post from '@ui/Post';
 import { getHotTopicFeeds } from '@handler/hotTopicApi';
-import { HotTopicFeedResponseDTO } from '@components/types/feed';
+import { FeedsResponseDTO } from '@components/types/feedsResponseDTO'; // 백엔드와 일치하는 DTO 사용
 
 const HotTopicFeedList: React.FC = () => {
-  const [feeds, setFeeds] = useState<HotTopicFeedResponseDTO[]>([]);
+  const [feeds, setFeeds] = useState<FeedsResponseDTO[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { ref, inView } = useInView();
@@ -62,7 +62,7 @@ const HotTopicFeedList: React.FC = () => {
             youtubeUrls={feed.youtubeUrls}
             commentsCount={feed.commentsCount}
             likesCount={feed.likesCount}
-            quoteCount={0} // 예시 값, 실제 데이터에 맞게 수정 필요
+            quoteCount={feed.quoteCount || 0}
             onClick={() => handlePostClick(feed.id.toString())}
             isLike={feed.isLike || false} 
           />
