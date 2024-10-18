@@ -2,10 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import Post from '@ui/Post';
-import { getHotTopicFeeds } from '@handler/hotTopicApi';
-import { FeedsResponseDTO } from '@components/types/feedsResponseDTO'; // 백엔드와 일치하는 DTO 사용
+import { getChannelFeeds } from '@handler/channelApi';
+import { FeedsResponseDTO } from '@components/types/feedsResponseDTO';
 
-const HotTopicFeedList: React.FC = () => {
+interface ChannelFeedListProps {
+  channelType: string;
+  channelId: number;
+}
+
+const ChannelFeedList: React.FC<ChannelFeedListProps> = ({ channelType, channelId }) => {
   const [feeds, setFeeds] = useState<FeedsResponseDTO[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -16,7 +21,7 @@ const HotTopicFeedList: React.FC = () => {
     if (!hasMore) return;
 
     try {
-      const response = await getHotTopicFeeds(page);
+      const response = await getChannelFeeds(channelType, channelId, page);
       const newFeeds = response.content;
 
       if (newFeeds.length === 0) {
@@ -27,9 +32,9 @@ const HotTopicFeedList: React.FC = () => {
         setHasMore(!response.last);
       }
     } catch (error) {
-      console.error('Error loading hot topic feeds:', error);
+      console.error('Error loading channel feeds:', error);
     }
-  }, [page, hasMore]);
+  }, [page, hasMore, channelType, channelId]);
 
   useEffect(() => {
     if (inView) {
@@ -40,6 +45,7 @@ const HotTopicFeedList: React.FC = () => {
   const handlePostClick = useCallback((id: string) => {
     router.push(`/feed/${id}`);
   }, [router]);
+
 
   return (
     <div>
@@ -75,4 +81,4 @@ const HotTopicFeedList: React.FC = () => {
   );
 };
 
-export default HotTopicFeedList;
+export default ChannelFeedList;

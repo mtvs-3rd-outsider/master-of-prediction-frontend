@@ -37,8 +37,6 @@ apiClient.interceptors.request.use(
   console.log(lang)
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
-    } else {
-      delete config.headers['Authorization'];
     }
     return config;
   },

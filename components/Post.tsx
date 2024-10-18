@@ -36,7 +36,7 @@ export interface PostItem {
   likesCount: number;
   quoteCount: number;
   onClick: () => void;
-  isLikedByUser: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
+  isLike: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
 }
 
 const Post: React.FC<PostItem> = ({
@@ -58,17 +58,17 @@ const Post: React.FC<PostItem> = ({
   likesCount: initialLikesCount = 0, 
   quoteCount = 0,    // 기본값 설정
   onClick = () => {}, // 기본값 설정
-  isLikedByUser = false, // 기본값 설정
+  isLike = false, // 기본값 설정
   ...props
 }) => {
-  const [isLiked, setIsLiked] = useState(isLikedByUser);
+  const [isLiked, setIsLiked] = useState(isLike);
   const [likesCount, setLikesCount] = useState(initialLikesCount);
   const userInfo = useUserStore(state => state?.userInfo);
 
   useEffect(() => {
-    setIsLiked(isLikedByUser);
+    setIsLiked(isLike);
     setLikesCount(initialLikesCount);
-  }, [isLikedByUser, initialLikesCount]);
+  }, [isLike, initialLikesCount]);
 
   const toggleLike = async (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지

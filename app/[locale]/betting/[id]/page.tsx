@@ -57,7 +57,7 @@ function BettingDetailPage() {
         <div className="sticky top-0">
           <Search />
           <OrderForm options={bettingInfo?.options || []} />
-          <BettingProductsChatRoom />
+          <BettingProductsChatRoom id={params.id as string} />
           <Footer />
         </div>
       </aside>

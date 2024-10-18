@@ -5,7 +5,7 @@ import { persist, devtools } from 'zustand/middleware';
 
 // UserInfo 인터페이스 정의
 export interface UserInfo {
-  id?: number;
+  id?: string;
   email?: string;
   displayName?: string;
   userName?: string;

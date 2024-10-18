@@ -41,7 +41,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
   };
 
   // 탭 데이터
-  const tabs = ['Posts', 'Replies', 'Bettings'];
+  const tabs = ['Posts',  'Bettings'];
 
   return (
     <>

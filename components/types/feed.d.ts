@@ -22,4 +22,5 @@ export interface HotTopicFeedResponseDTO {
   likesCount: number;
   commentsCount: number;
   quoteCount: number;
+  isLike: boolean; // 이 줄을 추가
 }

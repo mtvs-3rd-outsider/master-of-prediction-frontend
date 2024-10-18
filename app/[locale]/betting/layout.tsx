@@ -7,7 +7,6 @@ import type { Metadata, Viewport } from "next";
 import Head from "next/head";
 import { NextUIProvider } from "@nextui-org/system";
 import useUserStore from "@store/useUserStore";
-import FloatingActionButton from "@ui/FloatingActionButton";
 import { Button } from "@nextui-org/button";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
