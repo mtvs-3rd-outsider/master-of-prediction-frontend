@@ -37,6 +37,7 @@ export interface PostItem {
   quoteCount: number;
   onClick: () => void;
   isLike: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
+
 }
 
 const Post: React.FC<PostItem> = ({
@@ -54,11 +55,11 @@ const Post: React.FC<PostItem> = ({
   viewCount,
   mediaFiles,
   youtubeUrls,
-  commentsCount = 0, // 기본값 설정
-  likesCount: initialLikesCount = 0, 
-  quoteCount = 0,    // 기본값 설정
-  onClick = () => {}, // 기본값 설정
-  isLike = false, // 기본값 설정
+  commentsCount = 0,
+  likesCount: initialLikesCount = 0,
+  quoteCount = 0,
+  onClick = () => {},
+  isLike = false,
   ...props
 }) => {
   const [isLiked, setIsLiked] = useState(isLike);
@@ -71,7 +72,7 @@ const Post: React.FC<PostItem> = ({
   }, [isLike, initialLikesCount]);
 
   const toggleLike = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 버블링 방지
+    e.stopPropagation();
 
     if (!userInfo?.id) {
       alert('로그인이 필요합니다.');
@@ -79,15 +80,32 @@ const Post: React.FC<PostItem> = ({
     }
 
     try {
-      const response = await axios.post(`/feeds/${id}/${userInfo.id}`);
-      const newIsLiked = response.data;
-      setIsLiked(newIsLiked);
-      setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
+      const likeDTO = {
+        likeType: 'FEED',
+        viewType: 'HOTTOPICCHANNEL',
+        userId: userInfo.id,
+        targetId: id
+      };
+
+      const response = await axios.post('/like', likeDTO, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.message === "좋아요") {
+        setIsLiked(true);
+        setLikesCount(prevCount => prevCount + 1);
+      } else if (response.data.message === "좋아요 취소") {
+        setIsLiked(false);
+        setLikesCount(prevCount => prevCount - 1);
+      }
     } catch (error) {
       console.error('Error toggling like:', error);
       alert('좋아요 처리 중 오류가 발생했습니다.');
     }
   };
+
 
   return (
     <div 
@@ -144,12 +162,12 @@ const Post: React.FC<PostItem> = ({
             {quoteCount}
           </li>
           <li onClick={toggleLike}>
-            {isLiked ? (
-              <HeartIconSolid className="w-5 h-5 text-red-500" />
-            ) : (
-              <HeartIconOutline className="w-5 h-5" />
-            )}
-            {likesCount}
+          {isLiked ? (
+        <HeartIconSolid className="w-5 h-5 text-red-500" />
+      ) : (
+        <HeartIconOutline className="w-5 h-5" />
+      )}
+      {likesCount}
           </li>
           <li>
             <ArrowUpTrayIcon className="w-5 h-5" />
