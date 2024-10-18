@@ -1,5 +1,3 @@
-// @handler/hotTopicApi.ts
-
 import axios from '@handler/fetch/axios';
 import { FeedsResponseDTO } from '@components/types/feedsResponseDTO';
 
@@ -12,18 +10,20 @@ interface PageResponse<T> {
   size: number;
 }
 
-export const getHotTopicFeeds = async (
+export const getChannelFeeds = async (
+  channelType: string,
+  channelId: number,
   page: number = 0,
   size: number = 10,
-  sort: string = 'viewCount,DESC'
+  sort: string = 'createdAt,DESC'
 ): Promise<PageResponse<FeedsResponseDTO>> => {
   try {
-    const response = await axios.get('/feeds/hot-topic', { // '/api/v1/' 부분 제거
+    const response = await axios.get(`/myfeeds/${channelType}/${channelId}`, {
       params: { page, size, sort }
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching hot topic feeds:', error);
+    console.error('Error fetching channel feeds:', error);
     throw error;
   }
 };
