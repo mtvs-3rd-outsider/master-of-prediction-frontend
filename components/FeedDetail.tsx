@@ -30,7 +30,7 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ feed }) => {
           mediaFiles={feed.mediaFiles.map(file => file.fileUrl)}
           youtubeUrls={feed.youTubeVideos.map(video => video.youtubeUrl)}
           onClick={() => {}}
-          isLikedByUser={feed.isLikedByUser} // 이 줄을 추가합니다
+          isLike={feed.isLike} // 이 줄을 추가합니다
         />
       </div>
       {/* 댓글 섹션 */}
