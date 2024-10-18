@@ -1,5 +1,6 @@
 "use client"
 import { useTranslationStore } from '@store/useTranslationStore';
+import FCM from '@ui/FCM';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 
@@ -26,6 +27,7 @@ export default function RootLayout({
   
   return (
     <>
+     <FCM /> 
       <Toaster />
       {children}
     </>

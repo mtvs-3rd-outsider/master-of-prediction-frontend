@@ -27,13 +27,13 @@ type Message = {
   roomId: number;
 };
 
-export default function ChatUI() {
+export default function ChatUI({id}:any ) {
   const messageInputRef = useRef<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-  const [roomId, setRoom] = useState<any>(2);
+  const [roomId, setRoom] = useState<any>("bet-"+id.toString());
   const [endpoint, setEndpoint] = useState<any>(null);
   const userInfo =useUserStore(state=> state.userInfo);
   // RSocket 관련 상태 및 변수
@@ -60,7 +60,7 @@ export default function ChatUI() {
 
     client.connect().then((rsocket) => {
       clientRef.current = rsocket;
-      setRoom(2);
+      // setRoom(2);
       setEndpoint(`api.v1.messages.stream/${roomId}`);
 
       // 메시지 수신 스트림 설정

@@ -11,7 +11,7 @@ import {
   EnvelopeIcon as EnvelopeIconOutline,
   RectangleStackIcon as RectangleStackIconOutline,
   UserIcon as UserIconOutline,
-  MagnifyingGlassIcon as MagnifyingGlassIconOutline, // 검색 아이콘 추가
+  MagnifyingGlassIcon as MagnifyingGlassIconOutline,
 } from "@heroicons/react/24/outline";
 import {
   CircleStackIcon as CircleStackIconSolid,
@@ -20,11 +20,12 @@ import {
   EnvelopeIcon as EnvelopeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
   UserIcon as UserIconSolid,
-  MagnifyingGlassIcon as MagnifyingGlassIconSolid, // 검색 아이콘 추가
+  MagnifyingGlassIcon as MagnifyingGlassIconSolid,
 } from "@heroicons/react/24/solid";
 import { Button } from "@nextui-org/button";
 import useUserStore from "@store/useUserStore";
 import { useTranslations } from 'next-intl';
+
 interface NavLinkItem {
   href: string;
   text: string;
@@ -44,52 +45,41 @@ const Nav: React.FC = () => {
   const items: NavLinkItem[] = [
     {
       href: "/betting",
-      text: t('배팅'), // 'bettings'를 '배팅'으로 변경
+      text: t('배팅'),
       icon: <CircleStackIconOutline className="w-6 h-6" />,
       activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
     },
     {
       href: "/hot-topic",
-      text: t('핫토픽'), // 'hotTopic'을 '핫토픽'으로 변경
+      text: t('핫토픽'),
       icon: <FireIconOutline className="w-6 h-6" />,
       activeIcon: <FireIconSolid className="w-6 h-6" />,
     },
     {
       href: "/notifications",
-      text: t('알림'), // 'notifications'를 '알림'으로 변경
+      text: t('알림'),
       icon: <BellIconOutline className="w-6 h-6" />,
       activeIcon: <BellIconSolid className="w-6 h-6" />,
     },
     {
-      href: "/messages",
-      text: t('메시지'), // 'messages'를 '메시지'로 변경
-      icon: <EnvelopeIconOutline className="w-6 h-6" />,
-      activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
-    },
-    {
       href: "/category-channel",
-      text: t('카테고리 채널'), // 'categoryChannel'을 '카테고리 채널'로 변경
+      text: t('카테고리 채널'),
       icon: <RectangleStackIconOutline className="w-6 h-6" />,
       activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
     },
-    {
-      href: "/search",
-      text: t('검색'), // 'search'를 '검색'으로 변경
-      icon: <MagnifyingGlassIconOutline className="w-6 h-6" />,
-      activeIcon: <MagnifyingGlassIconSolid className="w-6 h-6" />,
-    },
+   
     ...(userInfo?.id
       ? [
           {
             href: `/channel/${userInfo?.id}`,
-            text: t('내 채널'), // 'myChannel'을 '내 채널'로 변경
+            text: t('내 채널'),
             icon: <UserIconOutline className="w-6 h-6" />,
             activeIcon: <UserIconSolid className="w-6 h-6" />,
           },
         ]
       : []),
   ];
-  
+
   const router = useRouter();
   const handleClick = () => {
     router.push("/login");
@@ -97,7 +87,7 @@ const Nav: React.FC = () => {
 
   useEffect(() => {
     if (hasHydrated) {
-      setIsReady(true); // Zustand가 hydration이 완료되면 렌더링 시작
+      setIsReady(true);
     }
   }, [hasHydrated, userInfo]);
 
@@ -145,7 +135,7 @@ const Nav: React.FC = () => {
                 <AccountNavItem />
               )
             ) : (
-              <div className="h-10 w-full mb-4"></div> // 로딩 중일 때 자리 차지용
+              <div className="h-10 w-full mb-4"></div>
             )}
           </div>
         </div>
@@ -162,6 +152,11 @@ const Nav: React.FC = () => {
             {pathname === href ? activeIcon : icon}
           </NavItem>
         ))}
+        {!userInfo && (
+          <NavItem href="/login" width="inline" size="default">
+            <UserIconOutline className="w-6 h-6" />
+          </NavItem>
+        )}
       </footer>
     </>
   );
