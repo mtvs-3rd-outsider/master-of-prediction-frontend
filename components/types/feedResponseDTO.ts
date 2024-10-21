@@ -31,7 +31,7 @@ export interface FeedResponseDTO {
   }
   
   export interface UserDTO {
-    id: number;
+    userId: number;
     userName: string;
     displayName: string;
     points: number;

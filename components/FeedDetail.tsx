@@ -2,6 +2,8 @@ import React from 'react';
 import { FeedResponseDTO } from '@components/types/feedResponseDTO';
 import Post from '@ui/Post';
 import BackButton from '@components/BackButton';
+import FeedComments from './FeedComments';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 interface FeedDetailProps {
   feed: FeedResponseDTO;
@@ -30,37 +32,15 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ feed }) => {
           mediaFiles={feed.mediaFiles.map(file => file.fileUrl)}
           youtubeUrls={feed.youTubeVideos.map(video => video.youtubeUrl)}
           onClick={() => {}}
-          isLikedByUser={feed.isLikedByUser} // 이 줄을 추가합니다
+          isLike={feed.isLike || false} // 이 줄을 추가합니다
+          userId={feed.user?.userId}
         />
       </div>
-      {/* 댓글 섹션 */}
-      <div className="mt-8 border-t pt-4">
-        <h2 className="text-xl font-bold mb-4">Comments</h2>
-        {feed.commentDTOS && feed.commentDTOS.length > 0 ? (
-          feed.commentDTOS.map(comment => (
-            <div key={comment.id} className="mb-4">
-              <p>{comment.content}</p>
-              <p className="text-sm text-gray-500">
-                {new Date(comment.createdAt).toLocaleString()}
-              </p>
-              {comment.replies && comment.replies.length > 0 && (
-                <div className="ml-8 mt-2">
-                  {comment.replies.map(reply => (
-                    <div key={reply.id} className="mb-2">
-                      <p>{reply.content}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(reply.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No comments yet.</p>
-        )}
-      </div>
+     {/* 댓글 섹션 */}
+<div className="mt-8 border-t pt-4">
+  <h2 className="text-xl font-bold mb-4">댓글</h2>
+  <FeedComments id={feed.id.toString()}/>
+</div>
     </div>
   );
 };
