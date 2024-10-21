@@ -1,8 +1,7 @@
-// @components/BettingList.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import BettingProduct from './BettingProduct';
+import NotificationProduct from './NotificationProduct';
 import apiClient from '@handler/fetch/axios';
 import useUserStore from '@store/useUserStore';
 
@@ -13,7 +12,10 @@ const NotificationList: React.FC = () => {
     triggerOnce: false,
   });
 
-  const fetchMyBettings = async (pageParam: number) => {
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  // 알림 데이터 가져오는 함수
+  const fetchNotifications = async (pageParam: number) => {
     const response = await apiClient.get(`/notifications`, {
       params: { 
         userId: userInfo?.id,
@@ -26,33 +28,45 @@ const NotificationList: React.FC = () => {
 
   const {
     fetchNextPage,
-    fetchPreviousPage,
     hasNextPage,
-    hasPreviousPage,
     isFetchingNextPage,
-    isFetchingPreviousPage,
     data,
-    error:infiniteError,
+    error: infiniteError,
     status
-
   } = useInfiniteQuery(
     {
-      queryKey: ['mybettings'],
-      queryFn: ({ pageParam = 1 })=> fetchMyBettings(pageParam),
+      queryKey: ['notifications'],
+      queryFn: ({ pageParam = 1 }) => fetchNotifications(pageParam),
       initialPageParam: 0,
-      getNextPageParam: (lastPage, allPages) => {
-      // lastPage는 Spring Page 객체입니다.
-      console.log(lastPage);
-      if (!lastPage.last) {
-        return lastPage.number + 1; // 다음 페이지 번호를 반환
-      } else {
-        return undefined; // 더 이상 페이지가 없으면 undefined 반환
-      }
+      getNextPageParam: (lastPage) => {
+        if (!lastPage.last) {
+          return lastPage.number + 1; // 다음 페이지 번호 반환
+        } else {
+          return undefined; // 마지막 페이지면 undefined 반환
+        }
       },
       enabled: !!userInfo
-  }
+    }
   );
 
+  // 알림의 isRead 상태가 변경되면 해당 알림 항목 업데이트
+  const handleReadUpdate = (id: number) => {
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
+        notification.id === id ? { ...notification, isRead: true } : notification
+      )
+    );
+  };
+
+  // 데이터가 변경될 때 알림 상태 업데이트
+  useEffect(() => {
+    if (data) {
+      const allNotifications = data.pages.flatMap(page => page.content);
+      setNotifications(allNotifications);
+    }
+  }, [data]);
+
+  // 페이지가 로드될 때 더 많은 알림을 가져오는 로직
   useEffect(() => {
     if (isInView && hasNextPage) {
       fetchNextPage();
@@ -67,24 +81,17 @@ const NotificationList: React.FC = () => {
         <p>Error: {infiniteError.message}</p>
       ) : (
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
-          {data?.pages.map((page, pageIndex) => (
-            <React.Fragment key={pageIndex}>
-              {page.content.map((node: any) => (
-                <li key={node.bettingId}>
-                  <BettingProduct
-                    userID={node.userID}
-                    userName={node.userName}
-                    displayName={node.displayName}
-                    tierName={node.tierName}
-                    userImg={node.userImg}
-                    title={node.title}
-                    imgUrls={node.imgUrls}
-                    bettingId={node.bettingId}
-                    blindName={node.blindName}
-                  />
-                </li>
-              ))}
-            </React.Fragment>
+          {notifications.map((notification, index) => (
+            <li key={notification.id}>
+              <NotificationProduct
+                id={notification.id}
+                title={notification.title}
+                content={notification.content}
+                isRead={notification.isRead}
+                createdAt={notification.createdAt}
+                onReadUpdate={handleReadUpdate} // isRead 업데이트 콜백 전달
+              />
+            </li>
           ))}
         </ul>
       )}

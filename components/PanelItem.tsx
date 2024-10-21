@@ -46,7 +46,7 @@ const followMutation = useOptimisticMutation(
   const fetchSubscribe = async (actionType :string)=>{
     await apiClient.post("/channel/subscription", { channelId: id, isUserChannel ,actionType: actionType});
   }
-  const userId: number | undefined = userInfo?.id;
+  const userId: string | undefined = userInfo?.id;
   return (
   
     <Link href={href}>

@@ -38,7 +38,7 @@ export  default async function Page( ) {
   // };
 
   // 탭 데이터
-  const tabs = [ 'Bettings'];
+  const tabs = [ 'Bettings','ranking'];
 
   return (
     <>

@@ -12,6 +12,10 @@ import useUserStore from '@store/useUserStore';
 import BettingProduct from './BettingProduct';
 import BettingList from './BettingList';
 import ChannelFeedList from './ChannelFeedList';
+import NotificationList from './NotificationList';
+import UserRankingList from './UserRankingList';
+import MyUserRankingItem from './MyUserRankingItem';
+import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
 
 interface UserChannelPageProps {
 //   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
@@ -39,9 +43,21 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
       <div className="tab-content">
         {activeTab === 0 && <div>
           {/* <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/> */}
+          <NotificationList/>
           </div>}
         {activeTab === 1 &&  <div>
-             <BettingList/>
+     
+             <Card className="w-full">
+      <CardHeader >
+       
+       
+      </CardHeader>
+      <CardBody>
+      <MyUserRankingItem />
+             <UserRankingList/>
+      </CardBody>
+     
+    </Card>
              </div>}
       </div>
     </div>

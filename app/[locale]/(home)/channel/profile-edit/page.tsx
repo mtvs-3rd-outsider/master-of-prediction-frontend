@@ -29,7 +29,7 @@ import toast from "react-hot-toast";
   
 const ProfileEditPage: React.FC =  () => {
 
-  const fetchUserProfile = async (userId: number | undefined ) => {
+  const fetchUserProfile = async (userId: string | undefined ) => {
     const response = await apiClient.get(`/my-channel/${userId}`);
     if (!response.data) {
       throw new Error("Failed to fetch profile data");
