@@ -23,6 +23,7 @@ interface Props {
   currentOptionId: number;
   ratio?: OptionsRatio;
   data?: BettingOrderStatisticsDTO[];
+  winningOption?: number | null;
 }
 interface CustomPayload {
   orderTime: string;
@@ -61,6 +62,7 @@ const BettingOption = ({
   currentOptionId,
   ratio,
   data,
+  winningOption,
 }: Props) => {
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
@@ -100,9 +102,10 @@ const BettingOption = ({
   return (
     <>
       <li
-        className="flex gap-4 py-6
+        className={`flex gap-4 py-6
 			rounded-lg shadow-lg p-6 transform transition-transform duration-300 ease-in-out hover:bg-gray-200 hover:shadow-xl
-			"
+          ${winningOption == currentOptionId && "bg-green-400"}
+      `}
         onClick={handleClick}
       >
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
@@ -129,8 +132,8 @@ const BettingOption = ({
       </li>
       {/* <div style={{ width: "300px", height: "300px" }}> */}
       {state && (
-        <div className="w-full h-44">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full h-56">
+          <ResponsiveContainer width="100%" height="90%">
             <LineChart
               data={data}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -155,6 +158,14 @@ const BettingOption = ({
               />
             </LineChart>
           </ResponsiveContainer>
+          <div className="flex gap-4 h-auto">
+            <button className="rounded-lg hover:bg-gray-400 px-4">1H</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">6H</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">1D</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">1W</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">1M</button>
+            <button className="rounded-lg hover:bg-gray-400 px-4">ALL</button>
+          </div>
         </div>
       )}
     </>
