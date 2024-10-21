@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Account from "./Account";
 import AccountNavItem from "./AccountNavItem";
 import Avatar from "./AvatarWithIcon";
-import Button from "./Button";
 import BettingOptionList from "./BettingOptionList";
 import {
   HeartIcon,
@@ -19,22 +18,48 @@ import Image from "next/image";
 import apiClient from "@handler/fetch/axios";
 import { useParams } from "next/navigation";
 import { AxiosError } from "axios";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Button,
+  RadioGroup,
+  Radio,
+} from "@nextui-org/react";
 
 function BettingProductDetail(props: BettingProductInfo) {
   const { user, product, productImages, options, optionsRatio } = props;
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
+
+  useEffect(() => {
+    if (
+      options != undefined &&
+      options != null &&
+      options[0]?.optionId != undefined
+    ) {
+      setChoiceOptionId(options[0].optionId);
+    }
+  }, [options]);
+
   const params = useParams();
+
+  const handleChoiceOption = (id: number) => {
+    setChoiceOptionId(id);
+  };
 
   const handleSettlement = async () => {
     try {
       const response = await apiClient.post(
-        `/betting-products/settlement?productId=${params.id}&optionId=${options[0].optionId}`
+        `/betting-products/settlement?productId=${params.id}&optionId=${choiceOptionId}`
       );
     } catch (error) {
       if (error instanceof AxiosError) {
-        // AxiosError 타입일 경우 처리
         console.error("Response data:", error.response?.data?.error); // 서버 응답 데이터
       }
-      // alert("서버오류 정산실패.");
     }
   };
 
@@ -59,9 +84,75 @@ function BettingProductDetail(props: BettingProductInfo) {
                   avatarUrl={"/images/logo.png"}
                 />
               )}
-              {user.userID == product.userId && (
-                <button onClick={handleSettlement}>정산하기</button>
-              )}
+              <p className="flex flex-1">
+                ~{product.deadlineDate} {product.deadlineTime}
+              </p>
+              {user.userID == product.userId &&
+                product.winningOption == null && (
+                  <>
+                    <Button
+                      color="primary"
+                      variant="solid"
+                      radius="full"
+                      className="py-2 px-2 bg-black"
+                      onPress={onOpen}
+                    >
+                      정산하기
+                    </Button>
+                    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                      <ModalContent>
+                        {(onClose) => (
+                          <>
+                            <ModalHeader className="flex flex-col gap-1">
+                              정산하기
+                            </ModalHeader>
+                            <ModalBody>
+                              {options && options.length > 1 && (
+                                <RadioGroup
+                                  label="승리를 발표할 옵션을 선택해주세요."
+                                  defaultValue={options[0].optionId.toString()}
+                                >
+                                  {options.map((item) => {
+                                    const optionId: string = `${item.optionId}`;
+                                    return (
+                                      <Radio
+                                        key={optionId}
+                                        value={optionId}
+                                        onClick={() =>
+                                          handleChoiceOption(item.optionId)
+                                        }
+                                      >
+                                        {item.content}
+                                      </Radio>
+                                    );
+                                  })}
+                                </RadioGroup>
+                              )}
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button
+                                color="danger"
+                                variant="light"
+                                className="px-2 py-2"
+                                onPress={onClose}
+                              >
+                                취소
+                              </Button>
+                              <Button
+                                color="primary"
+                                className="px-2 py-2 bg-black"
+                                onPress={onClose}
+                                onClick={handleSettlement}
+                              >
+                                정산
+                              </Button>
+                            </ModalFooter>
+                          </>
+                        )}
+                      </ModalContent>
+                    </Modal>
+                  </>
+                )}
             </>
           )}
         </div>
@@ -121,7 +212,11 @@ function BettingProductDetail(props: BettingProductInfo) {
         </div>
       </div>
       {/* options={bettingInfo?.options || ({} as BettingOptions[])} */}
-      <BettingOptionList options={options || []} optionsRatio={optionsRatio} />
+      <BettingOptionList
+        options={options || []}
+        optionsRatio={optionsRatio}
+        winningOption={product?.winningOption}
+      />
       <BettingCommentActivityTabs
         options={options || []}
         isBlind={product.isBlind}

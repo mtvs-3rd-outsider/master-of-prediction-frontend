@@ -15,6 +15,7 @@ export interface BettingProduct {
   content: string;
   userId: number;
   blindName: string;
+  winningOption: number | null;
 }
 
 // 옵션 타입 정의

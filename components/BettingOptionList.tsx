@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 interface Props {
   options: BettingOptions[] | [];
   optionsRatio: OptionsRatio[] | [];
+  winningOption?: number | null;
 }
 
 interface BettingOrderHistoryDataProps {
@@ -30,7 +31,7 @@ const removeDuplicateOrderDates = (
     }
   });
 };
-const BettingOptionList = ({ options, optionsRatio }: Props) => {
+const BettingOptionList = ({ options, optionsRatio, winningOption }: Props) => {
   const [optionDatas, setOptionDatas] =
     useState<BettingOrderHistoryDataProps | null>(null);
   const bettingId = useParams().id;
@@ -78,6 +79,7 @@ const BettingOptionList = ({ options, optionsRatio }: Props) => {
                     ? optionDatas[`${option.optionId}`]
                     : []
                 }
+                winningOption={winningOption}
               />
             </>
           ); // matchingRatio가 없으면 null을 반환

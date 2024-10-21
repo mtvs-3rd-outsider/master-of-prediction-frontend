@@ -23,6 +23,7 @@ interface Props {
   currentOptionId: number;
   ratio?: OptionsRatio;
   data?: BettingOrderStatisticsDTO[];
+  winningOption?: number | null;
 }
 interface CustomPayload {
   orderTime: string;
@@ -61,6 +62,7 @@ const BettingOption = ({
   currentOptionId,
   ratio,
   data,
+  winningOption,
 }: Props) => {
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
@@ -100,9 +102,10 @@ const BettingOption = ({
   return (
     <>
       <li
-        className="flex gap-4 py-6
+        className={`flex gap-4 py-6
 			rounded-lg shadow-lg p-6 transform transition-transform duration-300 ease-in-out hover:bg-gray-200 hover:shadow-xl
-			"
+          ${winningOption == currentOptionId && "bg-green-400"}
+      `}
         onClick={handleClick}
       >
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
