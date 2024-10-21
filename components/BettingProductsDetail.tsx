@@ -63,6 +63,15 @@ function BettingProductDetail(props: BettingProductInfo) {
     }
   };
 
+  const handleSettlementButton = () => {
+    const serverDateTime = new Date(
+      `${product.deadlineDate}T${product.deadlineTime}`
+    );
+    const currentDateTime = new Date();
+
+    return currentDateTime >= serverDateTime;
+  };
+
   return (
     <>
       <div className="px-6 pt-6">
@@ -88,7 +97,8 @@ function BettingProductDetail(props: BettingProductInfo) {
                 ~{product.deadlineDate} {product.deadlineTime}
               </p>
               {user.userID == product.userId &&
-                product.winningOption == null && (
+                product.winningOption == null &&
+                handleSettlementButton() && (
                   <>
                     <Button
                       color="primary"
