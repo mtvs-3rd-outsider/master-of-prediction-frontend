@@ -49,7 +49,7 @@ const HotTopicFeedList: React.FC = () => {
             key={`feed-${feed.id}`}
             id={feed.id.toString()}
             content={feed.content}
-            name={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+            name={feed.user?.displayName || feed.guest?.guestId || 'Unknown'}
             username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
             date={new Date(feed.createdAt).toLocaleString()}
             src={feed.user?.userImg || ''}
@@ -65,6 +65,7 @@ const HotTopicFeedList: React.FC = () => {
             quoteCount={feed.quoteCount || 0}
             onClick={() => handlePostClick(feed.id.toString())}
             isLike={feed.isLike || false} 
+            userId={feed.user?.userId}
           />
         </div>
       ))}

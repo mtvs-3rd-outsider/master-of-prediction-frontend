@@ -37,7 +37,7 @@ export interface PostItem {
   quoteCount: number;
   onClick: () => void;
   isLike: boolean; // 새로운 prop: 사용자가 이미 좋아요를 눌렀는지 여부
-
+  userId?:number;
 }
 
 const Post: React.FC<PostItem> = ({
@@ -60,6 +60,7 @@ const Post: React.FC<PostItem> = ({
   quoteCount = 0,
   onClick = () => {},
   isLike = false,
+  userId,
   ...props
 }) => {
   const [isLiked, setIsLiked] = useState(isLike);
@@ -133,7 +134,7 @@ const Post: React.FC<PostItem> = ({
           tierName="novice"
         />
        <div className="">
-  {userInfo?.userName === username ? (
+  {userInfo?.id === userId? (
     <DropdownMenuMyDemo feedId={id} />
   ) : (
     <DropdownMenuDemo />

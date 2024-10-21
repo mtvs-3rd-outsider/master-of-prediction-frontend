@@ -21,7 +21,7 @@ export interface FeedsResponseDTO {
 }
 
 export interface UserDTO {
-    id: number;
+    userId: number;
     userName: string;
     displayName: string;
     points: string; // BigDecimal을 string으로 표현
