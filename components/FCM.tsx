@@ -14,8 +14,9 @@ export default function FCM() {
     try {
       // 서버에서 기존 FCM 토큰을 가져옴
       const response = await apiClient(`/fcm`);
-      const { fcmTokens } = await response.data();
-
+      const fcmTokens  = response.data || [];
+      console.log(fcmTokens)
+      
       // 서버에 저장된 토큰과 currentToken 비교
       if (!fcmTokens.includes(token)) {
         // 토큰이 존재하지 않으면 서버에 등록
@@ -40,11 +41,13 @@ export default function FCM() {
       console.log('User is not logged in');
       return;
     }
+    console.log('User is logged in');
 
     // 브라우저에 알림 권한을 요청합니다.
     const permission = await Notification.requestPermission();
+    console.log('Notification permission:', permission);
     if (permission !== 'granted') return;
-
+    console.log('Initializing Firebase');
     // Firebase 앱 구성
     const firebaseApp = initializeApp({
       apiKey: "AIzaSyBRxGXjdHMYSssRJn2Y8BmPBMcT59akgt8",
@@ -55,12 +58,13 @@ export default function FCM() {
       appId: "1:989843402526:web:1da513d205c118dacb630f",
       measurementId: "G-3CZK9Z9LVB",
     });
-
+    console.log('Firebase initialized:', firebaseApp);
     const messaging = getMessaging(firebaseApp);
 
     // FCM 토큰 가져오기
     getToken(messaging, { vapidKey: "BHzDuDNOeit-xrwflV5FULJ_AbFc17dnJVTVrmeX6FJUYD6DJnIMXTHK3dQtvwgwlCn1YxcwW-AoU7XgvMe_0YU" })
       .then((token) => {
+
         if (token) {
           currentToken.current = token; // useRef로 관리하는 currentToken에 값 저장
           console.log(currentToken.current); // 토큰 출력
