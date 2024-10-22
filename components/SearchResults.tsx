@@ -41,7 +41,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         search?.pages.map((page: any, pageIndex: number) => (
           <React.Fragment key={pageIndex}>
             {page.content.map((result: any) => (
-              <Link key={result.userId} href={`/channel/${result.user_id}`}>
+              <Link key={result.user_id} href={`/channel/${result.user_id}`}>
                 <Account
                   className="px-2 py-2"
                   userName={result.user_name}
