@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect } from 'react';
 
 import Footer from '@ui/Footer';
@@ -8,10 +9,8 @@ import GuideSection from '@ui/GuideSection';
 import { getCookie } from '@util/Auth';
 import apiClient from '@handler/fetch/axios';
 import useUserStore from '@store/useUserStore';
-import { useRouter } from 'next/navigation';
 
 const HomePage: React.FC = () => {
-  const router = useRouter();
   const setUserInfo = useUserStore((state) => state.setUserInfo);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const HomePage: React.FC = () => {
     };
 
     fetchUserInfo();
-  }, [router, setUserInfo]);
+  }, [ setUserInfo]);
 
   return (
     <>
