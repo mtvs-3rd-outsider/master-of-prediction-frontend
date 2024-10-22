@@ -57,12 +57,7 @@ const Nav: React.FC = () => {
       icon: <FireIconOutline className="w-6 h-6" />,
       activeIcon: <FireIconSolid className="w-6 h-6" />,
     },
-    {
-      href: "/messages",
-      text: t('메시지'),
-      icon: <EnvelopeIconOutline className="w-6 h-6" />,
-      activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
-    },
+
     {
       href: "/category-channel",
       text: t('카테고리 채널'),
@@ -83,6 +78,12 @@ const Nav: React.FC = () => {
             text: t('내 채널'),
             icon: <UserIconOutline className="w-6 h-6" />,
             activeIcon: <UserIconSolid className="w-6 h-6" />,
+          },
+          {
+            href: "/messages",
+            text: t('메시지'),
+            icon: <EnvelopeIconOutline className="w-6 h-6" />,
+            activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
           },
         ]
       : []),
