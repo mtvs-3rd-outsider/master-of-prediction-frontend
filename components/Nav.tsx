@@ -10,6 +10,7 @@ import {
   BellIcon as BellIconOutline,
   EnvelopeIcon as EnvelopeIconOutline,
   RectangleStackIcon as RectangleStackIconOutline,
+  TrophyIcon as StarIconOutline,
   UserIcon as UserIconOutline,
   MagnifyingGlassIcon as MagnifyingGlassIconOutline,
 } from "@heroicons/react/24/outline";
@@ -19,6 +20,7 @@ import {
   BellIcon as BellIconSolid,
   EnvelopeIcon as EnvelopeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
+  TrophyIcon as StarIconSolid,
   UserIcon as UserIconSolid,
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
 } from "@heroicons/react/24/solid";
@@ -56,16 +58,22 @@ const Nav: React.FC = () => {
       activeIcon: <FireIconSolid className="w-6 h-6" />,
     },
     {
-      href: "/notifications",
-      text: t('알림'),
-      icon: <BellIconOutline className="w-6 h-6" />,
-      activeIcon: <BellIconSolid className="w-6 h-6" />,
+      href: "/messages",
+      text: t('메시지'),
+      icon: <EnvelopeIconOutline className="w-6 h-6" />,
+      activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
     },
     {
       href: "/category-channel",
       text: t('카테고리 채널'),
       icon: <RectangleStackIconOutline className="w-6 h-6" />,
       activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
+    },
+    {
+      href: "/ranking",
+      text: t('랭킹'),
+      icon: <StarIconOutline className="w-6 h-6" />,
+      activeIcon: <StarIconSolid className="w-6 h-6" />,
     },
    
     ...(userInfo?.id

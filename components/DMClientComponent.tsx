@@ -16,14 +16,13 @@ import NotificationList from './NotificationList';
 import UserRankingList from './UserRankingList';
 import MyUserRankingItem from './MyUserRankingItem';
 import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
-import DMList from './DMList';
 
 interface UserChannelPageProps {
 //   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
   tabNames: string[];
 }
 
-const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabNames }) => {
+const DMClientComponent: React.FC<UserChannelPageProps> = ({  tabNames }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {
@@ -54,7 +53,8 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
        
       </CardHeader>
       <CardBody>
-             <DMList/>
+      <MyUserRankingItem />
+             <UserRankingList/>
       </CardBody>
      
     </Card>
@@ -64,4 +64,4 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
   );
 };
 
-export default NotificationPageClientComponent;
+export default DMClientComponent;

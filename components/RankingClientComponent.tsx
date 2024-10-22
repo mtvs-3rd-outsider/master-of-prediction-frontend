@@ -16,14 +16,14 @@ import NotificationList from './NotificationList';
 import UserRankingList from './UserRankingList';
 import MyUserRankingItem from './MyUserRankingItem';
 import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
-import DMList from './DMList';
+import RankingSystem from './RankingSystem';
 
 interface UserChannelPageProps {
 //   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
   tabNames: string[];
 }
 
-const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabNames }) => {
+const RankingClientComponent: React.FC<UserChannelPageProps> = ({  tabNames }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {
@@ -44,7 +44,8 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
       <div className="tab-content">
         {activeTab === 0 && <div>
           {/* <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/> */}
-          <NotificationList/>
+          <MyUserRankingItem/>
+          <UserRankingList/>
           </div>}
         {activeTab === 1 &&  <div>
      
@@ -54,7 +55,7 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
        
       </CardHeader>
       <CardBody>
-             <DMList/>
+      <RankingSystem />
       </CardBody>
      
     </Card>
@@ -64,4 +65,4 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
   );
 };
 
-export default NotificationPageClientComponent;
+export default RankingClientComponent;

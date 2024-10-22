@@ -58,17 +58,14 @@ const GuideSection: React.FC = () => {
           dataAdSlot="2358632947348636"
           /> */}
         {/* 랭킹 시스템 설명 카드 */}
-        <Link href="/ranking" passHref className="block m-2 bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
+        <div  className="block m-2 bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
             <div className="text-center">
               <h3 className="text-lg font-semibold mb-2">랭킹 시스템</h3>
               <p className="text-sm text-gray-600 mb-4">
                 포인트 기반 티어 시스템으로 실시간 순위를 확인하고 경쟁하세요. 더 높은 티어로 올라가 최고의 예측자로 도전하세요!
               </p>
-              <span className="text-blue-500 font-semibold">
-                랭킹 시스템 페이지로 이동 →
-              </span>
             </div>
-        </Link>
+        </div>
      
         <Footer />
 
