@@ -5,7 +5,6 @@ import { Input } from "@nextui-org/input";
 import { ArrowUpIcon } from "@heroicons/react/24/solid";
 import { Chip } from "@nextui-org/chip";
 import { ScrollShadow } from "@nextui-org/scroll-shadow";
-import Avatar from "./radix/Avatar";
 import { Flowable } from "rsocket-flowable";
 import moment from "moment";
 import { RSocketClient, BufferEncoders, encodeAndAddWellKnownMetadata, MESSAGE_RSOCKET_ROUTING, MESSAGE_RSOCKET_COMPOSITE_METADATA } from "rsocket-core";
@@ -14,6 +13,7 @@ import { Textarea } from "@nextui-org/input";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import useUserStore from "@store/useUserStore";
+import Avatar from "@ui/radix/Avatar";
 
 // 메시지 및 유저 타입 정의
 type User = {
@@ -34,7 +34,7 @@ export default function ChatUI({id}:any ) {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-  const [roomId, setRoom] = useState<any>("bet-"+id);
+  const [roomId, setRoom] = useState<any>("bet-"+id.toString());
   const [endpoint, setEndpoint] = useState<any>(null);
   const userInfo =useUserStore(state=> state.userInfo);
   // RSocket 관련 상태 및 변수
@@ -194,7 +194,7 @@ export default function ChatUI({id}:any ) {
         hideScrollBar
         offset={100}
         orientation="horizontal"
-        className="w-auto h-auto  flex-1 overflow-y-auto"
+        className="max-w-[400px] max-h-[300px] flex-1 overflow-y-auto"
       >
         <div className="p-4 space-y-4">
           {messages.map((message, index) => {
