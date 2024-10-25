@@ -8,7 +8,14 @@ import { ScrollShadow } from "@nextui-org/scroll-shadow";
 import Avatar from "./radix/Avatar";
 import { Flowable } from "rsocket-flowable";
 import moment from "moment";
-import { RSocketClient, BufferEncoders, encodeAndAddWellKnownMetadata, MESSAGE_RSOCKET_ROUTING, MESSAGE_RSOCKET_COMPOSITE_METADATA } from "rsocket-core";
+import { RSocketClient, BufferEncoders, encodeAndAddWellKnownMetadata, MESSAGE_RSOCKET_ROUTING, MESSAGE_RSOCKET_COMPOSITE_METADATA,
+  JsonSerializer,
+  IdentitySerializer,
+  encodeRoute,
+  WellKnownMimeType,
+  MESSAGE_RSOCKET_AUTHENTICATION,
+  encodeCompositeMetadata
+ } from "rsocket-core";
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import { Textarea } from "@nextui-org/input";
 import ReactMarkdown from 'react-markdown';
@@ -52,14 +59,55 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
   const [endpoint, setEndpoint] = useState<any>(null);
   const [endpointForReaction, setEndpointForReaction] = useState<any>(null);
   const userInfo = useUserStore(state=> state.userInfo);
+  const token = useUserStore(state=> state.userInfo?.token);
   // RSocket 관련 상태 및 변수
   const clientRef = useRef<any>(null);
   const sourceRef = useRef<any>(null);
   const user: User = { name: userInfo?.displayName, avatarImageLink: userInfo?.avatarUrl , id: userInfo!.id }; // 현재 사용자를 하드코딩했으나 동적으로 변경 가능
+  function createMetadata(route: string, token: string): Buffer {
+    const metadata: Array<[string | number | WellKnownMimeType, Buffer]> = [];
+  
+    // 라우팅 정보 인코딩
+    const routeMetadata = encodeRoute(route);
+    metadata.push([
+      MESSAGE_RSOCKET_ROUTING,
+      routeMetadata,
+    ]);
+  
+    // JWT 토큰을 Bearer 토큰 형식으로 인코딩
+    const authMetadata = Buffer.from(`Bearer ${token}`, 'utf8');
+    metadata.push([
+      MESSAGE_RSOCKET_AUTHENTICATION,
+      authMetadata,
+    ]);
+  
+    // Composite Metadata로 인코딩
+    return encodeCompositeMetadata(metadata);
+  }
 
+  function createSetupMetadata(token: string): Buffer {
+    const metadata: Array<[string | number | WellKnownMimeType, Buffer]> = [];
+  
+    // JWT 토큰을 Bearer 토큰 형식으로 인코딩
+    // const authMetadata = Buffer.from(`Bearer ${token}`, 'utf8');
+    const authMetadata = Buffer.from(`Bearer ${token}`, 'utf8');
+    metadata.push([
+      MESSAGE_RSOCKET_AUTHENTICATION,
+      authMetadata,
+    ]);
+  
+    // Composite Metadata로 인코딩
+    return encodeCompositeMetadata(metadata);
+  }
+  const setupMetadata = createSetupMetadata(token!);
   // RSocket 초기화
   useEffect(() => {
     const client = new RSocketClient({
+      // serializers: {
+      //   data: JsonSerializer,
+      //   metadata: IdentitySerializer,
+      // },
+    
       transport: new RSocketWebSocketClient(
         {
           url: process.env.NEXT_PUBLIC_RSOCKET_URL!, // RSocket 서버 URL
@@ -71,14 +119,20 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
         metadataMimeType: MESSAGE_RSOCKET_COMPOSITE_METADATA.toString(),
         keepAlive: 5000,
         lifetime: 60000,
+        payload: {
+          data: Buffer.alloc(0), // Setup Payload의 데이터 부분은 비워둘 수 있습니다.
+          metadata: setupMetadata,
+        },
       },
     });
+
 
     client.connect().then((rsocket) => {
       clientRef.current = rsocket;
       // setRoom(2);
       setEndpoint(`api.v1.messages.stream/${roomId}`);
       setEndpointForReaction(`api.v1.reactions.stream/${roomId}`)
+      const metadata = createMetadata(endpoint, token! );
 
       // 메시지 수신 스트림 설정
       rsocket
@@ -101,6 +155,7 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
           },
           onError: (error) => {
             console.log("requestChannel e: ", error);
+            console.log("requestChannel e: ", error.source);
           },
           onNext: (payload) => {
             console.log("requestChannel onNext: ", payload);
@@ -109,11 +164,7 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
 
         rsocket
         .requestStream({
-          metadata: encodeAndAddWellKnownMetadata(
-            Buffer.alloc(0),
-            MESSAGE_RSOCKET_ROUTING,
-            Buffer.from(String.fromCharCode(endpoint.length) + endpoint)
-          ),
+          metadata: metadata,
         })
         .subscribe({
           onComplete: () => {
@@ -130,10 +181,13 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
               setMessages((prevMessages) => [...prevMessages, v]);
             } catch (error) {
               console.error("JSON parsing error: ", error);
+
             }
           },
           onError: (error) => {
             console.log("requestStream e: ", error);
+            console.log("requestChannel e: ", error.source);
+
           },
     });
 //     rsocket
@@ -195,7 +249,7 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
     // 메시지를 RSocket으로 전송
     if (content && sourceRef.current) {
       messageInputRef.current.value = "";
-
+      const channelMetadata = createMetadata(endpoint, token!);
       sourceRef.current.onNext({
         data: Buffer.from(
           JSON.stringify({
@@ -207,11 +261,7 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
             contentType: "PLAIN"
           })
         ),
-        metadata: encodeAndAddWellKnownMetadata(
-          Buffer.alloc(0),
-          MESSAGE_RSOCKET_ROUTING,
-          Buffer.from(String.fromCharCode(endpoint.length) + endpoint)
-        ),
+        metadata: channelMetadata,
       });
       await updateLastMessage(Number(senderId), Number(receiverId), content);
     }
