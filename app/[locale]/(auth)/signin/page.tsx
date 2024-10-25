@@ -56,12 +56,11 @@ export default function SignInPage() {
         toast.success("인증에 성공했습니다.")
       }   else{
         toast.error("인증에 실패했습니다.")
-
       }
   };
   
 
-  const handleSubmit = async (event:any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = {
@@ -69,12 +68,19 @@ export default function SignInPage() {
       email: formData.get('email'),
       password: formData.get('password'),
     };
+  
     try {
       const response = await apiClient.post('/auth/register', data);
+      
+      // 회원가입이 성공하면 성공 메시지 표시
+      toast.success("회원가입에 성공했습니다.");
+      
+      // 로그인 페이지로 이동
       router.push('/login');
     } catch (error) {
+      // 회원가입 중 오류가 발생하면 오류 메시지 표시
       console.error(error);
-      toast.error('회원가입 중 오류가 발생했습니다.');
+      toast.error("회원가입에 실패했습니다.");
     }
   };
 

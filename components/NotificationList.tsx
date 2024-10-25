@@ -12,7 +12,6 @@ const NotificationList: React.FC = () => {
     triggerOnce: false,
   });
 
-  const [notifications, setNotifications] = useState<any[]>([]);
 
   // 알림 데이터 가져오는 함수
   const fetchNotifications = async (pageParam: number) => {
@@ -48,23 +47,17 @@ const NotificationList: React.FC = () => {
       enabled: !!userInfo
     }
   );
-
+  console.log(data)
   // 알림의 isRead 상태가 변경되면 해당 알림 항목 업데이트
-  const handleReadUpdate = (id: number) => {
-    setNotifications(prevNotifications =>
-      prevNotifications.map(notification =>
-        notification.id === id ? { ...notification, isRead: true } : notification
-      )
-    );
-  };
+
 
   // 데이터가 변경될 때 알림 상태 업데이트
-  useEffect(() => {
-    if (data) {
-      const allNotifications = data.pages.flatMap(page => page.content);
-      setNotifications(allNotifications);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     const allNotifications = data.pages.flatMap(page => page.content);
+  //     setNotifications(allNotifications);
+  //   }
+  // }, [data]);
 
   // 페이지가 로드될 때 더 많은 알림을 가져오는 로직
   useEffect(() => {
@@ -81,18 +74,26 @@ const NotificationList: React.FC = () => {
         <p>Error: {infiniteError.message}</p>
       ) : (
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
-          {notifications.map((notification, index) => (
-            <li key={notification.id}>
-              <NotificationProduct
-                id={notification.id}
-                title={notification.title}
-                content={notification.content}
-                isRead={notification.isRead}
-                createdAt={notification.createdAt}
-                onReadUpdate={handleReadUpdate} // isRead 업데이트 콜백 전달
-              />
-            </li>
-          ))}
+      {data?.pages.map((page, pageIndex) => (
+  <React.Fragment key={pageIndex}>
+    {page?.content?.length > 0 ? (
+      page.content.map((notification: any) => (
+        <li key={notification.id}>
+         <NotificationProduct
+                  id={notification.id}
+                  title={notification.title}
+                  content={notification.content}
+                  isRead={notification.isRead}
+                  createdAt={notification.createdAt}
+            // 추가적인 notification 속성들
+          />
+        </li>
+      ))
+    ) : (
+      <></> // 컨텐츠가 없을 때 대체 텍스트
+    )}
+  </React.Fragment>
+))}
         </ul>
       )}
 

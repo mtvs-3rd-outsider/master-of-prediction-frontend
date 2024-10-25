@@ -28,8 +28,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   const handleResultClick = async (senderId: number, receiverId: number) => {
     // senderId와 receiverId를 오름차순으로 정렬하여 roomId 생성
-    const sortedIds = [senderId, receiverId].sort((a, b) => a - b);
-    const roomId = `${sortedIds[0]}-${sortedIds[1]}`;
+    // const sortedIds = [senderId, receiverId].sort((a, b) => a - b);
+    // const roomId = `${sortedIds[0]}-${sortedIds[1]}`;
 
     try {
       // DMThread 생성 또는 조회 API 요청
@@ -39,7 +39,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       });
 
       // roomId로 메시지 페이지로 이동
-      router.push(`/messages/${roomId}`);
+      router.push(`/messages/${senderId}/${receiverId}`);
     } catch (error) {
       console.error('Failed to create or fetch DM thread:', error);
     }

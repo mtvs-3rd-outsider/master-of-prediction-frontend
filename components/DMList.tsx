@@ -6,6 +6,7 @@ import useUserStore from '@store/useUserStore'; // 유저 정보 스토어
 import DMItem from './DMItem';
 import Account from './Account';
 import { useRouter } from 'next/navigation';
+import DMListItem from './DMItem';
 
 const DMList: React.FC = () => {
   const router = useRouter()
@@ -27,7 +28,7 @@ const DMList: React.FC = () => {
       });
 
       // roomId로 메시지 페이지로 이동
-      router.push(`/messages/${roomId}`);
+      router.push(`/messages/${senderId}/${receiverId}`);
     } catch (error) {
       console.error('Failed to create or fetch DM thread:', error);
     }
@@ -85,19 +86,16 @@ const DMList: React.FC = () => {
           {data?.pages.map((page, pageIndex) => (
             <React.Fragment key={pageIndex}>
               {page.content.map((dm: any) => (
-              <div
-              key={dm.receiverId}
-              className='cursor-pointer'
-              onClick={() => handleResultClick(Number(userInfo!.id), dm.receiverId)}
-              >
-              <Account
-                className="px-2 py-2"
+               <DMListItem
+                key={dm.receiverId}
                 userName={dm.receiverName}
                 avatarUrl={dm.receiverImg}
                 displayName={dm.receiverDisplayName}
-                // tier={dm.tier}
+                lastMessage={dm.lastMessage}
+                lastMessageTime={dm.lastMessageTime}
+                lastMessageRead={dm.lastMessageRead}
+                onClick={() => handleResultClick(Number(userInfo!.id), dm.receiverId)}
               />
-              </div>
               ))}
             </React.Fragment>
           ))}
