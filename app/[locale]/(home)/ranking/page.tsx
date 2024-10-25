@@ -3,6 +3,7 @@ import React from 'react';
 import fetchWithBaseURL from '@api/fetch'; 
 import useUserStore from '@store/useUserStore';
 import NotificationPageClientComponent from '@ui/NotificationPageClientComponent';
+import RankingClientComponent from '@ui/RankingClientComponent';
 
 // 데이터 페칭 함수: userId를 사용하여 API 요청
 
@@ -38,13 +39,13 @@ export  default async function Page( ) {
   // };
 
   // 탭 데이터
-  const tabs = [ '알림','쪽지'];
+  const tabs = [ '랭킹','랭킹 시스템'];
 
   return (
     <>
       <main className="col-span-5 w-full border-x border-slate-200">
         {/* 클라이언트 컴포넌트로 데이터를 전달 */}
-        <NotificationPageClientComponent  tabNames={tabs} />
+        <RankingClientComponent  tabNames={tabs} />
       </main>
     </>
   );

@@ -1,11 +1,13 @@
 import React from 'react';
 import AdBanner from './AdBanner';
 import Footer from './Footer';
-
+import Link from 'next/link'; // Next.js Link 컴포넌트 추가
 const GuideSection: React.FC = () => {
   return (
     <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
+      
     <div className="sticky top-0 bottom-0 p-4  ">
+ 
       {/* <h2 className="text-xl font-bold mb-4">플랫폼 가이드: 예측의 달인</h2> */}
       
       <div className="mb-6">
@@ -50,13 +52,25 @@ const GuideSection: React.FC = () => {
           모든 예측은 공정하게 처리되며, 사용자의 데이터를 안전하게 보호합니다. 책임감 있게 예측하세요.
         </p>
       </div>
-    </div>
-    <AdBanner
+      {/* <AdBanner
           dataAdFormat="auto"
           dataFullWidthResponsive={true}
           dataAdSlot="2358632947348636"
-          />
-          <Footer />
+          /> */}
+        {/* 랭킹 시스템 설명 카드 */}
+        <div  className="block m-2 bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-2">랭킹 시스템</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                포인트 기반 티어 시스템으로 실시간 순위를 확인하고 경쟁하세요. 더 높은 티어로 올라가 최고의 예측자로 도전하세요!
+              </p>
+            </div>
+        </div>
+     
+        <Footer />
+
+    </div>
+
   </aside>)
 };
 

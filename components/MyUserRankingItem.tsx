@@ -26,8 +26,11 @@ const MyUserRankingItem: React.FC = () => {
     return <p style={{ color: 'red' }}>Error loading your ranking: {error?.message}</p>;
   }
 
+  if (!userInfo) {
+    return null;
+  }
   return (
-    <div className="flex justify-center items-center mb-6">
+    <div className="flex justify-center items-center my-6">
         
       <div className="text-center">
         <p className="text-5xl font-bold">{data.rank}</p>

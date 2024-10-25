@@ -7,42 +7,83 @@ import Link from 'next/link';
 import Image from 'next/image';
 import apiClient from '@handler/fetch/axios';  
 import { useRouter } from 'next/navigation';
-
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 export default function SignInPage() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [authNum, setAuthNum] = useState('');
+  const [timer, setTimer] = useState('03:00');
+  const [intervalId, setIntervalId] = useState<any>(null);
+
   const handleGoogleLogin = () => {
     router.push ("https://master-of-prediction.shop:8081/oauth2/authorization/google");
   };
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
 
-    // event.target을 HTMLFormElement로 캐스팅합니다.
-    const form = event.target as HTMLFormElement;
-    
+  const startTimer = (duration:any) => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    let timer = duration;
+    const id = setInterval(() => {
+      const minutes = Math.floor(timer / 60);
+      const seconds = timer % 60;
+      setTimer(`${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+
+      if (--timer < 0) {
+        clearInterval(id);
+        setTimer('03:00');
+      }
+    }, 1000);
+    setIntervalId(id);
+  };
+
+  const handleEmailSend = async () => {
+      const response = await apiClient.post('/auth/signup/email', { email });
+      if (response.data.code === 200) {
+        startTimer(60 * 3); // 3분 타이머 시작
+      }
+   
+  };
+
+  const handleCodeVerification = async () => {
+      const response = await apiClient.post('/auth/signup/emailAuth', { email: email, authNum: authNum });
+  
+      if (response.status === 200) {
+        clearInterval(intervalId);
+        setTimer('03:00');
+        toast.success("인증에 성공했습니다.")
+      }   else{
+        toast.error("인증에 실패했습니다.")
+      }
+  };
+  
+
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
     const data = {
-      userName: formData.get('userName') as string,
-      email: formData.get('email') as string,
-      // code: formData.get('code') as string, // 주석 처리된 경우
-      password: formData.get('password') as string,
+      userName: formData.get('userName'),
+      email: formData.get('email'),
+      password: formData.get('password'),
     };
-    console.log(data)
-    const response = await apiClient.post('/auth/register', data);
-    // 폼 제출 로직을 여기에 작성합니다.
-    console.log( response.data);
-          // 요청이 성공하면 로그인 페이지로 라우팅
-        router.push('/login');
-  };
   
-  const handleEmailSend = () => {
-    // Handle email sending logic here
-    console.log("Send email clicked");
+    try {
+      const response = await apiClient.post('/auth/register', data);
+      
+      // 회원가입이 성공하면 성공 메시지 표시
+      toast.success("회원가입에 성공했습니다.");
+      
+      // 로그인 페이지로 이동
+      router.push('/login');
+    } catch (error) {
+      // 회원가입 중 오류가 발생하면 오류 메시지 표시
+      console.error(error);
+      toast.error("회원가입에 실패했습니다.");
+    }
   };
-  
-  const handleCodeVerification = () => {
-    // Handle code verification logic here
-    console.log("Verify code clicked");
-  };
+
   return (
     <main className="w-full border-x border-slate-200">
       <section className="flex flex-col md:flex-row h-screen items-center w-full">
@@ -51,7 +92,7 @@ export default function SignInPage() {
             src="/images/login-bg.webp"
             alt="Background Image"
             className="w-full h-full object-cover"
-            layout="fill" // 또는 width와 height를 지정하세요.
+            layout="fill"
           />
         </div>
 
@@ -61,78 +102,79 @@ export default function SignInPage() {
               <Button variant="light" size="lg" className="p-2 font-bold">예측의 달인</Button>
             </Link>
             <form className="mt-6" onSubmit={handleSubmit}>
-  {/* Full Name Field */}
-  <Input
-  name="userName"
-    isRequired
-    type="text"
-    label="Full Name"
-    autoFocus
-    variant="bordered"
-    required
-  />
+              <Input
+                name="userName"
+                isRequired
+                type="text"
+                label="Full Name"
+                autoFocus
+                variant="bordered"
+                required
+              />
 
-  {/* Email Address Field */}
-  <div className="inline-flex w-full mt-4">
-    <Input
-      name="email"
-      isRequired
-      type="email"
-      label="Email"
-      autoComplete="on"
-      required
-      className="w-2/3"
-      variant="bordered"
-    />
-    <Button
-      type="button" // Changed to "button" to prevent form submission on click
-      className="w-1/3 ml-3 bg-blue-500 hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3"
-      onClick={handleEmailSend} // You need to define this function to handle the email sending
-    >
-      발송
-    </Button>
-  </div>
+              <div className="inline-flex w-full mt-4">
+                <Input
+                  name="email"
+                  isRequired
+                  type="email"
+                  label="Email"
+                  autoComplete="on"
+                  required
+                  className="w-2/3"
+                  variant="bordered"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  className="w-1/3 ml-3 bg-blue-500 hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3"
+                  onClick={handleEmailSend}
+                >
+                  발송
+                </Button>
+              </div>
+              <div className="mt-2 mx-2 text-end text-gray-600">
+                {timer !== '03:00' && <p>남은시간 {timer}</p>}
+              </div>
+              <div className="inline-flex w-full mt-4">
+                
+                <Input
+                  type="number"
+                  label="Code"
+                  autoComplete="on"
+                  variant="bordered"
+                  className="w-2/3"
+                  onChange={(e) => setAuthNum(e.target.value)}
+                />
+                 {/* 타이머를 화면에 표시 */}
+           
+                <Button
+                  type="button"
+                  className="w-1/3 ml-3 hover:bg-gray-400 text-black font-semibold rounded-lg px-4 py-3"
+                  onClick={handleCodeVerification}
+                >
+                  인증확인
+                </Button>
+              
+              </div>
+   
+              <div className="mt-4">
+                <Input
+                  name="password"
+                  isRequired
+                  label="Password"
+                  type="password"
+                  variant="bordered"
+                  required
+                />
+              </div>
 
-  {/* Verification Code Field */}
-  <div className="inline-flex w-full mt-4">
-    <Input
-      type="number"
-      label="Code"
-      autoComplete="on"
-      variant="bordered"
-      // required
-      // isRequired
-      className="w-2/3"
-    />
-    <Button
-      type="button" // Changed to "button" to prevent form submission on click
-      className="w-1/3 ml-3 hover:bg-gray-400 text-black font-semibold rounded-lg px-4 py-3"
-      onClick={handleCodeVerification} // You need to define this function to handle the code verification
-    >
-      인증확인
-    </Button>
-  </div>
-
-  {/* Password Field */}
-  <div className="mt-4">
-    <Input
-    name="password"
-      isRequired
-      label="Password"
-      type="password"
-      variant="bordered"
-      required
-    />
-  </div>
-
-  {/* Sign Up Button */}
-  <Button
-    type="submit"
-    className="w-full bg-blue-500 hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3 mt-6"
-  >
-    Sign Up
-  </Button>
-</form>
+              <Button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3 mt-6"
+              >
+                Sign Up
+              </Button>
+            </form>
 
             <hr className="my-6 border-gray-300 w-full" />
 

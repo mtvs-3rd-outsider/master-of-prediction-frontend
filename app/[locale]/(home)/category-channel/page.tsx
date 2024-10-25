@@ -1,4 +1,4 @@
- "use client";
+"use client";
 import React, { useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
 
@@ -9,6 +9,7 @@ import MyCategories from '@ui/MyCategories';
 import Categories from '@ui/Categories';
 import SearchResults from '@ui/SearchResults';
 import SearchInputSection from '@ui/SearchInputSection';
+import useUserStore from '@store/useUserStore'; // 유저 정보 스토어
 
 const fetchSearchResults = async (pageParam: number, queryKey: string[]) => {
   const response = await apiClient.get(`/search/category/displayName`, {
@@ -22,7 +23,8 @@ const fetchSearchResults = async (pageParam: number, queryKey: string[]) => {
 };
 
 export default function Page() {
-  const tabs = ['내 카테고리', '탐색'];
+  const userInfo = useUserStore((state) => state.userInfo); // 현재 로그인된 유저 정보
+  const tabs = userInfo ? ['내 카테고리', '탐색'] : ['탐색']; // 유저가 있을 때만 '내 카테고리' 탭 추가
   const [activeTab, setActiveTab] = useState(0);
   const [isHeaderVisible, setHeaderVisible] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
@@ -63,8 +65,8 @@ export default function Page() {
           <StickyTabsWrapper tabNames={tabs} onTabChange={setActiveTab} />
 
           <div className="p-4">
-            {activeTab === 0 && <MyCategories />}
-            {activeTab === 1 && <Categories />}
+            {userInfo && activeTab === 0 && <MyCategories />}
+            {(!userInfo || activeTab === (userInfo ? 1 : 0)) && <Categories />}
           </div>
         </>
       )}

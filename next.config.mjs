@@ -14,6 +14,23 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = withNextIntl(
   withBundleAnalyzer({
+    source: "/(.*)",
+    headers: [
+      { key: "Access-Control-Allow-Credentials", value: "true" },
+      {
+        key: "Access-Control-Allow-Origin",
+        value: "https://master-of-prediction.shop:8081",
+      }, // 백엔드 도메인 명시
+      {
+        key: "Access-Control-Allow-Methods",
+        value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+      },
+      {
+        key: "Access-Control-Allow-Headers",
+        value:
+          "X-CSRF-Token, X-Requested-With, Accept, Authorization, Content-Type, Access-Control-Allow-Origin",
+      },
+    ],
     compress: true,
     reactStrictMode: false,
     // styled-components 설정 추가

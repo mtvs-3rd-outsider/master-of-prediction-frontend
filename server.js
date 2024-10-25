@@ -21,7 +21,6 @@ const corsMiddleware = (req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://master-of-prediction.shop:8081',
-    'https://master-of-prediction.shop:3334'
   ];
 
   if (allowedOrigins.includes(origin)) {
