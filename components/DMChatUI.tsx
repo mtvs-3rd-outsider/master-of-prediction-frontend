@@ -21,28 +21,10 @@ import { Textarea } from "@nextui-org/input";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import useUserStore from "@store/useUserStore";
-import markMessageAsRead, { updateLastMessage } from "@handler/DM";
+import markMessageAsRead from "@handler/DM";
 import useDMThreadStatus from "@/hooks/useDMThreadStatus";
-
-// 메시지 및 유저 타입 정의
-type User = {
-  name?: string;
-  avatarImageLink?: string;
-  id: string | undefined;
-};
-interface ChatUIProps {
-
-  receiverId: string; // receiverId도 string 또는 number일 수 있음
-  senderId:string;
-}
-type Message = {
-  content: string;
-  user: User;
-  sent: string; // ISO 포맷의 날짜 문자열
-  roomId: number;
-  replyToMessageId: number |null,
-  contentType: string
-};
+import { createMetadata, createSetupMetadata } from "@util/metadataUtils";
+import { ChatUIProps, Message, User } from "@util/Type";
 
 export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
 
@@ -60,54 +42,17 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
   const [endpointForReaction, setEndpointForReaction] = useState<any>(null);
   const userInfo = useUserStore(state=> state.userInfo);
   const token = useUserStore(state=> state.userInfo?.token);
+  // const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ6dGFMd25DTGoydGVMS1VOV2IxUHQyMlRFY0todmZoTG15UXRQTW1BYkRFIn0.eyJleHAiOjE3Mjk5MzMzMTcsImlhdCI6MTcyOTkzMzAxNywianRpIjoiYjk5YThhZDctNjg3Yy00OGY0LTliY2UtM2VhMjNjY2ZjMGEwIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDg1L3JlYWxtcy9teXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjMwOWU3ZmE2LWRkYWYtNDUyYS1iODI2LTE1OTE5ZTgzMDU0YiIsInR5cCI6IkJlYXJlciIsImF6cCI6ImNsaWVudCIsInNpZCI6IjYwMzQ1NzBkLTM3YjMtNDlmZi04MTJmLWMwNDY0OTU2ZDFlZSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtbXlyZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJZZW8gV29uIFlvdW4iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJteXVzZXIiLCJnaXZlbl9uYW1lIjoiWWVvIFdvbiIsImZhbWlseV9uYW1lIjoiWW91biIsImVtYWlsIjoiZHVkbmpzY2tyZ29AbmF2ZXIuY29tIn0.nWlOoHpgRLRK5waak8Y-F98gQrCAPTX8P85CpSHVnAHDLO-MxHklmZQq7UyldM2EBTUWOD9t6h0LPxy8RBfPQuybP9Q_Z2J4L8pD_OqPqVXk_wSri5DO38X_J203Kzb8r2vrDa3aFFre0-OGi2-cccCRgNZ3ZFAt8We-Icge-Mknrav9fFDiXkjyMCRyEQVeqDQE4tpB3tzCqqJ74A9Z9QbvLXpvIFWKmpFz7bHmJW-u5_6rZ6komURS8I24JUXBf97sk18LluuPBDfrZX5exzMbNDpVeq7egXvpZ73FRr5psWFx995oSNOrJ_GyxKD53ZmlqfEWh8LZoc656rjDzA"
   // RSocket 관련 상태 및 변수
   const clientRef = useRef<any>(null);
   const sourceRef = useRef<any>(null);
   const user: User = { name: userInfo?.displayName, avatarImageLink: userInfo?.avatarUrl , id: userInfo!.id }; // 현재 사용자를 하드코딩했으나 동적으로 변경 가능
-  function createMetadata(route: string, token: string): Buffer {
-    const metadata: Array<[string | number | WellKnownMimeType, Buffer]> = [];
-  
-    // 라우팅 정보 인코딩
-    const routeMetadata = encodeRoute(route);
-    metadata.push([
-      MESSAGE_RSOCKET_ROUTING,
-      routeMetadata,
-    ]);
-  
-    // JWT 토큰을 Bearer 토큰 형식으로 인코딩
-    const authMetadata = Buffer.from(`Bearer ${token}`, 'utf8');
-    metadata.push([
-      MESSAGE_RSOCKET_AUTHENTICATION,
-      authMetadata,
-    ]);
-  
-    // Composite Metadata로 인코딩
-    return encodeCompositeMetadata(metadata);
-  }
 
-  function createSetupMetadata(token: string): Buffer {
-    const metadata: Array<[string | number | WellKnownMimeType, Buffer]> = [];
-  
-    // JWT 토큰을 Bearer 토큰 형식으로 인코딩
-    // const authMetadata = Buffer.from(`Bearer ${token}`, 'utf8');
-    const authMetadata = Buffer.from(`Bearer ${token}`, 'utf8');
-    metadata.push([
-      MESSAGE_RSOCKET_AUTHENTICATION,
-      authMetadata,
-    ]);
-  
-    // Composite Metadata로 인코딩
-    return encodeCompositeMetadata(metadata);
-  }
+
   const setupMetadata = createSetupMetadata(token!);
   // RSocket 초기화
   useEffect(() => {
     const client = new RSocketClient({
-      // serializers: {
-      //   data: JsonSerializer,
-      //   metadata: IdentitySerializer,
-      // },
-    
       transport: new RSocketWebSocketClient(
         {
           url: process.env.NEXT_PUBLIC_RSOCKET_URL!, // RSocket 서버 URL
@@ -129,7 +74,6 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
 
     client.connect().then((rsocket) => {
       clientRef.current = rsocket;
-      // setRoom(2);
       setEndpoint(`api.v1.messages.stream/${roomId}`);
       setEndpointForReaction(`api.v1.reactions.stream/${roomId}`)
       const metadata = createMetadata(endpoint, token! );
@@ -190,35 +134,7 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
 
           },
     });
-//     rsocket
-//     .requestStream({
-//       metadata: encodeAndAddWellKnownMetadata(
-//         Buffer.alloc(0),
-//         MESSAGE_RSOCKET_ROUTING,
-//         Buffer.from(String.fromCharCode(endpointForReaction.length) + endpointForReaction)
-//       ),
-//     })
-//     .subscribe({
-//       onComplete: () => {
-//         console.log("requestStream onComplete");
-//       },
-//       onSubscribe: (subscription) => {
-//         console.log("requestStream onSubscribe");
-//         subscription.request(1000); // 수신할 메시지 수 설정
-//       },
-//       onNext: (e: any) => {
-//         try {
-//           const v = JSON.parse(e.data);
-//           console.log("requestStream onNext", v);
-//           setMessages((prevMessages) => [...prevMessages, v]);
-//         } catch (error) {
-//           console.error("JSON parsing error: ", error);
-//         }
-//       },
-//       onError: (error) => {
-//         console.log("requestStream e: ", error);
-//       },
-// });
+
     });
 
     return () => {
@@ -263,7 +179,6 @@ export default function ChatUI({receiverId,senderId} :ChatUIProps ) {
         ),
         metadata: channelMetadata,
       });
-      await updateLastMessage(Number(senderId), Number(receiverId), content);
     }
 
   };
