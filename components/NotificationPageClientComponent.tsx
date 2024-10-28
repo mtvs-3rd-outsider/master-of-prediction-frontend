@@ -21,6 +21,7 @@ import SearchInputSection from './SearchInputSection';
 import { useDebounce } from '@uidotdev/usehooks';
 import { fetchSearchResults } from '@handler/UserAPI';
 import DMSearchResults from './DMSearchResults';
+import ChatList from './ChatList';
 
 interface UserChannelPageProps {
 //   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
@@ -104,7 +105,7 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
           <NotificationList/>
           </div>}
         {activeTab === 1 &&  <div>
-            <DMList/>
+            <ChatList/>
              </div>}
       </div>
       </>

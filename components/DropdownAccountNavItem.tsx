@@ -4,12 +4,13 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-o
 import { Button } from "@nextui-org/button";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import useUserStore from '@store/useUserStore'; // Zustand 스토어 가져오기
-
+import {useRouter} from 'next/navigation'
 export default function DropdownNext() {
   const clearUserInfo = useUserStore((state) => state.clearUserInfo); // Zustand에서 clearUserInfo 함수 가져오기
-
+  const router =useRouter()
   const handleLogout = () => {
     clearUserInfo();
+    router.push("/login")
     console.log('User logged out successfully.');
   };
 

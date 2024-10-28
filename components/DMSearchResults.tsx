@@ -13,6 +13,13 @@ interface SearchResultsProps {
   hasNextPageSearch: boolean;
   isFetchingNextPageSearch: boolean;
 }
+interface CreateChatThreadDTO {
+  isGroupThread: boolean;
+  participantIds: number[];
+}
+interface CreateChatThreadResponse {
+  chatRoomId: string;
+}
 
 const SearchResults: React.FC<SearchResultsProps> = ({
   status,
@@ -26,20 +33,21 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   const router = useRouter();
 
-  const handleResultClick = async (senderId: number, receiverId: number) => {
-    // senderId와 receiverId를 오름차순으로 정렬하여 roomId 생성
-    // const sortedIds = [senderId, receiverId].sort((a, b) => a - b);
-    // const roomId = `${sortedIds[0]}-${sortedIds[1]}`;
-
+  const handleResultClick = async (userId: number) => {
     try {
-      // DMThread 생성 또는 조회 API 요청
-      await apiClient.post(`/dmthreads/create`, {
-        senderId,
-        receiverId,
-      });
-
+      // participantIds에 현재 유저와 선택한 유저 ID를 포함
+      const requestData: CreateChatThreadDTO = {
+        isGroupThread: false, // 1:1 채팅
+        participantIds: [Number(userInfo!.id), userId], // 현재 사용자와 선택한 사용자
+      };
+  
+      const response = await apiClient.post<CreateChatThreadResponse>('/chat-threads/create', requestData);
+  
+      // 응답에서 생성된 roomId 가져오기
+      const roomId = response.data.chatRoomId;
+  
       // roomId로 메시지 페이지로 이동
-      router.push(`/messages/${senderId}/${receiverId}`);
+      router.push(`/messages/${roomId}`);
     } catch (error) {
       console.error('Failed to create or fetch DM thread:', error);
     }
@@ -57,7 +65,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <div
         key={result.user_id}
         className='cursor-pointer'
-        onClick={() => handleResultClick(Number(userInfo!.id), result.user_id)}>
+        onClick={() => handleResultClick( result.user_id)}>
         <Account
           className="px-2 py-2"
           userName={result.user_name}

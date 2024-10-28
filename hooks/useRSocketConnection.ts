@@ -2,42 +2,58 @@ import { RSocketClient, BufferEncoders, MESSAGE_RSOCKET_COMPOSITE_METADATA } fro
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import { Flowable } from "rsocket-flowable";
 import { createMetadata, createSetupMetadata } from "@util/metadataUtils";
-
+import { Message } from "@ui/ChatUI";
+interface StreamConfig {
+    endpoint: string;
+    onNext: (data: any) => void;
+  }
+  
+  interface ChannelConfig {
+    sourceRef: React.MutableRefObject<any>; // Retained sourceRef for sending messages
+    onNext: (data: any) => void;
+  }
+  interface RSocketClientSetupConfig {
+    clientRef: React.MutableRefObject<any>;
+    token: string | undefined;
+    channels?: ChannelConfig[]; // 선택적인 channels
+    streams?: StreamConfig[]; // 선택적인 streams
+  }
 export const RSocketClientSetup = {
-  init(
-    clientRef: React.MutableRefObject<any>,
-    sourceRef: React.MutableRefObject<any>,
-    roomId: string,
-    token: string | undefined,
-    userId: String,
-    onNextMessage: (message: any) => void
-  ) {
-    const client = createRSocketClient(token);
-
-    // Establish the RSocket connection
-    client.connect().then((rsocket) => {
-      clientRef.current = rsocket;
-      setupRequestChannel(rsocket, sourceRef);
-      setupRequestStream(rsocket, `api.v1.messages.stream/${roomId}`, token, onNextMessage); 
-      setupRequestStream(rsocket, `api.v1.messages.connect/${roomId}`, token); 
+    init(
+       { clientRef,
+        token,
+        channels,
+        streams} // Array of streams
+      : RSocketClientSetupConfig) {
+        const client = createRSocketClient(token);
     
-    });
-  },
-
-  sendMessage(
-    sourceRef: React.MutableRefObject<any>,
-    content: string,
-    metadata: any,
-    user: any,
-    roomId: string
-  ) {
-
-    const payload = createPayload(content, user, roomId);
-    sourceRef?.current.onNext({
-      data: payload,
-      metadata,
-    });
-  },
+        // Establish the RSocket connection
+        client.connect().then((rsocket) => {
+          clientRef.current = rsocket;
+    
+          // Set up channels
+          channels?.forEach(({ sourceRef, onNext }) => {
+            setupRequestChannel(rsocket, sourceRef, onNext);
+          });
+    
+          // Set up streams
+          streams?.forEach(({ endpoint, onNext }) => {
+            setupRequestStream(rsocket, endpoint, token, onNext);
+          });
+        });
+      },
+   
+      sendMessage(
+        sourceRef: React.MutableRefObject<any>,
+        message: Message, // Message 타입을 인자로 받음
+        metadata: any
+      ) {
+        const payload = createPayload(message); // Message DTO로 payload 생성
+        sourceRef?.current.onNext({
+          data: payload,
+          metadata,
+        });
+      },
 };
 
 // Helper function to create an RSocketClient instance
@@ -63,28 +79,39 @@ function createRSocketClient(token: string | undefined) {
 }
 
 // Helper function to set up a request channel
-function setupRequestChannel(rsocket: any, sourceRef: React.MutableRefObject<any>) {
-  rsocket
-    .requestChannel(
-      new Flowable((source) => {
-        sourceRef.current = source;
-        source.onSubscribe({
-          cancel: () => {},
-          request: (n) => {},
-        });
-      })
-    )
-    .subscribe({
-      onComplete: () => console.log("requestChannel onComplete"),
-      onSubscribe: (subscription:any) => {
-        subscription.request(1000);
-        console.log("requestChannel onSubscribe");
-      },
-      onError: (error:any) => console.log("requestChannel error: ", error),
-      onNext: (payload:any) => console.log("requestChannel onNext:", payload),
-    });
-}
-
+function setupRequestChannel(rsocket: any, sourceRef: React.MutableRefObject<any>, onNext: (data: any) => void) {
+    rsocket
+      .requestChannel(
+        new Flowable((source) => {
+          sourceRef.current = source; // Store reference for sending messages
+          source.onSubscribe({
+            cancel: () => {},
+            request: (n) => {},
+          });
+        })
+      )
+      .subscribe({
+        onComplete: () => console.log("requestChannel onComplete"),
+        onSubscribe: (subscription: any) => {
+          subscription.request(1000);
+          console.log("requestChannel onSubscribe");
+        },
+        onError: (error: any) => console.log("requestChannel error: ", error),
+        onNext: (payload: any) => {
+          const data = parseData(payload);
+          onNext(data);
+        },
+      });
+  }
+  // Helper function to parse data payload
+function parseData(payload: any): any {
+    try {
+      return JSON.parse(payload.data);
+    } catch (error) {
+      console.error("JSON parsing error:", error);
+      return null;
+    }
+  }
 // Helper function to set up a request stream
 function setupRequestStream(
     rsocket: any,
@@ -119,15 +146,6 @@ function setupRequestStream(
   }
 
 // Helper function to create a payload for sending messages
-function createPayload(content: string, user: any, roomId: string): Buffer {
-  return Buffer.from(
-    JSON.stringify({
-      content,
-      user,
-      sent: new Date().toISOString(),
-      roomId,
-      replyToMessageId: null,
-      contentType: "PLAIN",
-    })
-  );
+function createPayload(message: Message): Buffer {
+  return Buffer.from(JSON.stringify(message));
 }
