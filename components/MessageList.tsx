@@ -109,7 +109,7 @@ const MessageList: React.FC<MessageListProps> = ({
       {/* Load More Indicator */}
       <div ref={loadMoreRef}>
         {isFetchingNextPage && <p>Loading more messages...</p>}
-        {!hasNextPage && <p>No more messages</p>}
+        {!hasNextPage && <p></p>}
       </div>
     </div>
   );

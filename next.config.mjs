@@ -51,8 +51,12 @@ const nextConfig = withNextIntl(withBundleAnalyzer({
         protocol: 'http',
         hostname: '125.132.216.190',
       },
+      {
+        protocol: 'http',
+        hostname: 'master-of-prediction.shop',
+      },
     ],
-    domains: ["localhost"], // localhost 도메인 추가
+    domains: ["localhost","master-of-prediction.shop"], // localhost 도메인 추가
   },
   webpack: (config, { dev, isServer }) => {
     if (!isServer) {

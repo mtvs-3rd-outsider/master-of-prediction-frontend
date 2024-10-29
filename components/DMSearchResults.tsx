@@ -78,7 +78,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         </React.Fragment>
       ))}
       {isFetchingNextPageSearch && <p>Loading more...</p>}
-      {!hasNextPageSearch && <p>No more results</p>}
+      {!hasNextPageSearch && <p></p>}
     </ul>
   );
 };

@@ -45,7 +45,7 @@ export const RSocketClientSetup = {
    
       sendMessage(
         sourceRef: React.MutableRefObject<any>,
-        message: Message, // Message 타입을 인자로 받음
+        message: any, // Message 타입을 인자로 받음
         metadata: any
       ) {
         const payload = createPayload(message); // Message DTO로 payload 생성
@@ -146,6 +146,6 @@ function setupRequestStream(
   }
 
 // Helper function to create a payload for sending messages
-function createPayload(message: Message): Buffer {
+function createPayload(message: any): Buffer {
   return Buffer.from(JSON.stringify(message));
 }
