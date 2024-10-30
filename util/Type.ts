@@ -1,7 +1,8 @@
 
 // 메시지 및 유저 타입 정의
 export type User = {
-    name?: string;
+  name?: string;
+  userName?: string;
     avatarImageLink?: string;
     id: string | undefined;
   };

@@ -9,5 +9,6 @@ export function toUser(userInfo: UserInfo| null): User {
       id: userInfo.id,
       name: userInfo.displayName,
       avatarImageLink: userInfo.avatarUrl,
+      userName: userInfo.userName,
     };
   }
