@@ -11,6 +11,7 @@ interface AccountProps {
   displayName?: string;
   tier?: string;
   className?: string; // className 속성을 추가
+  onClick?: ()=> void;
 }
 
 const Account = ({
@@ -19,16 +20,19 @@ const Account = ({
   displayName,
   tier,
   className,
+  onClick
 }: AccountProps) => {
   return (
     <div className={`flex flex-1 items-center gap-x-2 ${className}`}>
       <div className="flex items-center gap-x-3 flex-1">
         <div className="flex flex-1 flex-none justify-start">
-          <Avatar
-            src={avatarUrl || undefined} // 사용자 이미지가 없으면 기본 이미지를 사용하지 않음
-            alt={userName || "사용자"}
-            initials={userName ? userName[0].toUpperCase() : "U"} // 이름의 첫 글자 표시
-          />
+          <div style={{ cursor: "pointer" }} onClick={onClick}>
+            <Avatar
+              src={avatarUrl || undefined} // 사용자 이미지가 없으면 기본 이미지를 사용하지 않음
+              alt={userName || "사용자"}
+              initials={userName ? userName[0].toUpperCase() : "U"} // 이름의 첫 글자 표시
+            />
+          </div>
         </div>
 
         <div className="flex flex-col">

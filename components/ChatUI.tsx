@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, ReactNode } from "react";
 import { Button } from "@nextui-org/button";
 import { Textarea } from "@nextui-org/input";
-import { ArrowUpIcon, PhotoIcon } from "@heroicons/react/24/solid";
+import { ArrowUpIcon, PhotoIcon, UsersIcon } from "@heroicons/react/24/solid";
 import { Chip } from "@nextui-org/chip";
 import { ScrollShadow } from "@nextui-org/scroll-shadow";
 import useUserStore from "@store/useUserStore";
@@ -18,6 +18,7 @@ import moment from "moment";
 import Avatar from "./radix/Avatar";
 import Link from "next/link";
 import Image from "next/image";
+
 import {
   EllipsisHorizontalIcon,
   FaceSmileIcon,
@@ -29,7 +30,16 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/dropdown";
-type User = { name?: string; avatarImageLink?: string; id: string | undefined };
+import Account from "./Account";
+import { useRouter } from "next/navigation";
+import { useDMListStore } from "@store/useDMListStore";
+import { RoomInfo } from "@store/useMessageStore";
+type User = {
+  name?: string;
+  userName?: string;
+  avatarImageLink?: string;
+  id: string | undefined;
+};
 export type Message = {
   content: string;
   user: User;
@@ -43,10 +53,13 @@ export type Message = {
   reactions?: ReactionVM[]; // reactions 추가
 };
 export interface ReactionVM {
-  reactionType: string; // 반응 타입, 예: "like", "heart" 등
-  count: number; // 반응 개수
+  reactionId: number; // Reaction unique ID
+  reactionType: string; // Type of reaction (like, heart, etc.)
+  userId: string; // User ID of the person who reacted
+  displayName: string; // Display name of the person who reacted
+  userName: string;
+  userImg: string;
 }
-
 
 interface ChatUIProps {
   roomId: string;
@@ -58,9 +71,8 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     userInfo: state.userInfo,
     token: state.userInfo?.token,
   }));
-const [reactions, setReactions] = useState<
-  Record<number, Record<string, number>>
->({});// 각 메시지에 대한 반응 상태
+  const { dmlist } = useDMListStore();
+  const [reactions, setReactions] = useState<Record<number, ReactionVM[]>>({}); // 각 메시지에 대한 반응 상태
   const [messages, setMessages] = useState<Message[]>([]);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
@@ -69,9 +81,27 @@ const [reactions, setReactions] = useState<
   const [mediaType, setMediaType] = useState<string | null>(null); // 미디어 유형 상태 추가
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [currentRoom] = useState<RoomInfo>(dmlist[roomId]);
+  // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
+  const filteredParticipants = currentRoom.participants;
+  const [disabledKeysMap, setDisabledKeysMap] = useState<
+    Map<number, Set<string>>
+  >(new Map());
+  interface UserLastReadTimeVM {
+    userId: string;
+    lastReadTime: string;
+    roomId: string;
+  }
 
+  // 상태 초기화
+  const [userLastReadTimes, setUserLastReadTimes] = useState<
+    Map<string, UserLastReadTimeVM>
+  >(new Map());
+  console.log(userLastReadTimes);
   const [message, setMessage] = useState("");
   const sourceRef = useRef<any>(null);
+  const sourceRefForReaction = useRef<any>(null);
   const user: User = toUser(userInfo);
   const touchTimeout = useRef<NodeJS.Timeout | null>(null);
   const { ref: loadMoreRef, inView: isInView } = useInView({
@@ -80,15 +110,17 @@ const [reactions, setReactions] = useState<
     triggerOnce: false,
     root: chatContainerRef.current,
   });
-interface MessageReactionVM {
-  id: number | null; // 반응 고유 ID, 없을 경우 null
-  messageId: number; // 반응이 달린 메시지의 ID
-  userId: string; // 반응을 남긴 사용자의 ID
-  reactionType: string; // 반응 유형 (예: "like", "heart", "thumbs_up")
-  roomId: string; // 반응이 달린 메시지가 포함된 채팅방 ID
-  isPlus: boolean; // true일 경우 반응 추가, false일 경우 반응 제거
-}
-
+  interface MessageReactionVM {
+    id: number | null; // 반응 고유 ID, 없을 경우 null
+    messageId: number; // 반응이 달린 메시지의 ID
+    userId: string; // 반응을 남긴 사용자의 ID
+    reactionType: string; // 반응 유형 (예: "like", "heart", "thumbs_up")
+    roomId: string; // 반응이 달린 메시지가 포함된 채팅방 ID
+    actionType: string; // true일 경우 반응 추가, false일 경우 반응 제거
+    displayName: string;
+    userName: string;
+    userImg: string;
+  }
 
   // 메시지 ref 맵을 저장하는 객체
   const messageRefs = useRef(new Map<number, HTMLDivElement>());
@@ -103,6 +135,7 @@ interface MessageReactionVM {
       fetchNextPage(); // 메시지가 없는 경우 다음 페이지 로드
     }
   };
+  const router = useRouter();
   //  const handleAddReaction = (messageId, reaction) => {
   //    setReactions((prevReactions) => ({
   //      ...prevReactions,
@@ -140,13 +173,33 @@ interface MessageReactionVM {
       setMessages((prev) => [...fetchedMessages.reverse(), ...prev]);
     }
   }, [data]);
+  const handleNewData = (data: any) => {
+    console.log("data: ", data);
+
+    // data가 객체일 경우 Map으로 변환
+    const dataMap = data instanceof Map ? data : new Map(Object.entries(data));
+    setUserLastReadTimes((prevTimes) => {
+      const updatedTimes = new Map(prevTimes);
+      dataMap.forEach((value: UserLastReadTimeVM, key: string) => {
+        updatedTimes.set(key, {
+          ...value,
+          lastReadTime: value.lastReadTime,
+        });
+      });
+
+      return updatedTimes;
+    });
+  };
 
   useEffect(() => {
     if (userInfo) {
       RSocketClientSetup.init({
         clientRef,
         token,
-        channels: [{ sourceRef: sourceRef, onNext: (x) => x }],
+        channels: [
+          { sourceRef: sourceRef, onNext: (x) => x },
+          { sourceRef: sourceRefForReaction, onNext: (x) => x },
+        ],
         streams: [
           {
             endpoint: `api.v1.messages.stream/${roomId}`,
@@ -154,6 +207,10 @@ interface MessageReactionVM {
               setMessages((prev) => [...prev, message]);
               if (!!isAtBottom) setShowNewMessageAlert(() => true);
             },
+          },
+          {
+            endpoint: `api.v1.messages.lastReadTimes/${roomId}`,
+            onNext: handleNewData,
           },
           {
             endpoint: `api.v1.messages.connect/${roomId}`,
@@ -164,17 +221,49 @@ interface MessageReactionVM {
             onNext: (reaction: MessageReactionVM) => {
               setReactions((prevReactions) => {
                 const messageReactions =
-                  prevReactions[reaction.messageId] || {};
-                const currentCount =
-                  messageReactions[reaction.reactionType] || 0;
+                  prevReactions[reaction.messageId] || [];
+
+                // 현재 반응이 이미 존재하는지 확인
+                const existingReactionIndex = messageReactions.findIndex(
+                  (r) =>
+                    r.reactionType === reaction.reactionType &&
+                    r.userId === reaction.userId
+                );
+
+                let updatedReactions;
+
+                if (reaction.actionType === "plus") {
+                  // 반응이 없으면 추가
+                  if (existingReactionIndex === -1) {
+                    updatedReactions = [
+                      ...messageReactions,
+                      {
+                        reactionId: reaction.id || Date.now(), // ID 생성
+                        reactionType: reaction.reactionType,
+                        userId: reaction.userId,
+                        displayName: reaction.displayName,
+                        userName: reaction.userName,
+                        userImg: reaction.userImg,
+                      },
+                    ];
+                  } else {
+                    updatedReactions = [...messageReactions];
+                  }
+                } else if (
+                  reaction.actionType === "minus" &&
+                  existingReactionIndex !== -1
+                ) {
+                  // 반응이 있으면 제거
+                  updatedReactions = messageReactions.filter(
+                    (r, idx) => idx !== existingReactionIndex
+                  );
+                } else {
+                  updatedReactions = [...messageReactions];
+                }
+
                 return {
                   ...prevReactions,
-                  [reaction.messageId]: {
-                    ...messageReactions,
-                    [reaction.reactionType]: reaction.isPlus
-                      ? currentCount + 1
-                      : currentCount - 1,
-                  },
+                  [reaction.messageId]: updatedReactions as ReactionVM[], // ReactionVM[] 타입으로 지정
                 };
               });
             },
@@ -192,22 +281,50 @@ interface MessageReactionVM {
       setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
     }
   };
-const sendReaction = (messageId:number, reactionType:string, isPlus = true) => {
-  const reactionData = {
-    id: null,
-    messageId: messageId,
-    userId: userInfo?.id,
-    reactionType: reactionType,
-    roomId: roomId,
-    isPlus: isPlus,
+  const sendReaction = (
+    messageId: number,
+    reactionType: string,
+    actionType = "plus"
+  ) => {
+    const reactionData = {
+      id: null,
+      messageId: messageId,
+      userId: userInfo?.id,
+      reactionType: reactionType,
+      roomId: roomId,
+      actionType: actionType,
+      displayName: userInfo?.displayName,
+      userName: userInfo?.userName,
+      userImg: userInfo?.avatarUrl,
+    };
+    const channelMetadata = createMetadata(
+      `api.v1.reactions.stream/${roomId}`,
+      token!
+    );
+
+    // 비활성화 키 설정 업데이트
+    setDisabledKeysMap((prevMap) => {
+      const updatedMap = new Map(prevMap);
+      const disabledKeys = updatedMap.get(messageId) || new Set();
+
+      if (actionType === "plus") {
+        disabledKeys.add(reactionType);
+      } else if (actionType === "minus") {
+        disabledKeys.delete(reactionType);
+      }
+      updatedMap.set(messageId, disabledKeys);
+      return updatedMap;
+    });
+    if (reactionData.userId) {
+      RSocketClientSetup.sendMessage(
+        sourceRefForReaction,
+        reactionData,
+        channelMetadata
+      );
+    }
+    // RSocket 전송
   };
 
-  const channelMetadata = createMetadata(
-    `api.v1.reactions.stream/${roomId}`,
-    token!
-  );
-  RSocketClientSetup.sendMessage(sourceRef, reactionData, channelMetadata);
-};
   const handleSendMessage = async () => {
     const content = message;
     const mediaFile = fileInputRef.current?.files?.[0];
@@ -221,8 +338,8 @@ const sendReaction = (messageId:number, reactionType:string, isPlus = true) => {
           ? "IMAGE"
           : "VIDEO"
         : "PLAIN";
-      const userMessage = {
-        content: mediaFile ? "" : content,
+      const userMessage: Message = {
+        content: content,
         user,
         sent,
         roomId: parseInt(roomId),
@@ -295,35 +412,36 @@ const sendReaction = (messageId:number, reactionType:string, isPlus = true) => {
       fileInputRef.current.value = ""; // 파일 입력 초기화
     }
   };
-useEffect(() => {
-  if (data) {
-    const fetchedMessages = data.pages.flatMap((page) => page.content);
 
-    // 새로운 reactions 상태 생성
-    const newReactions = fetchedMessages.reduce(
-      (acc: Record<number, Record<string, number>>, message) => {
-        // 각 메시지의 reactions를 누적하여 각 메시지 id에 대해 구성
-        acc[message.id] = message.reactions.reduce(
-          (reactionAcc: Record<string, number>, reaction: ReactionVM) => {
-            reactionAcc[reaction.reactionType] = reaction.count;
-            return reactionAcc;
-          },
-          {}
-        );
-        return acc;
-      },
-      {}
-    );
+  useEffect(() => {
+    if (data) {
+      const fetchedMessages = data.pages.flatMap((page) => page.content);
 
-    // reactions 상태 업데이트
-    setReactions((prevReactions) => ({
-      ...prevReactions,
-      ...newReactions,
-    }));
-  }
-}, [data]);
+      const newDisabledKeysMap = new Map<number, Set<string>>();
 
+      const newReactions = fetchedMessages.reduce(
+        (acc: Record<number, ReactionVM[]>, message) => {
+          acc[message.id] = message.reactions;
 
+          // 각 메시지에 대해 비활성화할 리액션 타입 추출
+          const userReactions = message.reactions
+            .filter((reaction: ReactionVM) => reaction.userId == userInfo?.id)
+            .map((reaction: ReactionVM) => reaction.reactionType);
+
+          newDisabledKeysMap.set(message.id, new Set(userReactions));
+
+          return acc;
+        },
+        {}
+      );
+
+      setReactions((prevReactions) => ({
+        ...prevReactions,
+        ...newReactions,
+      }));
+      setDisabledKeysMap(newDisabledKeysMap); // 상태로 저장하여 이후 렌더링에 반영
+    }
+  }, [data]);
   useEffect(() => {
     if (chatContainerRef.current && isAtBottom) {
       chatContainerRef.current.scrollTop =
@@ -362,23 +480,36 @@ useEffect(() => {
       }
     }
   }, [data, hasNextPage, targetMessageId]);
-const handleRemoveReaction = (messageId:number, reactionType:string) => {
-  // 해당 메시지와 반응을 서버에 업데이트
-  sendReaction(messageId, reactionType, false); // false로 설정하여 반응 제거 전송
+  const handleRemoveReaction = (messageId: number, reactionType: string) => {
+    // 해당 메시지와 반응을 서버에 업데이트
+    sendReaction(messageId, reactionType, "minus"); // false로 설정하여 반응 제거 전송
 
-  // 로컬 상태에서 반응 제거
-  // setReactions((prevReactions) => {
-  //   const messageReactions = prevReactions[messageId];
-  //   if (messageReactions && messageReactions[reactionType] > 0) {
-  //     const updatedReactions = { ...messageReactions };
-  //     updatedReactions[reactionType] -= 1;
-  //     if (updatedReactions[reactionType] === 0)
-  //       delete updatedReactions[reactionType];
-  //     return { ...prevReactions, [messageId]: updatedReactions };
-  //   }
-  //   return prevReactions;
-  // });
-};
+    // 로컬 상태에서 반응 제거
+    // setReactions((prevReactions) => {
+    //   const messageReactions = prevReactions[messageId];
+    //   if (messageReactions && messageReactions[reactionType] > 0) {
+    //     const updatedReactions = { ...messageReactions };
+    //     updatedReactions[reactionType] -= 1;
+    //     if (updatedReactions[reactionType] === 0)
+    //       delete updatedReactions[reactionType];
+    //     return { ...prevReactions, [messageId]: updatedReactions };
+    //   }
+    //   return prevReactions;
+    // });
+  };
+  const calculateUnreadCount = (messageSent: string): number => {
+    // messageSent와 lastReadTime을 UTC ISO 형식으로 변환하여 비교
+    const messageSentDate = moment.utc(messageSent).toISOString(); // ISO 포맷으로 변환
+
+    const unreadCount = Array.from(userLastReadTimes.values()).filter(
+      (readTime) => {
+        const lastReadDate = moment.utc(readTime.lastReadTime).toISOString(); // ISO 포맷으로 변환
+        return moment(lastReadDate).isBefore(messageSentDate); // UTC 시간 비교
+      }
+    ).length;
+
+    return unreadCount;
+  };
 
   const isDifferentDay = (
     currentMessage: Message,
@@ -389,9 +520,35 @@ const handleRemoveReaction = (messageId:number, reactionType:string) => {
           moment.utc(previousMessage.sent).format("YYYY-MM-DD")
       : true;
   };
-
   return (
     <div className="flex flex-col h-screen mx-auto bg-white">
+      {/* 그룹 아이콘 및 참여자 드롭다운 */}
+      <div className="flex items-center p-4 border-b border-gray-300 bg-gray-100">
+        <Dropdown isOpen={isDropdownOpen} onOpenChange={setDropdownOpen}>
+          <DropdownTrigger>
+            <Button
+              isIconOnly
+              variant="light"
+              className="text-gray-400 rounded-full hover:text-gray-600 ml-2"
+            >
+              <UsersIcon className="h-15 w-15" />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Participants">
+            {filteredParticipants.map((participant) => (
+              <DropdownItem key={participant.userId}>
+                {participant.displayName}@{participant.userName}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+        <div className="ml-2 text-sm font-medium text-gray-800">
+          {`${filteredParticipants[1]?.displayName} 외 ${
+            filteredParticipants.length - 1
+          }명`}
+        </div>
+      </div>
+
       <ScrollShadow
         ref={chatContainerRef}
         onScroll={handleScroll}
@@ -459,11 +616,12 @@ const handleRemoveReaction = (messageId:number, reactionType:string) => {
                       <div
                         className={`absolute top-1/2 flex items-center -translate-y-1/2 ${
                           message.user.id == user.id
-                            ? "left-1 -translate-x-[90px]"
-                            : "right-1 translate-x-[90px]"
+                            ? "left-1  -translate-x-[90px]"
+                            : "right-1 flex-row-reverse  translate-x-[90px]"
                         }`}
                         style={{ top: "50%" }} // 중앙 정렬을 위한 위치 설정
                       >
+                        {/* 더보기 메뉴 */}
                         <Dropdown>
                           <DropdownTrigger>
                             <Button
@@ -483,7 +641,7 @@ const handleRemoveReaction = (messageId:number, reactionType:string) => {
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
-
+                          
                         <Dropdown>
                           <DropdownTrigger>
                             <Button
@@ -494,23 +652,47 @@ const handleRemoveReaction = (messageId:number, reactionType:string) => {
                               <FaceSmileIcon className="h-6 w-6" />
                             </Button>
                           </DropdownTrigger>
-                          <DropdownMenu aria-label="Reactions">
+                          <DropdownMenu
+                            aria-label="Reactions"
+                            disabledKeys={
+                              disabledKeysMap.get(message.id!) || new Set()
+                            }
+                          >
                             <DropdownItem
-                              key="like"
+                              key="👍"
                               onClick={() => sendReaction(message.id!, "👍")}
                             >
                               👍 좋아요
                             </DropdownItem>
                             <DropdownItem
-                              key="love"
+                              key="❤️"
+                              isDisabled={reactions[message.id!]?.some(
+                                (reaction) =>
+                                  reaction.userId === userInfo?.id &&
+                                  reaction.reactionType === "❤️"
+                              )}
                               onClick={() => sendReaction(message.id!, "❤️")}
                             >
                               ❤️ 하트
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
+                         {/* 안 읽음 카운트 */}
+                          {calculateUnreadCount(message.sent) > 0 && (
+                            <p
+                              className="text-xs mt-1 text-yellow-500"
+                              style={{
+                                alignSelf: "flex-end",
+                                marginLeft:
+                                  message.user.id == user.id ? "0" : "8px",
+                                marginRight:
+                                  message.user.id == user.id ? "8px" : "0",
+                              }}
+                            >
+                              {calculateUnreadCount(message.sent)}
+                            </p>
+                          )}
                       </div>
-
                       {message.replyToMessageId && (
                         <p
                           className="text-xs text-gray-500 cursor-pointer break-words whitespace-pre-line"
@@ -522,12 +704,14 @@ const handleRemoveReaction = (messageId:number, reactionType:string) => {
                         </p>
                       )}
                       <p className="font-semibold">
-                        {message.user.name}{" "}
+                        {message.user.name}
+                        <span className="text-xs text-gray-500">
+                          @{message.user.userName}
+                        </span>{" "}
                         <span className="text-xs text-gray-500">
                           {moment.utc(message.sent).format("HH:mm:ss")}
                         </span>
                       </p>
-
                       {message.contentType === "VIDEO" && message.mediaUrl ? (
                         <video
                           src={message.mediaUrl}
@@ -553,40 +737,69 @@ const handleRemoveReaction = (messageId:number, reactionType:string) => {
 
                     {/* 반응 아이콘 및 개수 (메시지 말풍선 아래쪽) */}
                     <div className="reactions flex space-x-2 mt-1 ml-2">
-                      {reactions[message.id!] &&
-                        Object.entries(reactions[message.id!]).map(
-                          ([reactionType, count], idx) => (
-                            <Dropdown key={idx} className="relative">
-                              <DropdownTrigger>
-                                <div className="reaction flex items-center space-x-1 cursor-pointer">
-                                  <span>{reactionType}</span>{" "}
-                                  {/* 반응 아이콘 */}
-                                  <span className="text-xs text-gray-500">
-                                    {count}
-                                  </span>{" "}
-                                  {/* 개수 */}
-                                </div>
-                              </DropdownTrigger>
-                              <DropdownMenu
-                                aria-label="Undo Reaction"
-                                // placement="bottom"
-                              >
-                                <DropdownItem
-                                  key={`remove-${reactionType}`}
-                                  color="danger"
-                                  onClick={() =>
-                                    handleRemoveReaction(
-                                      message.id!,
-                                      reactionType
-                                    )
-                                  }
-                                >
-                                  실행 취소
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </Dropdown>
+                      {reactions[message.id!]?.length > 0 &&
+                        Array.from(
+                          new Set(
+                            reactions[message.id!].map(
+                              (reaction) => reaction.reactionType
+                            )
                           )
-                        )}
+                        ).map((reactionType, idx) => (
+                          <Dropdown key={idx} className="relative">
+                            <DropdownTrigger>
+                              <div className="reaction flex items-center space-x-1 cursor-pointer">
+                                <span>{reactionType}</span>
+                                <span className="text-xs text-gray-500">
+                                  {
+                                    reactions[message.id!].filter(
+                                      (r) => r.reactionType === reactionType
+                                    ).length
+                                  }
+                                </span>
+                              </div>
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="Reaction List">
+                              {reactions[message.id!]
+                                .filter((r) => r.reactionType === reactionType)
+                                .map((r) => (
+                                  <DropdownItem
+                                    key={r.reactionId}
+                                    variant="light"
+                                    // className="pointer-events-none"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      {/* <span>
+                                        {r.displayName}@{r.userName}
+                                      </span> */}
+                                      <Account
+                                        onClick={() =>
+                                          router.push(`/channel/${r.userId}`)
+                                        }
+                                        userName={r.userName}
+                                        avatarUrl={r.userImg}
+                                        displayName={r.displayName}
+                                      ></Account>
+                                      {r.userId == userInfo?.id && (
+                                        <Button
+                                          variant="bordered"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRemoveReaction(
+                                              message.id!,
+                                              reactionType
+                                            );
+                                          }}
+                                          className="text-red-500 cursor-pointer ml-2 pointer-events-auto"
+                                        >
+                                          실행 취소
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </DropdownItem>
+                                ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                        ))}
                     </div>
                   </div>
                 </div>
