@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode, useRef } from "react";
 import NavItem from "@ui/NavItem";
 import AccountNavItem from "@ui/AccountNavItem";
 import Image from "next/image";
@@ -27,6 +27,8 @@ import {
 import { Button } from "@nextui-org/button";
 import useUserStore from "@store/useUserStore";
 import { useTranslations } from 'next-intl';
+import { RSocketClientSetup } from "@/hooks/useRSocketConnection";
+import { RoomInfo, useMessageStore } from "@store/useMessageStore";
 
 interface NavLinkItem {
   href: string;
@@ -36,14 +38,48 @@ interface NavLinkItem {
 }
 
 const Nav: React.FC = () => {
+  
   const t = useTranslations();
-  const { hasHydrated, userInfo } = useUserStore((state) => ({
-    hasHydrated: state.hasHydrated,
-    userInfo: state.userInfo,
-  }));
+ 
   const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
+  const clientRef = useRef<any>(null);
+  const { hasHydrated, userInfo ,token,userId} = useUserStore((state) => ({
+    hasHydrated: state.hasHydrated,
+    userInfo: state.userInfo,
+    token: state.userInfo?.token,
+    userId: state.userInfo?.id
+  }));
+  const { unreadCount, setUnreadCount,setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
 
+  useEffect(() => {
+    if (userInfo) {
+      RSocketClientSetup.init({
+        clientRef,
+        token,
+        streams: [
+          {
+            endpoint: `api.v1.messages.threadInfos/${userId}`,
+            onNext: (newMessageMap: Record<string, RoomInfo>) => {
+              // messageMap을 부분 업데이트
+              setMessageMap(newMessageMap);
+  
+              // 총 읽지 않은 메시지 수 계산
+              const totalUnreadCount = Object.values(newMessageMap).reduce(
+                (acc, roomInfo) => acc + roomInfo.unreadMessageCount,
+                0
+              );
+  
+              // Zustand에 총 읽지 않은 메시지 수 업데이트
+              setUnreadCount(totalUnreadCount);
+            },
+          },
+        ],
+      });
+  
+      console.log("Total Unread Count Updated in Zustand:", unreadCount);
+    }
+  }, [userInfo, userId, clientRef, token, setMessageMap, setUnreadCount]);
   const items: NavLinkItem[] = [
     {
       href: "/betting",
@@ -82,8 +118,26 @@ const Nav: React.FC = () => {
           {
             href: "/messages",
             text: t('메시지'),
-            icon: <EnvelopeIconOutline className="w-6 h-6" />,
-            activeIcon: <EnvelopeIconSolid className="w-6 h-6" />,
+            icon: (
+              <div className="relative">
+                <EnvelopeIconOutline className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+            ),
+            activeIcon: (
+              <div className="relative">
+                <EnvelopeIconSolid className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+            ),
           },
         ]
       : []),

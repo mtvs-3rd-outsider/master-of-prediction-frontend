@@ -42,7 +42,7 @@ export  default async function Page( ) {
 
   return (
     <>
-      <main className="col-span-5 w-full border-x border-slate-200">
+      <main className="col-span-5 w-full border-x border-slate-200 mb-16 xl:mb-0">
         {/* 클라이언트 컴포넌트로 데이터를 전달 */}
         <NotificationPageClientComponent  tabNames={tabs} />
       </main>

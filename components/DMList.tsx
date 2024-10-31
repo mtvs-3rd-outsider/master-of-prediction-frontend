@@ -107,7 +107,7 @@ const DMList: React.FC = () => {
           ? 'Loading more...'
           : hasNextPage
           ? 'Load More'
-          : 'No more messages'}
+          : ''}
       </div>
     </div>
   );
