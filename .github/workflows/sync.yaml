@@ -10,14 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 리포지토리 체크아웃
-        uses: actions/checkout@v3
-
-      - name: 대상 리포지토리로 푸시
-        env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with: 
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
+          ref: main
+          
+      - name: Add remote-url
         run: |
-          git config --global user.name "tripleyoung  "
+          git remote add forked-repo https://tripleyoung:${{ secrets.PAT_TOKEN }}@github.com/tripleyoung/master-of-prediction-frontend.git
+          git config --global user.name "tripleyoung"
           git config --global user.email "dudnjsckrgo@gmail.com"
-          git remote add target https://tripleyoung:${{ secrets.PAT_TOKEN }}@github.com/tripleyoung/master-of-prediction-frontend.git
-          git push target main
+      
+      - name: Push changes to forked-repo 
+        run: |
+          git push -f forked-repo main
+      
+      - name: Clean up
+        run: |
+          git remote remove forked-repo
+
