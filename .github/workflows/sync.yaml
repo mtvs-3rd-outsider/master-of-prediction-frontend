@@ -17,7 +17,7 @@ jobs:
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "dudnjsckrgo-actions@github.com"
+          git config --global user.name "tripleyoung  "
+          git config --global user.email "dudnjsckrgo@gmail.com"
           git remote add target https://tripleyoung:${{ secrets.PAT_TOKEN }}@github.com/tripleyoung/master-of-prediction-frontend.git
           git push target main
