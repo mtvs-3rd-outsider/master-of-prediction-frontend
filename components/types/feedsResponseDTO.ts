@@ -1,14 +1,13 @@
 // @components/types/feedResponseDTO.ts
 
 export type AuthorType = 'USER' | 'GUEST';
-
+// 목록 조회용 DTO
 export interface FeedsResponseDTO {
     id: number;
     authorType: AuthorType;
-    title: string;
     content: string;
-    createdAt: string; // LocalDateTime을 string으로 표현
-    updatedAt: string; // LocalDateTime을 string으로 표현
+    createdAt: string;
+    updatedAt: string;
     viewCount: number;
     user: UserDTO | null;
     guest: GuestDTO | null;
@@ -17,9 +16,20 @@ export interface FeedsResponseDTO {
     youtubeUrls: string[];
     likesCount: number;
     commentsCount: number;
-    quoteCount: number;
-}
-
+    shareCount: number;
+    isShare: boolean | null;
+    isQuote: boolean;
+    quoteFeed?: QuoteFeed;
+  }
+  export interface QuoteFeed {
+    quoteId: number;
+    quoteContent: string;
+    quoteCreateAt: string;
+    quoteUser: UserDTO;
+    quoteGuest: GuestDTO;
+    mediaFileUrls: string[];
+    youtubeUrls: string[];
+  }
 export interface UserDTO {
     userId: number;
     userName: string;

@@ -5,9 +5,10 @@ interface MediaGridProps {
   mediaFiles: string[];
   youtubeUrls: string[];
   id: string;
+  isQuote?: boolean;
 }
 
-const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id }) => {
+const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id, isQuote = false }) => {
   const allMedia = [...mediaFiles, ...youtubeUrls];
   const gridClassName = (length: number) => {
     switch (length) {
@@ -18,6 +19,8 @@ const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id }) =>
     }
   };
 
+  // 인용된 경우의 컨테이너 높이 조절
+  const containerHeight = isQuote ? "150px" : "200px";
   const aspectRatio = allMedia.length === 1 ? "aspect-video" : "aspect-square";
 
   const isVideoFile = (url: string): boolean => {
@@ -26,18 +29,21 @@ const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id }) =>
   };
 
   return (
-    <div className={`grid ${gridClassName(allMedia.length)} gap-1 w-full`}>
+    <div className={`grid ${gridClassName(allMedia.length)} gap-1 w-full ${isQuote ? 'max-w-[600px]' : ''}`}>
       {mediaFiles.map((file, index) => (
         <div 
           key={`${id}-media-${index}`} 
           className={`relative ${aspectRatio} ${allMedia.length === 3 && index === 0 ? "col-span-2" : ""}`}
-          style={{ minHeight: '200px' }} // 최소 높이 추가
+          style={{ 
+            minHeight: containerHeight,
+            maxHeight: isQuote ? containerHeight : 'none'
+          }}
         >
           {isVideoFile(file) ? (
             <video
               src={file}
               controls
-              className="w-full h-full object-cover rounded-lg"
+              className={`w-full h-full object-cover rounded-lg ${isQuote ? 'max-h-[150px]' : ''}`}
               onError={(e) => console.error('Video load error:', e, file)}
             />
           ) : (
@@ -47,7 +53,7 @@ const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id }) =>
                 alt={`Post media ${index + 1}`}
                 layout="fill"
                 objectFit="cover"
-                className="rounded-lg"
+                className={`rounded-lg ${isQuote ? 'scale-90' : ''}`}
                 onError={(e) => console.error('Image load error:', e, file)}
               />
             </div>
@@ -58,7 +64,10 @@ const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id }) =>
         <div 
           key={`${id}-youtube-${index}`} 
           className={`relative ${aspectRatio} ${allMedia.length === 3 && mediaFiles.length + index === 0 ? "col-span-2" : ""}`}
-          style={{ minHeight: '200px' }} // 최소 높이 추가
+          style={{ 
+            minHeight: containerHeight,
+            maxHeight: isQuote ? containerHeight : 'none'
+          }}
         >
           <iframe
             src={`https://www.youtube.com/embed/${getYouTubeVideoId(url)}`}
@@ -66,7 +75,7 @@ const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id }) =>
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            className="w-full h-full rounded-lg"
+            className={`w-full h-full rounded-lg ${isQuote ? 'scale-90' : ''}`}
           />
         </div>
       ))}

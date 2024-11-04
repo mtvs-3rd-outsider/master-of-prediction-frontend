@@ -26,6 +26,11 @@ const MainContent: React.FC = () => {
   const handleSearchInput = (input: string) => {
     setSearchQuery(input);
   };
+  const [sortBy, setSortBy] = useState<'views' | 'latest' | 'likes'>('latest');
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value as 'views' | 'latest' | 'likes');
+  };
 
   const {
     fetchNextPage: fetchNextPageSearch,
@@ -64,6 +69,7 @@ const MainContent: React.FC = () => {
         isHeaderVisible={isHeaderVisible}
         onSearchToggle={handleSearchToggle}
         onInput={handleSearchInput}
+        onSortChange={handleSortChange}
       />
       {!isSearching && (
         <>
@@ -71,7 +77,7 @@ const MainContent: React.FC = () => {
 
           <div className="p-4">
             {activeTab === 0 && <BettingProducts />}
-            {activeTab === 1 && <HotTopicFeedList />}
+            {activeTab === 1 && <HotTopicFeedList sortBy={sortBy} />}
           </div>
         </>
       )}
