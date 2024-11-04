@@ -40,10 +40,11 @@ const ChannelFeedList: React.FC<{
   }, [page, hasMore, channelType, channelId]);
 
   useEffect(() => {
-    if (inView) {
-      loadMoreFeeds();
-    }
-  }, [inView, loadMoreFeeds]);
+    setFeeds([]);
+    setPage(0);
+    setHasMore(true);
+    loadMoreFeeds();
+  }, [channelType, channelId]);
 
   const handlePostClick = useCallback((id: string) => {
     router.push(`/feed/${id}`);

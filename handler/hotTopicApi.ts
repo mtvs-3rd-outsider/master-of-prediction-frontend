@@ -60,3 +60,19 @@ export const getLikeFeeds = async (
     throw error;
   }
 };
+
+// 팔로우한 채널의 피드 조회
+export const getFollowingFeeds = async (
+  page: number = 0,
+  size: number = 10
+): Promise<PageResponse<FeedsResponseDTO>> => {
+  try {
+    const response = await axios.get('/feeds/following', {
+      params: { page, size }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching following feeds:', error);
+    throw error;
+  }
+};

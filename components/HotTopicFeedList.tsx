@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import Post from '@ui/Post';
-import { getHotTopicFeeds, getHomeTopicFeeds, getLikeFeeds } from '@handler/hotTopicApi';
+import { getHotTopicFeeds, getHomeTopicFeeds, getLikeFeeds, getFollowingFeeds } from '@handler/hotTopicApi';
 import { FeedsResponseDTO } from '@components/types/feedsResponseDTO';
 
 interface HotTopicFeedListProps {
-  sortBy: 'views' | 'latest' | 'likes';
+  sortBy: 'views' | 'latest' | 'likes' | 'follow';
 }
 
 const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
@@ -24,8 +24,10 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
         return await getHomeTopicFeeds(pageNum);
       case 'likes':
         return await getLikeFeeds(pageNum);
+      case 'follow':
+        return await getFollowingFeeds(pageNum);
       default:
-        return await getHotTopicFeeds(pageNum);
+        return await getHomeTopicFeeds(pageNum);
     }
   }, [sortBy]);
 

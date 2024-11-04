@@ -9,21 +9,22 @@ interface PageResponse<T> {
   number: number;
   size: number;
 }
-
 export const getChannelFeeds = async (
   channelType: string,
   channelId: number,
   page: number = 0,
-  size: number = 10,
-  sort: string = 'createdAt,DESC'
+  size: number = 10
 ): Promise<PageResponse<FeedsResponseDTO>> => {
-  try {
-    const response = await axios.get(`/myfeeds/${channelType}/${channelId}`, {
-      params: { page, size, sort }
+    // channelType을 대문자로 변환
+    const type = channelType.toUpperCase();
+    
+    const response = await axios.get(`/myfeeds/${type}/${channelId}`, {
+      params: {
+        page,
+        size,
+        sort: 'shortAt,DESC'  // 서버와 일치하도록 수정
+      }
     });
     return response.data;
-  } catch (error) {
-    console.error('Error fetching channel feeds:', error);
-    throw error;
-  }
+  
 };
