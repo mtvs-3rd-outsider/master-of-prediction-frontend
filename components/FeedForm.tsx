@@ -10,9 +10,14 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import { FreeMode } from 'swiper/modules';
 import Image from "next/image";
+import QuotePost from '@ui/QuotePost';
+import { FeedResponseDTO } from '@components/types/feedResponseDTO';
+import { UserDTO, GuestDTO } from '@components/types/feedResponseDTO';
 
 interface FeedFormProps {
   onSubmit: (content: string, media: File[], youtubeUrls: string[]) => void;
+  quoteFeed?: FeedResponseDTO | null; // 인용할 게시글 추가
+  isSubmitting?: boolean; // isSubmitting 속성 추가
 }
 
 const YouTubeIcon = () => (
@@ -21,7 +26,8 @@ const YouTubeIcon = () => (
   </svg>
 );
 
-const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
+
+const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
   const [content, setContent] = useState('');
   const [media, setMedia] = useState<File[]>([]);
   const [youtubeUrls, setYoutubeUrls] = useState<string[]>([]);
@@ -57,7 +63,6 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
   const handleRemoveYoutubeUrl = (index: number) => {
     setYoutubeUrls(prev => prev.filter((_, i) => i !== index));
   };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex justify-between items-center mb-4 relative p-4">
@@ -110,7 +115,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
         )}
       </div>
 
-      <Textarea
+  <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="무슨 일이 일어나고 있나요?"
@@ -168,6 +173,20 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
             </SwiperSlide>
           ))}
         </Swiper>
+      )}
+      {quoteFeed && (
+        <div className="mt-4">
+          <QuotePost
+            quoteId={quoteFeed.id}
+            quoteContent={quoteFeed.content}
+            quoteCreateAt={quoteFeed.createdAt}
+            quoteUser={quoteFeed.user || null}
+            quoteGuest={quoteFeed.guest || null}
+            mediaFileUrls={quoteFeed.mediaFiles?.map(file => file.fileUrl) || []}
+            youtubeUrls={quoteFeed.youTubeVideos?.map(video => video.youtubeUrl) || []}
+            onClick={() => {}} // 작성 폼에서는 클릭 동작 불필요
+          />
+        </div>
       )}
     </form>
   );
