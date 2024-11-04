@@ -40,7 +40,25 @@ const Header = ({
                     : "border-gray-300 hover:bg-gray-100 font-normal text-gray-600"
                   }`}
                 >
-                  시간
+                  최신
+                </span>
+              </label>
+              <label className="relative">
+                <input
+                  type="radio"
+                  name="sort"
+                  value="follow"
+                  checked={selectedSort === "follow"}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="absolute opacity-0 w-full h-full cursor-pointer"
+                />
+                <span className={`px-3 py-1 rounded-full text-sm transition-all cursor-pointer border-2
+                  ${selectedSort === "follow" 
+                    ? "bg-white-100 border-sky-400 text-sky-600 font-semibold" 
+                    : "border-gray-300 hover:bg-gray-100 font-normal text-gray-600"
+                  }`}
+                >
+                  팔로잉
                 </span>
               </label>
 
@@ -59,7 +77,7 @@ const Header = ({
                     : "border-gray-300 hover:bg-gray-100 font-normal text-gray-600"
                   }`}
                 >
-                  조회
+                  인기
                 </span>
               </label>
 
