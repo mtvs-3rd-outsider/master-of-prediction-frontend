@@ -42,12 +42,6 @@ const BettingOptionList = ({ options, optionsRatio, winningOption }: Props) => {
         `/betting-products/orders?bettingId=${bettingId}`
       )
       .then((res) => {
-        // const processedData: BettingOrderHistoryDataProps = {};
-        // for (const [key, value] of Object.entries(res.data)) {
-        //   processedData[key] = removeDuplicateOrderDates(value);
-        // }
-        // console.log("processData: ", processedData);
-        // setOptionDatas(processedData);
         setOptionDatas(res.data);
       });
   }, [bettingId]);

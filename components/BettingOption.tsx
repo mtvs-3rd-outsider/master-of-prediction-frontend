@@ -64,13 +64,58 @@ const BettingOption = ({
   data,
   winningOption,
 }: Props) => {
+  const FILTER_1H = "1H";
+  const FILTER_6H = "6H";
+  const FILTER_1D = "1D";
+  const FILTER_1W = "1W";
+  const FILTER_1M = "1M";
+  const FILTER_ALL = "ALL";
+  const FILTER_OPTIONS = [
+    FILTER_1H,
+    FILTER_6H,
+    FILTER_1D,
+    FILTER_1W,
+    FILTER_1M,
+    FILTER_ALL,
+  ];
+
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
   const [optionRatio, setOptionRatio] = useState<number>(0);
+  const [cachedData, setCachedData] = useState({});
+  const [currentData, setCurrentData] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState(FILTER_1H);
+
+  // useEffect(() => {}, []);
+
+  // useEffect(() => {
+  //   // 초기화 시 기본 필터 데이터를 가져오기
+  //   fetchData(selectedFilter);
+  // }, []);
+
+  // const fetchData = async (filter: string) => {
+  //   // 이미 캐시된 데이터가 있는지 확인
+  //   if (cachedData[filter]) {
+  //     // 캐시된 데이터를 사용
+  //     setCurrentData(cachedData[filter]);
+  //   } else {
+  //     // 서버에서 새 데이터를 요청
+  //     const response = await fetch(`/api/data?filter=${filter}`);
+  //     const data = await response.json();
+
+  //     // 상태에 캐시하고, 현재 데이터로 설정
+  //     setCachedData((prev) => ({ ...prev, [filter]: data }));
+  //     setCurrentData(data);
+  //   }
+  // };
 
   const handleClick = () => {
     setState(!state);
     setOptionId(currentOptionId);
+  };
+
+  const handleButtonClick = (filter: string) => {
+    setSelectedFilter(filter);
   };
 
   useEffect(() => {
@@ -130,7 +175,6 @@ const BettingOption = ({
           <p>{optionRatio}%</p>
         </div>
       </li>
-      {/* <div style={{ width: "300px", height: "300px" }}> */}
       {state && (
         <div className="w-full h-56">
           <ResponsiveContainer width="100%" height="90%">
@@ -159,12 +203,15 @@ const BettingOption = ({
             </LineChart>
           </ResponsiveContainer>
           <div className="flex gap-4 h-auto">
-            <button className="rounded-lg hover:bg-gray-400 px-4">1H</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">6H</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">1D</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">1W</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">1M</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">ALL</button>
+            {FILTER_OPTIONS.map((filter) => (
+              <button
+                key={filter}
+                className="rounded-lg hover:bg-gray-400 px-4"
+                onClick={() => handleButtonClick(filter)}
+              >
+                {filter}
+              </button>
+            ))}
           </div>
         </div>
       )}
