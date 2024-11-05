@@ -70,7 +70,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const createChatThread = async (participantIds: SelectedUser[]) => {
     try {
       const requestData: CreateChatThreadDTO = {
-        isGroupThread: participantIds.length > 2,
+        isGroupThread: participantIds.length >= 2,
         participantIds: [
           Number(userInfo!.id),
           ...participantIds.map((user) => user.id),
