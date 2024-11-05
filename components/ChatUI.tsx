@@ -84,7 +84,11 @@ export default function ChatUI({ roomId }: ChatUIProps) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [currentRoom] = useState<RoomInfo>(dmlist[roomId]);
   // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
-  const filteredParticipants = currentRoom.participants;
+
+    const filteredParticipants = currentRoom.participants.filter(
+      (participant) => participant.userId.toString() != userInfo?.id
+    );
+
   const [disabledKeysMap, setDisabledKeysMap] = useState<
     Map<number, Set<string>>
   >(new Map());
@@ -685,7 +689,7 @@ const calculateUnreadCount = (messageSent: string): number => {
                           </DropdownMenu>
                         </Dropdown>
                         {/* 안 읽음 카운트 */}
-                        {/* {calculateUnreadCount(message.sent) > 0 && (
+                        {calculateUnreadCount(message.sent) > 0 && (
                           <p
                             className="text-xs mt-1 text-yellow-500"
                             style={{
@@ -698,7 +702,7 @@ const calculateUnreadCount = (messageSent: string): number => {
                           >
                             {calculateUnreadCount(message.sent)}
                           </p>
-                        )} */}
+                        )}
                       </div>
                       {message.replyToMessageId && (
                         <p
