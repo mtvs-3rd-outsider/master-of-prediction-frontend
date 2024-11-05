@@ -21,6 +21,7 @@ export interface HotTopicFeedResponseDTO {
   youtubeUrls: string[];
   likesCount: number;
   commentsCount: number;
-  quoteCount: number;
+  shareCount: number;
   isLike: boolean; // 이 줄을 추가
+  isShare: boolean;
 }

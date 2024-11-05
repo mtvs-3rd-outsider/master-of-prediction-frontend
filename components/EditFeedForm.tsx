@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@nextui-org/button';
 import BackButton from '@components/BackButton';
@@ -11,12 +9,14 @@ import 'swiper/css/free-mode';
 import { FreeMode } from 'swiper/modules';
 import Image from "next/image";
 import { FeedResponseDTO } from '@components/types/feedResponseDTO';
+import QuotePost from '@ui/QuotePost';
 
 interface EditFeedFormProps {
   onSubmit: (content: string, media: File[], youtubeUrls: string[]) => void;
   initialData: FeedResponseDTO;
-  isSubmitting: boolean; // 새로 추가된 prop
+  isSubmitting: boolean;
 }
+
 const YouTubeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
     <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="currentColor"/>
@@ -44,7 +44,6 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
         setMedia(existingMedia);
       } catch (error) {
         console.error('Error loading existing media:', error);
-        // 여기에 사용자에게 에러를 알리는 로직을 추가할 수 있습니다.
       }
     };
 
@@ -55,6 +54,7 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
     e.preventDefault();
     onSubmit(content, media, youtubeUrls);
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && media.length + youtubeUrls.length < 4) {
@@ -78,6 +78,7 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
   const handleRemoveYoutubeUrl = (index: number) => {
     setYoutubeUrls(prev => prev.filter((_, i) => i !== index));
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex justify-between items-center mb-4 relative p-4">
@@ -89,13 +90,12 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
           radius='full' 
           className="h-7" 
           size='sm'
-          disabled={isSubmitting} // isSubmitting prop 사용
+          disabled={isSubmitting}
           aria-label="수정하기"
         >
           {isSubmitting ? '수정 중...' : '수정하기'}
         </Button>
       </div>
-
 
       <div className="flex space-x-2 mb-4">
         <Button
@@ -103,7 +103,7 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
           onClick={() => fileInputRef.current?.click()}
           startContent={<CameraIcon className="h-5 w-5" />}
           disabled={media.length + youtubeUrls.length >= 4}
-          className='x-1 bg-white'
+          className="x-1 bg-white"
         />
         <input
           type="file"
@@ -134,7 +134,7 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
             onClick={() => setIsYoutubeInputOpen(true)}
             startContent={<YouTubeIcon />}
             disabled={media.length + youtubeUrls.length >= 4}
-            className='x-1 bg-white'
+            className="x-1 bg-white"
           />
         )}
       </div>
@@ -197,6 +197,22 @@ const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSu
             </SwiperSlide>
           ))}
         </Swiper>
+      )}
+
+      {/* Add QuotePost display if the feed is a quote */}
+      {initialData.isQuote && initialData.quoteFeed && (
+        <div className="mt-4">
+          <QuotePost
+            quoteId={initialData.quoteFeed.quoteId}
+            quoteContent={initialData.quoteFeed.quoteContent}
+            quoteCreateAt={initialData.quoteFeed.quoteCreateAt}
+            quoteUser={initialData.quoteFeed.quoteUser}
+            quoteGuest={initialData.quoteFeed.quoteGuest}
+            mediaFileUrls={initialData.quoteFeed.mediaFileUrls}
+            youtubeUrls={initialData.quoteFeed.youtubeUrls}
+            onClick={() => {}} // 수정 폼에서는 클릭 이벤트 불필요
+          />
+        </div>
       )}
     </form>
   );

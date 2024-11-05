@@ -10,7 +10,6 @@ import HotTopicFeedList from './HotTopicFeedList';
 import StickyTabsWrapper from './StickyTabs';
 import BettingProducts from './BettingProducts';
 
-
 const MainContent: React.FC = () => {
   const tabs = ["베팅", "게시글"];
   const [isHeaderVisible, setHeaderVisible] = useState(true);
@@ -18,6 +17,8 @@ const MainContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchTerm = useDebounce(searchQuery, 500);
   const [activeTab, setActiveTab] = useState(0);
+  const [sortBy, setSortBy] = useState<'latest' | 'follow' | 'views' | 'likes'>('latest');
+
   const handleSearchToggle = () => {
     setHeaderVisible((prev) => !prev);
     setIsSearching((prev) => !prev);
@@ -27,35 +28,31 @@ const MainContent: React.FC = () => {
     setSearchQuery(input);
   };
 
+  const handleSortChange = (value: string) => {
+    setSortBy(value as 'latest' | 'follow' | 'views' | 'likes');
+  };
+
   const {
     fetchNextPage: fetchNextPageSearch,
-    fetchPreviousPage: fetchPreviousPageSearch,
-    hasNextPage : hasNextPageSearch,
-    hasPreviousPage:hasPreviousPageSearch,
+    hasNextPage: hasNextPageSearch,
     isFetchingNextPage: isFetchingNextPageSearch,
-    isFetchingPreviousPage:isFetchingPreviousPageSearch,
     data: search,
-    error:infiniteErrorSearch,
-    status:statusSearch
-  
-  } = useInfiniteQuery(
-    {
-      queryKey: ['searchResults',debouncedSearchTerm],
-      queryFn: ({ pageParam = 1 ,queryKey })=> fetchSearchResults(pageParam,queryKey),
-      initialPageParam: 0,
-      getNextPageParam: (lastPage, allPages) => {
-      // lastPage는 Spring Page 객체입니다.
-      console.log(lastPage);
+    error: infiniteErrorSearch,
+    status: statusSearch
+  } = useInfiniteQuery({
+    queryKey: ['searchResults', debouncedSearchTerm],
+    queryFn: ({ pageParam = 1, queryKey }) => fetchSearchResults(pageParam, queryKey),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
       if (!lastPage.last) {
-        return lastPage.number + 1; // 다음 페이지 번호를 반환
-      } else {
-        return undefined; // 더 이상 페이지가 없으면 undefined 반환
+        return lastPage.number + 1;
       }
-      },
-      enabled: !!debouncedSearchTerm,
-      staleTime: 5 * 60 * 1000,
-    }
-  );
+      return undefined;
+    },
+    enabled: !!debouncedSearchTerm,
+    staleTime: 5 * 60 * 1000,
+  });
+
   return (
     <main className="col-span-5 w-full border-x border-slate-200">
       <SearchInputSection
@@ -64,14 +61,14 @@ const MainContent: React.FC = () => {
         isHeaderVisible={isHeaderVisible}
         onSearchToggle={handleSearchToggle}
         onInput={handleSearchInput}
+        onSortChange={handleSortChange}
       />
       {!isSearching && (
         <>
           <StickyTabsWrapper tabNames={tabs} onTabChange={setActiveTab} />
-
           <div className="p-4">
             {activeTab === 0 && <BettingProducts />}
-            {activeTab === 1 && <HotTopicFeedList />}
+            {activeTab === 1 && <HotTopicFeedList sortBy={sortBy} />}
           </div>
         </>
       )}
