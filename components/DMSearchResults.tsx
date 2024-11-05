@@ -9,6 +9,9 @@ import { UserIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import "swiper/swiper-bundle.css"; // Swiper 스타일 import
 import { Button } from "@nextui-org/button";
 import toast from "react-hot-toast";
+import { RoomInfo } from "@store/useMessageStore";
+import { ParticipantDTO } from "./ChatList";
+import { useDMListStore } from "@store/useDMListStore";
 
 interface SearchResultsProps {
   status: string;
@@ -22,6 +25,7 @@ interface SearchResultsProps {
 interface SelectedUser {
   id: number;
   displayName: string;
+  userName: string;
 }
 
 interface CreateChatThreadDTO {
@@ -46,44 +50,86 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   const [isGroupMode, setIsGroupMode] = React.useState(false);
   const [selectedUsers, setSelectedUsers] = React.useState<SelectedUser[]>([]);
-
-  const handleResultClick = (userId: number, displayName: string) => {
+  const { dmlist, setDMLIst } = useDMListStore(); // zustand store에서 가져오기
+  const handleResultClick = (
+    userId: number,
+    displayName: string,
+    userName: string
+  ) => {
     if (isGroupMode) {
       setSelectedUsers((prev) =>
-        prev.some((user) => user.id === userId)
-          ? prev.filter((user) => user.id !== userId)
-          : [...prev, { id: userId, displayName }]
+        prev.some((user) => user.id == userId)
+          ? prev.filter((user) => user.id != userId)
+          : [...prev, { id: userId, displayName, userName }]
       );
     } else {
-      createChatThread([userId]);
+      // `SelectedUser` 타입 배열로 전달
+      createChatThread([{ id: userId, displayName, userName }]);
     }
   };
-
-  const createChatThread = async (participantIds: number[]) => {
+  const createChatThread = async (participantIds: SelectedUser[]) => {
     try {
       const requestData: CreateChatThreadDTO = {
         isGroupThread: participantIds.length > 2,
-        participantIds: [Number(userInfo!.id), ...participantIds],
+        participantIds: [
+          Number(userInfo!.id),
+          ...participantIds.map((user) => user.id),
+        ],
       };
       const response = await apiClient.post<CreateChatThreadResponse>(
         "/chat-threads/create",
         requestData
       );
-      const roomId = response.data.chatRoomId;
+      const roomId = response.data.chatRoomId;;
+
+      // 단일 채팅방과 그룹 채팅방에 따라 roomName 설정
+      const roomName = requestData.isGroupThread
+        ? participantIds.map((user) => user.displayName).join(", ")
+        : participantIds[0]?.displayName || "New Chat";
+
+      // participants를 SelectedUser[]로 설정
+      const participants: ParticipantDTO[] = participantIds.map((user) => ({
+        userId: user.id,
+        userName: user.userName,
+        avatarUrl: "", // 기본 아바타 URL
+        displayName: user.displayName,
+        unreadMessageCount: 0, // 초기 읽지 않은 메시지 개수
+      }));
+
+      const newRoom: RoomInfo = {
+        roomId,
+        roomName,
+        lastMessage: "",
+        lastMessageTime: new Date().toISOString(),
+        unreadMessageCount: 0,
+        userId: userInfo!.id!.toString(),
+        participants,
+        isGroupThread: requestData.isGroupThread,
+      };
+      // dmList가 null 또는 undefined일 때만 설정
+      // dmlist에 roomId가 없을 때만 추가
+      console.log(newRoom);
+      setDMLIst((prevDMList) => {
+        if (!prevDMList[roomId]) {
+          return { ...prevDMList, [roomId]: newRoom };
+        }
+        return prevDMList;
+      });
+      console.log(dmlist)
       router.push(`/messages/${roomId}`);
     } catch (error) {
       console.error("Failed to create chat thread:", error);
     }
   };
 
-const handleCreateGroupChat = () => {
-  if (selectedUsers.length >= 2) {
-    // 2명 이상일 경우에만 그룹 생성
-    createChatThread(selectedUsers.map((user) => user.id));
-  } else {
-    toast.error("그룹 채팅은 최소 2명 이상의 사용자가 필요합니다.");
-  }
-};
+  const handleCreateGroupChat = () => {
+    if (selectedUsers.length >= 2) {
+      // 2명 이상일 경우에만 그룹 생성
+      createChatThread(selectedUsers.map((user) => user));
+    } else {
+      toast.error("그룹 채팅은 최소 2명 이상의 사용자가 필요합니다.");
+    }
+  };
   const toggleGroupMode = () => {
     setIsGroupMode(!isGroupMode);
     setSelectedUsers([]);
@@ -154,7 +200,11 @@ const handleCreateGroupChat = () => {
                       : ""
                   }`}
                   onClick={() =>
-                    handleResultClick(result.user_id, result.display_name)
+                    handleResultClick(
+                      result.user_id,
+                      result.display_name,
+                      result.user_name
+                    )
                   }
                 >
                   <Account

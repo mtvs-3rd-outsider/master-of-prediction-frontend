@@ -38,7 +38,7 @@ export  default async function Page( ) {
   // };
 
   // 탭 데이터
-  const tabs = [ '알림','쪽지'];
+  const tabs = ['쪽지', '알림'];
 
   return (
     <>

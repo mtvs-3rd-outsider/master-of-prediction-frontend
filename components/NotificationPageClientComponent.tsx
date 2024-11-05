@@ -78,7 +78,13 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
   );
   return (
     <div>
-      <SearchInputSection guide="메시지 보낼 사람을 검색해보세요" title="메시지" isHeaderVisible={isHeaderVisible} onSearchToggle={handleSearchToggle} onInput={handleSearchInput} />
+      <SearchInputSection
+        guide="메시지 보낼 사람을 검색해보세요"
+        title="메시지"
+        isHeaderVisible={isHeaderVisible}
+        onSearchToggle={handleSearchToggle}
+        onInput={handleSearchInput}
+      />
       {isSearching && (
         <DMSearchResults
           status={statusSearch}
@@ -96,19 +102,23 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
 
       {!isSearching && (
         <>
-      <Tabs tabNames={tabNames} onTabChange={handleTabChange} />
+          <Tabs tabNames={tabNames} onTabChange={handleTabChange} />
 
-      {/* 탭에 따라 표시할 콘텐츠 */}
-      <div className="tab-content">
-        {activeTab === 0 && <div>
-          {/* <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/> */}
-          <NotificationList/>
-          </div>}
-        {activeTab === 1 &&  <div>
-            <ChatList/>
-             </div>}
-      </div>
-      </>
+          {/* 탭에 따라 표시할 콘텐츠 */}
+          <div className="tab-content">
+            {activeTab === 0 && (
+              <div>
+                {/* <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/> */}
+                <ChatList />
+              </div>
+            )}
+            {activeTab === 1 && (
+              <div>
+                <NotificationList />
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

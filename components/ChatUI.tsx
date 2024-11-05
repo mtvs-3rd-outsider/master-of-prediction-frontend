@@ -93,7 +93,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     lastReadTime: string;
     roomId: string;
   }
-
+    console.log(dmlist);
   // 상태 초기화
   const [userLastReadTimes, setUserLastReadTimes] = useState<
     Map<string, UserLastReadTimeVM>
@@ -543,9 +543,11 @@ export default function ChatUI({ roomId }: ChatUIProps) {
           </DropdownMenu>
         </Dropdown>
         <div className="ml-2 text-sm font-medium text-gray-800">
-          {`${filteredParticipants[1]?.displayName} 외 ${
-            filteredParticipants.length - 1
-          }명`}
+          {filteredParticipants.length == 1
+            ? filteredParticipants[0]?.displayName
+            : `${filteredParticipants[0]?.displayName} 외 ${
+                filteredParticipants.length - 1
+              }명`}
         </div>
       </div>
 
@@ -641,7 +643,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
-                          
+
                         <Dropdown>
                           <DropdownTrigger>
                             <Button
@@ -677,21 +679,21 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
-                         {/* 안 읽음 카운트 */}
-                          {calculateUnreadCount(message.sent) > 0 && (
-                            <p
-                              className="text-xs mt-1 text-yellow-500"
-                              style={{
-                                alignSelf: "flex-end",
-                                marginLeft:
-                                  message.user.id == user.id ? "0" : "8px",
-                                marginRight:
-                                  message.user.id == user.id ? "8px" : "0",
-                              }}
-                            >
-                              {calculateUnreadCount(message.sent)}
-                            </p>
-                          )}
+                        {/* 안 읽음 카운트 */}
+                        {calculateUnreadCount(message.sent) > 0 && (
+                          <p
+                            className="text-xs mt-1 text-yellow-500"
+                            style={{
+                              alignSelf: "flex-end",
+                              marginLeft:
+                                message.user.id == user.id ? "0" : "8px",
+                              marginRight:
+                                message.user.id == user.id ? "8px" : "0",
+                            }}
+                          >
+                            {calculateUnreadCount(message.sent)}
+                          </p>
+                        )}
                       </div>
                       {message.replyToMessageId && (
                         <p
