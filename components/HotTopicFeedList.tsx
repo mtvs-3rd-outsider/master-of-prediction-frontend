@@ -6,7 +6,7 @@ import { getHotTopicFeeds, getHomeTopicFeeds, getLikeFeeds, getFollowingFeeds } 
 import { FeedsResponseDTO } from '@components/types/feedsResponseDTO';
 
 interface HotTopicFeedListProps {
-  sortBy: 'views' | 'latest' | 'likes' | 'follow';
+  sortBy?: 'views' | 'latest' | 'likes' | 'follow';
 }
 
 const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
