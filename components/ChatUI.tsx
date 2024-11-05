@@ -689,7 +689,7 @@ const calculateUnreadCount = (messageSent: string): number => {
                           </DropdownMenu>
                         </Dropdown>
                         {/* 안 읽음 카운트 */}
-                        {calculateUnreadCount(message.sent) > 0 && (
+                        {/* {calculateUnreadCount(message.sent) > 0 && (
                           <p
                             className="text-xs mt-1 text-yellow-500"
                             style={{
@@ -702,7 +702,7 @@ const calculateUnreadCount = (messageSent: string): number => {
                           >
                             {calculateUnreadCount(message.sent)}
                           </p>
-                        )}
+                        )} */}
                       </div>
                       {message.replyToMessageId && (
                         <p
