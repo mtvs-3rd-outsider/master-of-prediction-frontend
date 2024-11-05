@@ -8,7 +8,7 @@ interface SearchInputSectionProps {
     isHeaderVisible: boolean;
     onSearchToggle: () => void;
     onInput: (input: string) => void;
-    onSortChange: (value: string) => void;  // 추가된 props
+    onSortChange?: (value: string) => void;  // 추가된 props
 }
 
 const SearchInputSection: React.FC<SearchInputSectionProps> = ({

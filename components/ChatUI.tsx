@@ -497,19 +497,24 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     //   return prevReactions;
     // });
   };
-  const calculateUnreadCount = (messageSent: string): number => {
-    // messageSent와 lastReadTime을 UTC ISO 형식으로 변환하여 비교
-    const messageSentDate = moment.utc(messageSent).toISOString(); // ISO 포맷으로 변환
+const calculateUnreadCount = (messageSent: string): number => {
+  const messageSentDate = moment.utc(messageSent).toISOString();
 
-    const unreadCount = Array.from(userLastReadTimes.values()).filter(
-      (readTime) => {
-        const lastReadDate = moment.utc(readTime.lastReadTime).toISOString(); // ISO 포맷으로 변환
-        return moment(lastReadDate).isBefore(messageSentDate); // UTC 시간 비교
-      }
-    ).length;
+  // 모든 사용자의 lastReadTime과 비교하여 읽지 않은 메시지 수 계산
+  let unreadCount = 0;
 
-    return unreadCount;
-  };
+  // 각 사용자의 lastReadTime과 messageSent를 비교하여 읽지 않은 메시지인지 확인
+  userLastReadTimes.forEach((readTime) => {
+    const lastReadDate = moment.utc(readTime.lastReadTime).toISOString();
+
+    // lastReadTime이 messageSent 이전이라면 읽지 않은 메시지로 간주
+    if (moment(lastReadDate).isBefore(messageSentDate)) {
+      unreadCount++;
+    }
+  });
+
+  return unreadCount;
+};
 
   const isDifferentDay = (
     currentMessage: Message,
@@ -680,7 +685,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                           </DropdownMenu>
                         </Dropdown>
                         {/* 안 읽음 카운트 */}
-                        {calculateUnreadCount(message.sent) > 0 && (
+                        {/* {calculateUnreadCount(message.sent) > 0 && (
                           <p
                             className="text-xs mt-1 text-yellow-500"
                             style={{
@@ -693,7 +698,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                           >
                             {calculateUnreadCount(message.sent)}
                           </p>
-                        )}
+                        )} */}
                       </div>
                       {message.replyToMessageId && (
                         <p
