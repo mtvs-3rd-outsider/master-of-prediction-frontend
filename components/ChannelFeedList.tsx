@@ -10,7 +10,10 @@ interface ChannelFeedListProps {
   channelId: number;
 }
 
-const ChannelFeedList: React.FC<ChannelFeedListProps> = ({ channelType, channelId }) => {
+const ChannelFeedList: React.FC<{ 
+  channelType: string; 
+  channelId: number; 
+}> = ({ channelType, channelId }) => {
   const [feeds, setFeeds] = useState<FeedsResponseDTO[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -37,15 +40,15 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({ channelType, channelI
   }, [page, hasMore, channelType, channelId]);
 
   useEffect(() => {
-    if (inView) {
-      loadMoreFeeds();
-    }
-  }, [inView, loadMoreFeeds]);
+    setFeeds([]);
+    setPage(0);
+    setHasMore(true);
+    loadMoreFeeds();
+  }, [channelType, channelId]);
 
   const handlePostClick = useCallback((id: string) => {
     router.push(`/feed/${id}`);
   }, [router]);
-
 
   return (
     <div>
@@ -55,12 +58,12 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({ channelType, channelI
             key={`feed-${feed.id}`}
             id={feed.id.toString()}
             content={feed.content}
-            name={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+            name={feed.user?.displayName || feed.guest?.guestId || 'Unknown'}
             username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
             date={new Date(feed.createdAt).toLocaleString()}
             src={feed.user?.userImg || ''}
             initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
-            description={feed.title}
+            description={''}
             followers={feed.likesCount.toString()}
             following={feed.commentsCount.toString()}
             viewCount={feed.viewCount.toString()}
@@ -68,9 +71,13 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({ channelType, channelI
             youtubeUrls={feed.youtubeUrls}
             commentsCount={feed.commentsCount}
             likesCount={feed.likesCount}
-            quoteCount={feed.quoteCount || 0}
+            shareCount={feed.shareCount}
             onClick={() => handlePostClick(feed.id.toString())}
-            isLike={feed.isLike || false} 
+            isLike={feed.isLike || false}
+            userId={feed.user?.userId}
+            isShare={feed.isShare || false}
+            quoteFeed={feed.quoteFeed}
+            isQuote={feed.isQuote}
           />
         </div>
       ))}

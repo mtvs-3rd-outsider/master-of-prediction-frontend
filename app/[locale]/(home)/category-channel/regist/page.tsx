@@ -5,9 +5,11 @@ import { Button } from "@nextui-org/button";
 import { CameraIcon, MinusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import apiClient from "@handler/fetch/axios";
-import Image  from "next/image";
+import { useRouter } from "next/navigation";
+
 
 export default function Component() {
+  const router = useRouter()
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -88,6 +90,7 @@ export default function Component() {
       if (response.status === 200) {
         // 성공 처리
         alert("채널 등록 신청이 완료되었습니다.");
+        router.push("/category-channel/")
       } else {
         // 오류 처리
         alert("채널 등록 신청에 실패했습니다.");
@@ -108,10 +111,12 @@ export default function Component() {
           placeholder="채널 이름을 입력하세요"
           fullWidth
         />
-        
+
         <div className="space-y-2">
           <h2 className="font-semibold">대표 이미지 (정비율)</h2>
-          <p className="text-sm text-muted-foreground">대표 이미지는 1개, 15MB 이하입니다.</p>
+          <p className="text-sm text-muted-foreground">
+            대표 이미지는 1개, 15MB 이하입니다.
+          </p>
 
           <input
             type="file"
@@ -126,7 +131,7 @@ export default function Component() {
             onClick={() => handleButtonClick(false)}
           >
             {preview ? (
-              <Image
+              <img
                 src={preview}
                 alt="Selected preview"
                 className="w-full h-full object-cover rounded"
@@ -141,7 +146,9 @@ export default function Component() {
 
         <div className="space-y-2">
           <h2 className="font-semibold">배너 이미지 (3:1 비율)</h2>
-          <p className="text-sm text-muted-foreground">배너 이미지는 1개, 15MB 이하입니다.</p>
+          <p className="text-sm text-muted-foreground">
+            배너 이미지는 1개, 15MB 이하입니다.
+          </p>
 
           <input
             type="file"
@@ -152,11 +159,11 @@ export default function Component() {
           />
           <div
             className="relative w-full mt-4 border rounded overflow-hidden cursor-pointer"
-            style={{ paddingTop: '33.33%', minHeight: '150px' }} // 3:1 aspect ratio, ensuring minimum height
+            style={{ paddingTop: "33.33%", minHeight: "150px" }} // 3:1 aspect ratio, ensuring minimum height
             onClick={() => handleButtonClick(true)}
           >
             {bannerPreview ? (
-              <Image
+              <img
                 src={bannerPreview}
                 alt="Banner preview"
                 className="absolute top-0 left-0 w-full h-full object-cover rounded"
@@ -167,12 +174,13 @@ export default function Component() {
               </div>
             )}
           </div>
-
         </div>
 
         <div className="space-y-2">
           <h2 className="font-semibold">채널 설명</h2>
-          <p className="text-sm text-muted-foreground">등록하시는 채널에 대해 설명해주세요!</p>
+          <p className="text-sm text-muted-foreground">
+            등록하시는 채널에 대해 설명해주세요!
+          </p>
           <Textarea
             placeholder="채널 설명을 입력하세요."
             fullWidth
@@ -185,7 +193,9 @@ export default function Component() {
 
         <div className="space-y-2">
           <h2 className="font-semibold">채널 규칙</h2>
-          <p className="text-sm text-muted-foreground">채널 규칙을 입력해주세요.</p>
+          <p className="text-sm text-muted-foreground">
+            채널 규칙을 입력해주세요.
+          </p>
           <div className="flex items-center space-x-2">
             <MinusCircleIcon className="w-6 h-6 text-red-500" />
             <Input
@@ -208,7 +218,9 @@ export default function Component() {
             {rules.map((rule, index) => (
               <li key={index} className="flex items-center space-x-2">
                 <MinusCircleIcon className="w-5 h-5 text-red-500" />
-                <span>{index + 1}. {rule}</span>
+                <span>
+                  {index + 1}. {rule}
+                </span>
                 <button
                   className="ml-auto text-red-500 hover:text-red-700"
                   onClick={() => handleDeleteRule(index)}
@@ -221,7 +233,12 @@ export default function Component() {
         </div>
 
         <div className="flex justify-center">
-          <Button className="w-10 p-3" fullWidth color="primary" onClick={handleSubmit}>
+          <Button
+            className="w-10 p-3"
+            fullWidth
+            color="primary"
+            onClick={handleSubmit}
+          >
             채널 등록 신청하기
           </Button>
         </div>

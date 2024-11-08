@@ -6,7 +6,7 @@ import HotTopicFeedList from '@components/HotTopicFeedList';
 const HotTopicPage: React.FC = () => {
   return (
     <main className="col-span-5 w-full border-x border-slate-200">
-      <HotTopicFeedList />
+      <HotTopicFeedList sortBy='views'/>
     </main>
   );
 };

@@ -83,8 +83,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [currentRoom] = useState<RoomInfo>(dmlist[roomId]);
-  // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
-  const filteredParticipants = currentRoom.participants;
+
   const [disabledKeysMap, setDisabledKeysMap] = useState<
     Map<number, Set<string>>
   >(new Map());
@@ -93,7 +92,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     lastReadTime: string;
     roomId: string;
   }
-
+  console.log(dmlist);
   // 상태 초기화
   const [userLastReadTimes, setUserLastReadTimes] = useState<
     Map<string, UserLastReadTimeVM>
@@ -150,6 +149,41 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     });
     return response.data;
   };
+  // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
+const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
+  const filteredParticipants = currentRoom.participants.filter(
+    (participant) => participant.userId.toString() != userInfo?.id
+  );
+
+useEffect(() => {
+  const newUnreadCounts: Record<number, number> = {};
+  console.log(userLastReadTimes);
+
+  messages.forEach((message) => {
+    const messageId = message.id;
+
+    // messageId가 유효하고, 이전에 계산되지 않았거나 0이 아닌 경우에만 계산
+    if (messageId !== null && messageId !== undefined) {
+      if (unreadCounts[messageId] == undefined || unreadCounts[messageId] > 0) {
+        const count = calculateUnreadCount(
+          moment(message.sent)
+            .utcOffset(9)
+            .subtract(9, "hours")
+            .toLocaleString()
+        );
+        newUnreadCounts[messageId] = count;
+      } else {
+        newUnreadCounts[messageId] = unreadCounts[messageId];
+      }
+    }
+  });
+
+  // 이전 상태와 병합하여 부분 업데이트
+  setUnreadCounts((prevUnreadCounts) => ({
+    ...prevUnreadCounts,
+    ...newUnreadCounts,
+  }));
+}, [messages, userLastReadTimes, setUserLastReadTimes]);
 
   const {
     data,
@@ -498,18 +532,41 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     // });
   };
   const calculateUnreadCount = (messageSent: string): number => {
-    // messageSent와 lastReadTime을 UTC ISO 형식으로 변환하여 비교
-    const messageSentDate = moment.utc(messageSent).toISOString(); // ISO 포맷으로 변환
+    // 모든 사용자의 lastReadTime과 비교하여 읽지 않은 메시지 수 계산
+    let unreadCount = 0;
 
-    const unreadCount = Array.from(userLastReadTimes.values()).filter(
-      (readTime) => {
-        const lastReadDate = moment.utc(readTime.lastReadTime).toISOString(); // ISO 포맷으로 변환
-        return moment(lastReadDate).isBefore(messageSentDate); // UTC 시간 비교
+    // 각 사용자의 lastReadTime과 messageSent를 비교하여 읽지 않은 메시지인지 확인
+    userLastReadTimes.forEach((readTime) => {
+      const lastReadDate = moment(readTime.lastReadTime).toLocaleString();
+
+      if (moment(lastReadDate).isBefore(messageSent)) {
+        console.log("==================");
+        console.log(readTime?.userId);
+        console.log(lastReadDate);
+        console.log(messageSent);
+        console.log("==================");
+
+        unreadCount++;
       }
-    ).length;
+    });
 
     return unreadCount;
   };
+const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    e.stopPropagation(); // 이벤트 전파 방지
+
+    if (
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLTextAreaElement
+    ) {
+      handleSendMessage();
+    }
+  }
+};
+
+
 
   const isDifferentDay = (
     currentMessage: Message,
@@ -543,9 +600,11 @@ export default function ChatUI({ roomId }: ChatUIProps) {
           </DropdownMenu>
         </Dropdown>
         <div className="ml-2 text-sm font-medium text-gray-800">
-          {`${filteredParticipants[1]?.displayName} 외 ${
-            filteredParticipants.length - 1
-          }명`}
+          {filteredParticipants.length == 1
+            ? filteredParticipants[0]?.displayName
+            : `${filteredParticipants[0]?.displayName} 외 ${
+                filteredParticipants.length - 1
+              }명`}
         </div>
       </div>
 
@@ -641,7 +700,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
-                          
+
                         <Dropdown>
                           <DropdownTrigger>
                             <Button
@@ -677,8 +736,10 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
-                         {/* 안 읽음 카운트 */}
-                          {calculateUnreadCount(message.sent) > 0 && (
+                        {/* message.id가 null 또는 undefined가 아닌 경우에만 처리 */}
+                        {message.id !== null &&
+                          message.id !== undefined &&
+                          unreadCounts[message.id] > 0 && (
                             <p
                               className="text-xs mt-1 text-yellow-500"
                               style={{
@@ -689,7 +750,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
                                   message.user.id == user.id ? "8px" : "0",
                               }}
                             >
-                              {calculateUnreadCount(message.sent)}
+                              {unreadCounts[message.id]}
                             </p>
                           )}
                       </div>
@@ -892,6 +953,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
             className="flex-1"
             placeholder="메시지 입력"
             minRows={1}
+            onKeyDown={handleKeyDown}
           />
 
           {/* 메시지 전송 버튼 */}

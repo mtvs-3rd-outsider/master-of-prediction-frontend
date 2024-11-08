@@ -38,9 +38,10 @@ interface FeedCommentsType {
 
 interface FeedCommentsProps {
   id: string;
+  onCommentAdd?: () => void;
 }
 
-const FeedComments: React.FC<FeedCommentsProps> = ({ id }) => {
+const FeedComments: React.FC<FeedCommentsProps> = ({ id, onCommentAdd }) => {
   const [comments, setComments] = useState<FeedCommentsType[]>([]);
   const [inputState, setInputState] = useState<string>("");
 
@@ -72,6 +73,9 @@ const FeedComments: React.FC<FeedCommentsProps> = ({ id }) => {
         });
         loadComments();
         setInputState("");
+        if (onCommentAdd) {
+          onCommentAdd();  // 댓글이 추가되면 부모 컴포넌트에 알림
+        }
       } catch (error) {
         console.error("댓글 작성에 실패했습니다:", error);
       }
@@ -79,7 +83,6 @@ const FeedComments: React.FC<FeedCommentsProps> = ({ id }) => {
       console.error("유효하지 않은 feedId");
     }
   };
-
   return (
     <>
       <Input
@@ -89,11 +92,16 @@ const FeedComments: React.FC<FeedCommentsProps> = ({ id }) => {
         onChange={handleChange}
         placeholder="댓글을 입력하세요..."
         endContent={
-          <p onClick={handleClick} className="text-blue-700 cursor-pointer">
-            게시
-          </p>
-        }
-      />
+          <div className="flex items-center whitespace-nowrap ml-2">
+            <button 
+              onClick={handleClick} 
+              className="text-blue-700 hover:text-blue-800 cursor-pointer px-2"
+            >
+              게시
+            </button>
+            </div>
+   }
+   />
       <ul>
         {comments.map((commentItem, idx) => (
           <li key={idx} className="flex px-4 py-4 shadow">
