@@ -50,8 +50,8 @@ const useUserStore = create<UserStore>()(
           localStorage.removeItem("user-storage");
 
           // accessToken 쿠키 제거
-          document.cookie =
-            "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          document.cookie = document.cookie =
+            "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=master-of-prediction.shop;";
         },
         setHasHydrated: (state: boolean) => {
           set({ hasHydrated: state });
