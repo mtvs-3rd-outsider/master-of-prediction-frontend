@@ -1,7 +1,7 @@
 "use client";
-import toast from 'react-hot-toast';
-import { create } from 'zustand';
-import { persist, devtools } from 'zustand/middleware';
+import toast from "react-hot-toast";
+import { create } from "zustand";
+import { persist, devtools } from "zustand/middleware";
 
 // UserInfo 인터페이스 정의
 export interface UserInfo {
@@ -37,7 +37,9 @@ const useUserStore = create<UserStore>()(
         hasHydrated: false, // 초기값 false
         setUserInfo: (info) => {
           if (!info.token) {
-            toast.error("User information cannot be set without a valid token.");
+            toast.error(
+              "User information cannot be set without a valid token."
+            );
             return; // Exit early if there's no token
           }
           set({ userInfo: info });
@@ -45,14 +47,18 @@ const useUserStore = create<UserStore>()(
         clearUserInfo: () => {
           console.log("clearUserInfo called");
           set({ userInfo: null });
-          localStorage.removeItem('user-storage');
+          localStorage.removeItem("user-storage");
+
+          // accessToken 쿠키 제거
+          document.cookie =
+            "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         },
         setHasHydrated: (state: boolean) => {
           set({ hasHydrated: state });
         },
       }),
       {
-        name: 'user-storage',
+        name: "user-storage",
         partialize: (state) => ({ userInfo: state.userInfo }),
         onRehydrateStorage: () => (state) => {
           console.log("rehydrate success");
@@ -60,7 +66,7 @@ const useUserStore = create<UserStore>()(
         },
       }
     ),
-    { name: 'UserStore' }
+    { name: "UserStore" }
   )
 );
 

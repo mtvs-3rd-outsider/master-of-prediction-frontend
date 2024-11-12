@@ -42,24 +42,29 @@ const RankingClientComponent: React.FC<UserChannelPageProps> = ({  tabNames }) =
 
       {/* 탭에 따라 표시할 콘텐츠 */}
       <div className="tab-content">
-        {activeTab === 0 && <div>
-          {/* <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/> */}
-          <MyUserRankingItem/>
-          <UserRankingList/>
-          </div>}
-        {activeTab === 1 &&  <div>
-     
-             <Card className="w-full">
-      <CardHeader >
-       
-       
-      </CardHeader>
-      <CardBody>
-      <RankingSystem />
-      </CardBody>
-     
-    </Card>
-             </div>}
+        {activeTab === 0 && (
+          <div>
+            {/* <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/> */}
+            <MyUserRankingItem />
+            <UserRankingList />
+          </div>
+        )}
+        {/* {activeTab === 1 && (
+          <div>
+           
+          </div>
+        )} */}
+
+        {/* {activeTab === 2 && (
+          <div>
+            <Card className="w-full">
+              <CardHeader></CardHeader>
+              <CardBody>
+                <RankingSystem />
+              </CardBody>
+            </Card>
+          </div>
+        )} */}
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ export  default async function Page( ) {
   // };
 
   // 탭 데이터
-  const tabs = [ '랭킹','랭킹 시스템'];
+  const tabs = [ '랭킹'];
 
   return (
     <>
