@@ -89,7 +89,7 @@ const UserRankingList: React.FC = () => {
           ? 'Loading more...'
           : hasNextPage
           ? 'Load More'
-          : 'No more rankings'}
+          : ''}
       </div>
     </div>
   );
