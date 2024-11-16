@@ -117,7 +117,7 @@ const config: Config = {
         },
       },
     }),
-     function ({ addUtilities }) {
+     function ({ addUtilities }:any) {
       addUtilities({
         ".text-stroke": {
           "-webkit-text-stroke": "0.7px black",
