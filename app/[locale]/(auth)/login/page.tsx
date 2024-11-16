@@ -53,9 +53,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    router.push(
-      "https://back.master-of-prediction.shop:8080/oauth2/authorization/google"
-    );
+    router.push(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL!);
 
     
   };
