@@ -12,6 +12,7 @@ import useUserStore from '@store/useUserStore';
 import BettingProduct from './BettingProduct';
 import BettingList from './BettingList';
 import ChannelFeedList from './ChannelFeedList';
+import { useRouter } from 'next/navigation';
 
 interface UserChannelPageProps {
   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
@@ -19,6 +20,15 @@ interface UserChannelPageProps {
 }
 
 const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user, tabNames }) => {
+    const { userInfo } = useUserStore((state) => ({
+      userInfo: state.userInfo,
+    }));
+    const router = useRouter();
+    useEffect(() => {
+      if (!userInfo) {
+        router.push("/login");
+      }
+    }, [userInfo, router]);
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {

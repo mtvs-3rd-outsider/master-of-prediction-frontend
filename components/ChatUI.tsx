@@ -101,7 +101,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
   const [message, setMessage] = useState("");
   const sourceRef = useRef<any>(null);
   const sourceRefForReaction = useRef<any>(null);
-  const user: User = toUser(userInfo);
+  const [user, setUser] = useState<User>(); // User 상태로 초기화
   const touchTimeout = useRef<NodeJS.Timeout | null>(null);
   const { ref: loadMoreRef, inView: isInView } = useInView({
     rootMargin: "100px",
@@ -120,7 +120,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     userName: string;
     userImg: string;
   }
-
+  
   // 메시지 ref 맵을 저장하는 객체
   const messageRefs = useRef(new Map<number, HTMLDivElement>());
   // scrollToMessage 함수
@@ -150,40 +150,44 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     return response.data;
   };
   // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
-const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
+  const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   const filteredParticipants = currentRoom.participants.filter(
     (participant) => participant.userId.toString() != userInfo?.id
   );
 
-useEffect(() => {
-  const newUnreadCounts: Record<number, number> = {};
-  console.log(userLastReadTimes);
+  useEffect(() => {
+    const newUnreadCounts: Record<number, number> = {};
+    console.log(userLastReadTimes);
 
-  messages.forEach((message) => {
-    const messageId = message.id;
+    messages.forEach((message) => {
+      const messageId = message.id;
 
-    // messageId가 유효하고, 이전에 계산되지 않았거나 0이 아닌 경우에만 계산
-    if (messageId !== null && messageId !== undefined) {
-      if (unreadCounts[messageId] == undefined || unreadCounts[messageId] > 0) {
-        const count = calculateUnreadCount(
-          moment.utc(message.sent)
-            // .utcOffset(9)
-            // .subtract(9, "hours")
-            .toLocaleString()
-        );
-        newUnreadCounts[messageId] = count;
-      } else {
-        newUnreadCounts[messageId] = unreadCounts[messageId];
+      // messageId가 유효하고, 이전에 계산되지 않았거나 0이 아닌 경우에만 계산
+      if (messageId !== null && messageId !== undefined) {
+        if (
+          unreadCounts[messageId] == undefined ||
+          unreadCounts[messageId] > 0
+        ) {
+          const count = calculateUnreadCount(
+            moment
+              .utc(message.sent)
+              // .utcOffset(9)
+              // .subtract(9, "hours")
+              .toLocaleString()
+          );
+          newUnreadCounts[messageId] = count;
+        } else {
+          newUnreadCounts[messageId] = unreadCounts[messageId];
+        }
       }
-    }
-  });
+    });
 
-  // 이전 상태와 병합하여 부분 업데이트
-  setUnreadCounts((prevUnreadCounts) => ({
-    ...prevUnreadCounts,
-    ...newUnreadCounts,
-  }));
-}, [messages, userLastReadTimes, setUserLastReadTimes]);
+    // 이전 상태와 병합하여 부분 업데이트
+    setUnreadCounts((prevUnreadCounts) => ({
+      ...prevUnreadCounts,
+      ...newUnreadCounts,
+    }));
+  }, [messages, userLastReadTimes, setUserLastReadTimes]);
 
   const {
     data,
@@ -360,6 +364,9 @@ useEffect(() => {
   };
 
   const handleSendMessage = async () => {
+     if (!user) {
+       return; // user가 없으면 메시지 전송을 중단
+     }
     const content = message;
     const mediaFile = fileInputRef.current?.files?.[0];
 
@@ -373,6 +380,7 @@ useEffect(() => {
           ? "IMAGE"
           : "VIDEO"
         : "PLAIN";
+      
       const userMessage: Message = {
         content: content,
         user,
@@ -515,6 +523,19 @@ useEffect(() => {
       }
     }
   }, [data, hasNextPage, targetMessageId]);
+  useEffect(() => {
+    if (!userInfo) {
+      router.push("/login");
+    } else {
+      const convertedUser = toUser(userInfo);
+      if (convertedUser)
+        setUser(convertedUser);
+    }
+  }, [userInfo, router]);
+
+  if (!user) {
+    return null; // 리디렉션 전까지는 컴포넌트를 렌더링하지 않음
+  }
   const handleRemoveReaction = (messageId: number, reactionType: string) => {
     // 해당 메시지와 반응을 서버에 업데이트
     sendReaction(messageId, reactionType, "minus"); // false로 설정하여 반응 제거 전송
@@ -532,44 +553,40 @@ useEffect(() => {
     //   return prevReactions;
     // });
   };
-const calculateUnreadCount = (messageSent: string): number => {
-  let unreadCount = 0;
+  const calculateUnreadCount = (messageSent: string): number => {
+    let unreadCount = 0;
 
-  userLastReadTimes.forEach((readTime) => {
-    // lastReadTime을 UTC 시간으로 변환하여 비교
-    const lastReadDate = moment.utc(readTime.lastReadTime).add(9, "hours");
+    userLastReadTimes.forEach((readTime) => {
+      // lastReadTime을 UTC 시간으로 변환하여 비교
+      const lastReadDate = moment.utc(readTime.lastReadTime).add(9, "hours");
 
-    if (lastReadDate.isBefore(moment.utc(messageSent))) {
-      console.log("==================");
-      console.log(readTime?.userId);
-      console.log(lastReadDate.toString());
-      console.log(moment.utc(messageSent).toString());
-      console.log("==================");
+      if (lastReadDate.isBefore(moment.utc(messageSent))) {
+        console.log("==================");
+        console.log(readTime?.userId);
+        console.log(lastReadDate.toString());
+        console.log(moment.utc(messageSent).toString());
+        console.log("==================");
 
-      unreadCount++;
+        unreadCount++;
+      }
+    });
+
+    return unreadCount;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.stopPropagation(); // 이벤트 전파 방지
+
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        handleSendMessage();
+      }
     }
-  });
-
-  return unreadCount;
-};
-
-
-
-const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    e.stopPropagation(); // 이벤트 전파 방지
-
-    if (
-      e.target instanceof HTMLInputElement ||
-      e.target instanceof HTMLTextAreaElement
-    ) {
-      handleSendMessage();
-    }
-  }
-};
-
-
+  };
 
   const isDifferentDay = (
     currentMessage: Message,

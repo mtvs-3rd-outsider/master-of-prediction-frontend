@@ -22,13 +22,23 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { fetchSearchResults } from '@handler/UserAPI';
 import DMSearchResults from './DMSearchResults';
 import ChatList from './ChatList';
+import { useRouter } from 'next/navigation';
 
 interface UserChannelPageProps {
 //   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
   tabNames: string[];
 }
 
-const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabNames }) => {
+const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({ tabNames }) => {
+    const { userInfo } = useUserStore((state) => ({
+      userInfo: state.userInfo,
+    }));
+    const router = useRouter();
+    useEffect(() => {
+      if (!userInfo) {
+        router.push("/login");
+      }
+    }, [userInfo, router]);
   const [activeTab, setActiveTab] = useState(0);
   const [isHeaderVisible, setHeaderVisible] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
@@ -75,7 +85,8 @@ const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({  tabN
       enabled: !!debouncedSearchTerm,
       staleTime: 5 * 60 * 1000,
     }
-  );
+    );
+
   return (
     <div>
       <SearchInputSection
