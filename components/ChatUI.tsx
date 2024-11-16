@@ -166,9 +166,9 @@ useEffect(() => {
     if (messageId !== null && messageId !== undefined) {
       if (unreadCounts[messageId] == undefined || unreadCounts[messageId] > 0) {
         const count = calculateUnreadCount(
-          moment(message.sent)
-            .utcOffset(9)
-            .subtract(9, "hours")
+          moment.utc(message.sent)
+            // .utcOffset(9)
+            // .subtract(9, "hours")
             .toLocaleString()
         );
         newUnreadCounts[messageId] = count;
@@ -365,6 +365,7 @@ useEffect(() => {
 
     if (content || mediaFile) {
       const sent = moment().toISOString();
+      console.log(sent);
       const replyToMessageId = replyTo?.id?.toString() || null;
       const replyContent = replyTo?.content?.toString() || undefined;
       const contentType = mediaFile
@@ -531,27 +532,29 @@ useEffect(() => {
     //   return prevReactions;
     // });
   };
-  const calculateUnreadCount = (messageSent: string): number => {
-    // 모든 사용자의 lastReadTime과 비교하여 읽지 않은 메시지 수 계산
-    let unreadCount = 0;
+const calculateUnreadCount = (messageSent: string): number => {
+  let unreadCount = 0;
 
-    // 각 사용자의 lastReadTime과 messageSent를 비교하여 읽지 않은 메시지인지 확인
-    userLastReadTimes.forEach((readTime) => {
-      const lastReadDate = moment(readTime.lastReadTime).toLocaleString();
+  userLastReadTimes.forEach((readTime) => {
+    // lastReadTime을 UTC 시간으로 변환하여 비교
+    const lastReadDate = moment.utc(readTime.lastReadTime).add(9, "hours");
 
-      if (moment(lastReadDate).isBefore(messageSent)) {
-        console.log("==================");
-        console.log(readTime?.userId);
-        console.log(lastReadDate);
-        console.log(messageSent);
-        console.log("==================");
+    if (lastReadDate.isBefore(moment.utc(messageSent))) {
+      console.log("==================");
+      console.log(readTime?.userId);
+      console.log(lastReadDate.toString());
+      console.log(moment.utc(messageSent).toString());
+      console.log("==================");
 
-        unreadCount++;
-      }
-    });
+      unreadCount++;
+    }
+  });
 
-    return unreadCount;
-  };
+  return unreadCount;
+};
+
+
+
 const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
   if (e.key === "Enter") {
     e.preventDefault();
