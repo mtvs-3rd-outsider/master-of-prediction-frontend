@@ -54,8 +54,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     router.push(
-      process.env.NEXT_PUBLIC_BACKEND+"/oauth2/authorization/google"
-      
+      "https://back.master-of-prediction.shop:8080/oauth2/authorization/google"
     );
 
     
