@@ -58,12 +58,16 @@ const ChannelFeedList: React.FC<{
             key={`feed-${feed.id}`}
             id={feed.id.toString()}
             content={feed.content}
-            name={feed.user?.displayName || feed.guest?.guestId || 'Unknown'}
-            username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+            name={feed.user?.displayName || feed.guest?.guestId || "Unknown"}
+            username={feed.user?.userName || feed.guest?.guestId || "Unknown"}
             date={new Date(feed.createdAt).toLocaleString()}
-            src={feed.user?.userImg || ''}
-            initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
-            description={''}
+            src={feed.user?.userImg || ""}
+            initials={(
+              feed.user?.userName?.[0] ||
+              feed.guest?.guestId?.[0] ||
+              "U"
+            ).toUpperCase()}
+            description={""}
             followers={feed.likesCount.toString()}
             following={feed.commentsCount.toString()}
             viewCount={feed.viewCount.toString()}
@@ -82,7 +86,16 @@ const ChannelFeedList: React.FC<{
         </div>
       ))}
       <div ref={ref}>
-        {hasMore ? 'Loading more...' : 'No more feeds'}
+        {hasMore ? (
+          "Loading more..."
+        ) : (
+          <div className="flex flex-col   justify-center h-screen font-GangwonEduPowerExtraBoldA">
+            <p className="text-center text-2xl">
+              게시글을 작성하지 않았습니다.
+            </p>
+            <p className="text-center text-4xl ">게시글을 작성해보세요!</p>
+          </div>
+        )}
       </div>
     </div>
   );

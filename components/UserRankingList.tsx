@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import apiClient from '@handler/fetch/axios'; // Axios 클라이언트
-import useUserStore from '@store/useUserStore'; // 유저 정보 스토어
-import UserRankingItem from './UserRankingItem';
+import React, { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import apiClient from "@handler/fetch/axios"; // Axios 클라이언트
+import useUserStore from "@store/useUserStore"; // 유저 정보 스토어
+import UserRankingItem from "./UserRankingItem";
 
 const UserRankingList: React.FC = () => {
   const userInfo = useUserStore((state) => state.userInfo);
@@ -25,32 +25,23 @@ const UserRankingList: React.FC = () => {
 
   const {
     fetchNextPage,
-    fetchPreviousPage,
     hasNextPage,
-    hasPreviousPage,
     isFetchingNextPage,
-    isFetchingPreviousPage,
     data,
-    error:infiniteError,
-    status
-
-  } = useInfiniteQuery(
-    {
-      queryKey: ['rankings'],
-      queryFn: ({ pageParam = 1 })=> fetchUserRankings(pageParam),
-      initialPageParam: 0,
-      getNextPageParam: (lastPage, allPages) => {
-      // lastPage는 Spring Page 객체입니다.
-      console.log(lastPage);
+    error: infiniteError,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["rankings"],
+    queryFn: ({ pageParam = 1 }) => fetchUserRankings(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
       if (!lastPage.last) {
         return lastPage.number + 1; // 다음 페이지 번호를 반환
       } else {
         return undefined; // 더 이상 페이지가 없으면 undefined 반환
       }
-      },
-      enabled: !!userInfo
-  }
-  );
+    },
+  });
 
   useEffect(() => {
     if (isInView && hasNextPage) {
@@ -58,26 +49,37 @@ const UserRankingList: React.FC = () => {
     }
   }, [isInView, hasNextPage, fetchNextPage]);
 
+  // 데이터가 없는 경우를 확인하는 변수
+  const noData =
+    status === "success" &&
+    (!data || data.pages.every((page) => page.content.length === 0));
+
   return (
     <div>
-      {status === 'pending' ? (
+      {status === "pending" ? (
         <p>Loading...</p>
-      ) : status === 'error' ? (
+      ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
+      ) : noData ? (
+        <div className="flex flex-col items-center justify-center h-screen font-GangwonEduPowerExtraBoldA">
+          <p className="text-center text-2xl">
+            아직 아무도 예측을 하지 않았습니다.
+          </p>
+          <p className="text-center text-4xl ">예측에 참여해보세요!</p>
+        </div>
       ) : (
         <ul className="[&_li:last-child]:text-slate-500 [&_li:first-child]:text-lg divide-y divide-slate-200">
           {data?.pages.map((page, pageIndex) => (
             <React.Fragment key={pageIndex}>
               {page.content.map((ranking: any) => (
                 <UserRankingItem
-                key={ranking.userId}
-                // userImg={ranking.userImg}
-                userName={ranking.userName} 
-                displayName={ranking.displayName} 
-                rank={ranking.rank}
-                points={ranking.points}
-                lastUpdated={ranking.lastUpdated}
-              />
+                  key={ranking.userId}
+                  userName={ranking.userName}
+                  displayName={ranking.displayName}
+                  rank={ranking.rank}
+                  points={ranking.points}
+                  lastUpdated={ranking.lastUpdated}
+                />
               ))}
             </React.Fragment>
           ))}
@@ -86,10 +88,10 @@ const UserRankingList: React.FC = () => {
 
       <div ref={loadMoreRef} className="mt-4">
         {isFetchingNextPage
-          ? 'Loading more...'
+          ? "Loading more..."
           : hasNextPage
-          ? 'Load More'
-          : ''}
+          ? "Load More"
+          : ""}
       </div>
     </div>
   );

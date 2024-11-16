@@ -17,7 +17,7 @@ const MyUserRankingItem: React.FC = () => {
     enabled: !!userInfo, // userInfo가 존재할 때만 쿼리 실행
   });
 
-  if (status === "pending") {
+  if (status === "pending" && userInfo) {
     return <p>Loading your ranking...</p>;
   }
 

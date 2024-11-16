@@ -41,7 +41,6 @@ const UserRankingList: React.FC = () => {
         return undefined; // 더 이상 페이지가 없으면 undefined 반환
       }
     },
-    enabled: !!userInfo,
   });
 
   useEffect(() => {
@@ -50,12 +49,24 @@ const UserRankingList: React.FC = () => {
     }
   }, [isInView, hasNextPage, fetchNextPage]);
 
+  // 데이터가 없는 경우를 확인하는 변수
+  const noData =
+    status === "success" &&
+    (!data || data.pages.every((page) => page.content.length === 0));
+
   return (
     <div>
       {status === "pending" ? (
         <p>Loading...</p>
       ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
+      ) : noData ? (
+        <div className="flex flex-col items-center justify-center h-screen font-GangwonEduPowerExtraBoldA">
+          <p className="text-center text-2xl">
+            아직 아무도 예측을 하지 않았습니다.
+          </p>
+          <p className="text-center text-4xl ">예측에 참여해보세요!</p>
+        </div>
       ) : (
         <ul className="[&_li:last-child]:text-slate-500 [&_li:first-child]:text-lg divide-y divide-slate-200">
           {data?.pages.map((page, pageIndex) => (

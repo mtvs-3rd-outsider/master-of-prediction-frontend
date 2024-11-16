@@ -34,7 +34,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   return (
     <div className="p-4">
       {status === 'pending' ? (
-        <p>Loading ...</p>
+        <p></p>
       ) : status === 'error' ? (
         <p>Error: {infiniteErrorSearch.message}</p>
       ) : (

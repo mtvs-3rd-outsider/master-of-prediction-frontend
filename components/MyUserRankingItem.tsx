@@ -17,11 +17,11 @@ const MyUserRankingItem: React.FC = () => {
     enabled: !!userInfo, // userInfo가 존재할 때만 쿼리 실행
   });
 
-  if (status === "pending") {
+  if (status === "pending" && userInfo) {
     return <p>Loading your ranking...</p>;
   }
 
-  if (status === "error") {
+  if (status === "error" ) {
     return (
       <p style={{ color: "red" }}>
         Error loading your ranking: {error?.message}
@@ -34,7 +34,7 @@ const MyUserRankingItem: React.FC = () => {
   }
 
   const rank = data?.rank > 0 ? data.rank : "-"; // rank가 없으면 "-"로 표시
-  const points = data?.points !== undefined ? data.points : "포인트 없음"; // points가 없으면 "포인트 없음"으로 표시
+  const points = data?.points != undefined ? data.points : "0"; // points가 없으면 "포인트 없음"으로 표시
 
   return (
     <div className="flex justify-center items-center my-6">

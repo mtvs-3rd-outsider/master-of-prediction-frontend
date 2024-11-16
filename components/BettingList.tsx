@@ -61,9 +61,9 @@ const BettingList: React.FC = () => {
 
   return (
     <div>
-      {status === 'pending' ? (
+      {status === "pending" ? (
         <p>Loading...</p>
-      ) : status === 'error' ? (
+      ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
       ) : (
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
@@ -90,7 +90,18 @@ const BettingList: React.FC = () => {
       )}
 
       <div ref={loadMoreRef}>
-        {isFetchingNextPage ? 'Loading more...' : hasNextPage ? 'Load More' : ''}
+        {isFetchingNextPage ? (
+          "Loading more..."
+        ) : hasNextPage ? (
+          <div className="flex flex-col   justify-center h-screen font-GangwonEduPowerExtraBoldA">
+            <p className="text-center text-2xl">
+              베팅을 작성하지 않았습니다.
+            </p>
+            <p className="text-center text-4xl ">베팅을 작성해보세요!</p>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
