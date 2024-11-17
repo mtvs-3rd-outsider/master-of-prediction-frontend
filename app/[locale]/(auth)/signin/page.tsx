@@ -17,7 +17,7 @@ export default function SignInPage() {
   const [intervalId, setIntervalId] = useState<any>(null);
 
   const handleGoogleLogin = () => {
-    router.push ("https://master-of-prediction.shop:8081/oauth2/authorization/google");
+     router.push(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL!);
   };
 
   const startTimer = (duration:any) => {

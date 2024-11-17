@@ -52,7 +52,7 @@ export default function LoginPage() {
     router.push("/");
   };
 
-  const handleGoogleLogin = () => {
+   const handleGoogleLogin = () => {
     router.push(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL!);
 
     
