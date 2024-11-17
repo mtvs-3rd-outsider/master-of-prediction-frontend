@@ -23,6 +23,10 @@ export default function DropdownNext() {
     }, 0); // 짧은 지연을 두어 라우터 이동이 실행된 후 clearUserInfo 호출
   };
 
+  const handleSettings = () => {
+    router.push("/settings"); // 설정 페이지로 이동
+  };
+
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -32,6 +36,9 @@ export default function DropdownNext() {
         </Button>
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions">
+        <DropdownItem key="settings" onClick={handleSettings}>
+          설정
+        </DropdownItem>
         <DropdownItem
           key="logout"
           className="text-danger"

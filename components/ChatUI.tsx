@@ -67,10 +67,13 @@ interface ChatUIProps {
 type ReactionCount = { [reactionType: string]: number };
 export default function ChatUI({ roomId }: ChatUIProps) {
   const clientRef = useRef<any>(null);
-  const { userInfo, token } = useUserStore((state) => ({
+  const { userInfo, token, hasHydrated } = useUserStore((state) => ({
     userInfo: state.userInfo,
     token: state.userInfo?.token,
+    hasHydrated: state.hasHydrated,
   }));
+
+
   const { dmlist } = useDMListStore();
   const [reactions, setReactions] = useState<Record<number, ReactionVM[]>>({}); // 각 메시지에 대한 반응 상태
   const [messages, setMessages] = useState<Message[]>([]);
@@ -522,17 +525,14 @@ export default function ChatUI({ roomId }: ChatUIProps) {
         fetchNextPage(); // 페이지에 없
       }
     }
-  }, [data, hasNextPage, targetMessageId]);
-  useEffect(() => {
-    if (!userInfo) {
-      router.push("/login");
-    } else {
-      const convertedUser = toUser(userInfo);
-      if (convertedUser)
-        setUser(convertedUser);
-    }
-  }, [userInfo, router]);
+  }, [data, hasNextPage, targetMessageId]); 
 
+  useEffect(() => {
+    // hydration이 완료된 후에만 로그인 상태 확인
+    if (hasHydrated && !userInfo) {
+      router.push("/login");
+    }
+  }, [hasHydrated, userInfo, router]);
   if (!user) {
     return null; // 리디렉션 전까지는 컴포넌트를 렌더링하지 않음
   }

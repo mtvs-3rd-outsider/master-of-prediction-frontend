@@ -8,7 +8,7 @@ import useUserStore from "@store/useUserStore";
 const NotificationList: React.FC = () => {
   const userInfo = useUserStore((state) => state.userInfo);
   const { ref: loadMoreRef, inView: isInView } = useInView({
-    threshold: 0.5, // 50% visibility trigger
+    threshold: 0.5,
     triggerOnce: false,
   });
 
@@ -36,25 +36,21 @@ const NotificationList: React.FC = () => {
     queryFn: ({ pageParam = 1 }) => fetchNotifications(pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      if (!lastPage.last) {
-        return lastPage.number + 1; // 다음 페이지 번호 반환
-      } else {
-        return undefined; // 마지막 페이지면 undefined 반환
-      }
+      console.log("lastPage object:", lastPage); // 디버깅을 위한 로그
+      return lastPage.last ? undefined : lastPage.number + 1;
     },
     enabled: !!userInfo,
   });
 
   useEffect(() => {
-    if (isInView && hasNextPage) {
+    if (isInView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [isInView, hasNextPage, fetchNextPage]);
+  }, [isInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // 데이터가 없는 경우를 확인하는 변수
   const noData =
     status === "success" &&
-    (!data || data.pages.every((page) => page.content.length === 0));
+    (!data || data.pages?.every((page) => !page.content?.length));
 
   return (
     <div>
@@ -63,9 +59,11 @@ const NotificationList: React.FC = () => {
       ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
       ) : noData ? (
-        <div className="flex flex-col items-center justify-center h-screen">
-          <p className="text-center">알림이 아직 없습니다.</p>
-        </div>
+             <div className="flex flex-col   justify-center h-screen font-GangwonEduPowerExtraBoldA">
+            <p className="text-center text-2xl">
+              알림이 아직 없습니다.
+            </p>
+          </div>
       ) : (
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
           {data?.pages.map((page, pageIndex) => (

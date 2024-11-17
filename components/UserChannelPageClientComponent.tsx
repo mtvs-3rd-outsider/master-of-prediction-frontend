@@ -24,11 +24,7 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user, 
       userInfo: state.userInfo,
     }));
     const router = useRouter();
-    useEffect(() => {
-      if (!userInfo) {
-        router.push("/login");
-      }
-    }, [userInfo, router]);
+
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {

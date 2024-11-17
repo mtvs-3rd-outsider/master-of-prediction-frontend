@@ -1,46 +1,52 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import BackButton from '@components/BackButton';
-import Tabs from '@components/Tabs';
-import SubscribePanel from '@components/SubscribePanel';
-import PanelItem from '@ui/PanelItem';
-import apiClient from '@api/axios'; // 예시 API 함수
+import React, { useState, useEffect } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import BackButton from "@components/BackButton";
+import Tabs from "@components/Tabs";
+import SubscribePanel from "@components/SubscribePanel";
+import PanelItem from "@ui/PanelItem";
+import apiClient from "@api/axios";
 import { usePathname } from "next/navigation";
-import { useInView } from 'react-intersection-observer';
+import { useInView } from "react-intersection-observer";
 
 // Fetch followers
-const fetchFollowers = async (pageParam = 0, queryKey :string[]) => {
+const fetchFollowers = async (pageParam = 0, queryKey: string[]) => {
   const channelId = queryKey[1];
-  const response = await apiClient.get(`/subscriptions/channel/${channelId}/subscribers`, {
-    params: {
-      isUserChannel: true,
-      page: pageParam,
-      size: 15,
-    },
-  });
+  const response = await apiClient.get(
+    `/subscriptions/channel/${channelId}/subscribers`,
+    {
+      params: {
+        isUserChannel: true,
+        page: pageParam,
+        size: 15,
+      },
+    }
+  );
   return response.data;
 };
 
 // Fetch followings
-const fetchFollowings = async (pageParam = 0, queryKey :string[] ) => {
+const fetchFollowings = async (pageParam = 0, queryKey: string[]) => {
   const channelId = queryKey[1];
-  const response = await apiClient.get(`/subscriptions/user/${channelId}/following`, {
-    params: {
-      isUserChannel: true,
-      page: pageParam,
-      size: 15,
-    },
-  });
+  const response = await apiClient.get(
+    `/subscriptions/user/${channelId}/following`,
+    {
+      params: {
+        isUserChannel: true,
+        page: pageParam,
+        size: 15,
+      },
+    }
+  );
   return response.data;
 };
 
 const HomePage: React.FC = () => {
-  const tabs = ['Followers', 'Followings'];
+  const tabs = ["Followers", "Followings"];
   const [activeTab, setActiveTab] = useState(0);
   const pathName = usePathname();
-  const parts = pathName.split('/');
-  const channelId = parts[parts.length - 2]; // "2" 추출
+  const parts = pathName.split("/");
+  const channelId = parts[parts.length - 2];
   const { ref: loadMoreRef, inView: isInView } = useInView({
     threshold: 0.5,
     triggerOnce: false,
@@ -58,9 +64,9 @@ const HomePage: React.FC = () => {
     hasNextPage: hasNextFollowers,
     isFetchingNextPage: isFetchingNextFollowers,
   } = useInfiniteQuery({
-    queryKey: ['followers', channelId],
-    queryFn: ({ pageParam = 1 ,queryKey })=> fetchFollowers(pageParam,queryKey),
-
+    queryKey: ["followers", channelId],
+    queryFn: ({ pageParam = 1, queryKey }) =>
+      fetchFollowers(pageParam, queryKey),
     getNextPageParam: (lastPage) => {
       return !lastPage.last ? lastPage.number + 1 : undefined;
     },
@@ -76,8 +82,9 @@ const HomePage: React.FC = () => {
     hasNextPage: hasNextFollowings,
     isFetchingNextPage: isFetchingNextFollowings,
   } = useInfiniteQuery({
-    queryKey: ['followings', channelId],
-    queryFn: ({ pageParam = 1 ,queryKey })=> fetchFollowings(pageParam,queryKey),
+    queryKey: ["followings", channelId],
+    queryFn: ({ pageParam = 1, queryKey }) =>
+      fetchFollowings(pageParam, queryKey),
     getNextPageParam: (lastPage) => {
       return !lastPage.last ? lastPage.number + 1 : undefined;
     },
@@ -93,7 +100,14 @@ const HomePage: React.FC = () => {
         fetchNextFollowings();
       }
     }
-  }, [isInView, activeTab, hasNextFollowers, hasNextFollowings, fetchNextFollowers, fetchNextFollowings]);
+  }, [
+    isInView,
+    activeTab,
+    hasNextFollowers,
+    hasNextFollowings,
+    fetchNextFollowers,
+    fetchNextFollowings,
+  ]);
 
   return (
     <>
@@ -108,6 +122,12 @@ const HomePage: React.FC = () => {
           <SubscribePanel title="" href="/">
             {followersLoading ? (
               <div>Loading followers...</div>
+            ) : followersData?.pages[0]?.content.length === 0 ? ( // 체크: followers가 없는 경우
+              <div className="flex flex-col justify-center h-screen font-GangwonEduPowerExtraBoldA">
+                <p className="text-center text-2xl">
+                  팔로우하는 채널이 아직 없습니다.
+                </p>
+              </div>
             ) : (
               followersData?.pages.map((page, pageIndex) => (
                 <React.Fragment key={pageIndex}>
@@ -127,7 +147,11 @@ const HomePage: React.FC = () => {
               ))
             )}
             <div ref={loadMoreRef}>
-              {isFetchingNextFollowers ? 'Loading more...' : hasNextFollowers ? 'Load More' : ''}
+              {isFetchingNextFollowers
+                ? "Loading more..."
+                : hasNextFollowers
+                ? "Load More"
+                : ""}
             </div>
           </SubscribePanel>
         )}
@@ -137,6 +161,12 @@ const HomePage: React.FC = () => {
           <SubscribePanel title="" href="/">
             {followingsLoading ? (
               <div>Loading followings...</div>
+            ) : followingsData?.pages[0]?.content.length === 0 ? ( // 체크: followings가 없는 경우
+              <div className="flex flex-col justify-center h-screen font-GangwonEduPowerExtraBoldA">
+                <p className="text-center text-2xl">
+                  팔로윙하는 채널이 아직 없습니다.
+                </p>
+              </div>
             ) : (
               followingsData?.pages.map((page, pageIndex) => (
                 <React.Fragment key={pageIndex}>
@@ -156,7 +186,11 @@ const HomePage: React.FC = () => {
               ))
             )}
             <div ref={loadMoreRef}>
-              {isFetchingNextFollowings ? 'Loading more...' : hasNextFollowings ? 'Load More' : ''}
+              {isFetchingNextFollowings
+                ? "Loading more..."
+                : hasNextFollowings
+                ? "Load More"
+                : ""}
             </div>
           </SubscribePanel>
         )}
