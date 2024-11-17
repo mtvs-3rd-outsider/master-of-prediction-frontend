@@ -531,6 +531,9 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     // hydration이 완료된 후에만 로그인 상태 확인
     if (hasHydrated && !userInfo) {
       router.push("/login");
+    } else {
+      const convertedUser = toUser(userInfo);
+      if (convertedUser) setUser(convertedUser);
     }
   }, [hasHydrated, userInfo, router]);
   if (!user) {
