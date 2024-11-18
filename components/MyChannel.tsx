@@ -23,6 +23,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import useOptimisticMutation from "@handler/useOptimisticMutation";
 import { MyChannelProps } from "@/app/[locale]/(home)/channel/[userId]/page";
 import DropdownNext from "./DropdownAccountNavItem";
+import { useTranslations } from "next-intl";
 
 
 // 구독 상태를 서버에서 가져오는 함수
@@ -31,7 +32,8 @@ interface UserChannelPageProps {
 }
 
 const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
-
+ const t = useTranslations();
+ 
   const fetchFollowers = async (channelId?: string) => {
     const response = await apiClient.get(`/subscriptions/channel/${channelId}/subscribers/count?isUserChannel=true`);
     setFollowerCount(response.data);
@@ -131,7 +133,7 @@ const handleSubscribeToggle = () => {
         <UserBanner imageUrl={user.banner_img} />
       </div>
       <div className="relative pt-2 flex justify-end gap-2 z-10">
-      {isMyChannel ? (
+        {isMyChannel ? (
           <>
             <DropdownNext />
             <Link href="profile-edit">
@@ -146,18 +148,19 @@ const handleSubscribeToggle = () => {
             </Link>
           </>
         ) : (
-          isLoggedIn && !isLoading && ( // 로그인한 상태에서만 구독 버튼이 보이고 로딩 중에는 버튼 숨김
+          isLoggedIn &&
+          !isLoading && ( // 로그인한 상태에서만 구독 버튼이 보이고 로딩 중에는 버튼 숨김
             <Button
               radius="full"
               className="font-bold px-3 py-2"
               color="primary"
-              variant={isSubscribed ? 'bordered' : 'solid'}
+              variant={isSubscribed ? "bordered" : "solid"}
               onClick={handleSubscribeToggle}
             >
               {isSubscribed ? "구독 취소" : "구독"}
             </Button>
-        ))
-        }
+          )
+        )}
       </div>
       <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col">
         <div
@@ -166,42 +169,58 @@ const handleSubscribeToggle = () => {
             transformOrigin: "bottom center",
           }}
         >
-     <Avatar
-  alt="User Avatar"
-  initials={user?.user_name}
-  size={80}
-  src={user?.user_img}
-/>
+          <Avatar
+            alt="User Avatar"
+            initials={user?.user_name}
+            size={80}
+            src={user?.user_img}
+          />
         </div>
 
         <div>
           <div className="inline-flex gap-1">
             <TierIcon name={user.tier_name} size={35} className="px-2" />{" "}
-            <h1 className="text-md m-auto font-bold">{user.display_name ||user.user_name }</h1>{" "}
-            <p className="text-xs mb-1 mt-auto text-gray-600">@{user.user_name}</p>
+            <h1 className="text-md m-auto font-bold">
+              {user.display_name || user.user_name}
+            </h1>{" "}
+            <p className="text-xs mb-1 mt-auto text-gray-600">
+              @{user.user_name}
+            </p>
           </div>
         </div>
       </div>
       <div className="mt-2">
         <p className="text-sm text-gray-800">
-        {user.bio?.split('\n').map((line, index) => (
-        <span key={index}>
-          {line}
-          <br />
-        </span>
-  ))}
+          {user.bio?.split("\n").map((line, index) => (
+            <span key={index}>
+              {line}
+              <br />
+            </span>
+          ))}
         </p>
         <div className="flex-wrap gap-3 mt-3">
           {user.location && <IconText icon={MapPinIcon} text={user.location} />}
           {user.website && (
-  <IconText 
-    icon={LinkIcon} 
-    text={<a href={user.website} target="_blank" rel="noopener noreferrer">{user.website}</a>} 
-  />
-)}
+            <IconText
+              icon={LinkIcon}
+              text={
+                <a
+                  href={user.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {user.website}
+                </a>
+              }
+            />
+          )}
           {user.birthdate && <IconText icon={CakeIcon} text={user.birthdate} />}
-          {user.joined_date && <IconText icon={CalendarIcon} text={user.joined_date} />}
-          {user.user_gender && <IconText icon={SwatchIcon} text={user.user_gender} />}
+          {user.joined_date && (
+            <IconText icon={CalendarIcon} text={user.joined_date} />
+          )}
+          {user.user_gender && (
+            <IconText icon={SwatchIcon} text={user.user_gender} />
+          )}
         </div>
         <div className="mt-4 flex space-x-1">
           <span className="text-xs font-bold">{user.user_point}</span>
@@ -226,23 +245,23 @@ const handleSubscribeToggle = () => {
           </div>
         </div> */}
         <div className="flex mt-1 space-x-4">
-  <div>
-    <span className="text-xs font-bold">{followerCount } </span>
-    <Link href={`${pathname}/subscribe`}>
-      <Button variant="light" className="text-xs p-1 text-gray-600">
-        Followers
-      </Button>
-    </Link>
-  </div>
-  <div>
-    <span className="text-xs font-bold">{followingCount} </span>
-    <Link href={`${pathname}/subscribe`}>
-      <Button variant="light" className="text-xs p-1 text-gray-600">
-        Followings
-      </Button>
-    </Link>
-  </div>
-</div>
+          <div>
+            <span className="text-xs font-bold">{followerCount} </span>
+            <Link href={`${pathname}/subscribe`}>
+              <Button variant="light" className="text-xs p-1 text-gray-600">
+                {t("팔로워")}
+              </Button>
+            </Link>
+          </div>
+          <div>
+            <span className="text-xs font-bold">{followingCount} </span>
+            <Link href={`${pathname}/subscribe`}>
+              <Button variant="light" className="text-xs p-1 text-gray-600">
+                {t("팔로잉")}
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

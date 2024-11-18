@@ -34,6 +34,7 @@ import Account from "./Account";
 import { useRouter } from "next/navigation";
 import { useDMListStore } from "@store/useDMListStore";
 import { RoomInfo } from "@store/useMessageStore";
+import BackButton from "./BackButton";
 type User = {
   name?: string;
   userName?: string;
@@ -603,7 +604,10 @@ export default function ChatUI({ roomId }: ChatUIProps) {
   return (
     <div className="flex flex-col h-screen mx-auto bg-white">
       {/* 그룹 아이콘 및 참여자 드롭다운 */}
-      <div className="flex items-center p-4 border-b border-gray-300 bg-gray-100">
+      <div className=" flex  items-center p-4 border-b border-gray-300 bg-gray-100">
+        <div className="top-0 left-0 p-4 flex justify-start w-full">
+          <BackButton />
+        </div>
         <Dropdown isOpen={isDropdownOpen} onOpenChange={setDropdownOpen}>
           <DropdownTrigger>
             <Button

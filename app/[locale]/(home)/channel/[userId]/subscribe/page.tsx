@@ -112,7 +112,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       <main className="relative col-span-5 w-full border-x border-slate-200">
-        <div className="top-0 left-0 p-4 flex justify-start w-full">
+        <div className=" top-0 left-0 p-4 flex justify-start w-full">
           <BackButton />
         </div>
         <Tabs tabNames={tabs} onTabChange={handleTabChange} />

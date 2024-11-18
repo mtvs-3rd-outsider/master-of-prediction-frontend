@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import Account from "./Account";
 import { formatDate } from "@util/Date";
@@ -11,6 +12,7 @@ import {
 } from "@nextui-org/dropdown";
 import { EllipsisHorizontalIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { Button } from "@nextui-org/button";
+import { useTranslations } from "next-intl";
 
 interface ChatItemProps {
   participants: ParticipantDTO[];
@@ -38,7 +40,8 @@ const ChatItem: React.FC<ChatItemProps> = ({
   const filteredParticipants = participants.filter(
     (participant) => participant.userId.toString() != userInfo?.id
   );
-
+ const t = useTranslations();
+ 
   return (
     <div
       className="flex items-center w-full justify-between p-4 border-b border-gray-300 cursor-pointer hover:bg-gray-100"
@@ -110,7 +113,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
           </DropdownTrigger>
           <DropdownMenu aria-label="Chat Actions">
             <DropdownItem key="delete" color="danger" onClick={onDelete}>
-              Delete Chat
+              {t("채팅방 제거")}
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
