@@ -1,9 +1,16 @@
 "use client";
 
+import BettingGraphFilterConstants from "@/constant/BettingGraphFilterConstants";
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
-import { BettingOrderStatisticsDTO } from "@/types/BettingOrderHistoryData";
+import {
+  BettingOrderHistoryData,
+  BettingOrderHistoryDataArray,
+  BettingOrderStatisticsDTO,
+} from "@/types/BettingOrderHistoryData";
 import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
+import apiClient from "@handler/fetch/axios";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LineChart,
@@ -79,40 +86,53 @@ const BettingOption = ({
     FILTER_ALL,
   ];
 
+  const [bettingOrderHistoryData, setBettingOrderHistoryData] =
+    useState<BettingOrderHistoryData>({
+      lastHour: [],
+      last6Hour: [],
+      oneDay: [],
+      oneWeek: [],
+      oneMonth: [],
+      all: [],
+    });
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
   const [optionRatio, setOptionRatio] = useState<number>(0);
   const [cachedData, setCachedData] = useState({});
-  const [currentData, setCurrentData] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState(FILTER_1H);
+  const [currentData, setCurrentData] = useState<BettingOrderStatisticsDTO[]>();
+  const [selectedFilter, setSelectedFilter] = useState(FILTER_ALL);
+  const bettingId = useParams().id;
 
-  // useEffect(() => {}, []);
-
-  // useEffect(() => {
-  //   // 초기화 시 기본 필터 데이터를 가져오기
-  //   fetchData(selectedFilter);
-  // }, []);
-
-  // const fetchData = async (filter: string) => {
-  //   // 이미 캐시된 데이터가 있는지 확인
-  //   if (cachedData[filter]) {
-  //     // 캐시된 데이터를 사용
-  //     setCurrentData(cachedData[filter]);
-  //   } else {
-  //     // 서버에서 새 데이터를 요청
-  //     const response = await fetch(`/api/data?filter=${filter}`);
-  //     const data = await response.json();
-
-  //     // 상태에 캐시하고, 현재 데이터로 설정
-  //     setCachedData((prev) => ({ ...prev, [filter]: data }));
-  //     setCurrentData(data);
-  //   }
-  // };
+  useEffect(() => {
+    setBettingOrderHistoryData((prevData) => ({
+      ...prevData,
+      all: data != undefined ? data : [], // 'all' 필드 업데이트
+    }));
+    setCurrentData(data);
+  }, [data]);
 
   const handleClick = () => {
     setState(!state);
     setOptionId(currentOptionId);
   };
+
+  useEffect(() => {
+    // 필터링된 데이터를 가져오는 함수
+    apiClient
+      .get<BettingOrderHistoryDataArray>(
+        `/betting-products/orders?bettingId=${bettingId}&timeRange=${BettingGraphFilterConstants[selectedFilter]}`
+      )
+      .then((res) => {
+        setBettingOrderHistoryData((prevData) => ({
+          ...prevData,
+          [BettingGraphFilterConstants[selectedFilter]]:
+            res.data != undefined && res.data != null
+              ? res.data[`${currentOptionId}`]
+              : [],
+        }));
+        setCurrentData(res.data[`${currentOptionId}`]);
+      });
+  }, [selectedFilter, bettingId, currentOptionId]);
 
   const handleButtonClick = (filter: string) => {
     setSelectedFilter(filter);
@@ -179,7 +199,7 @@ const BettingOption = ({
         <div className="w-full h-56">
           <ResponsiveContainer width="100%" height="90%">
             <LineChart
-              data={data}
+              data={currentData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={3} />

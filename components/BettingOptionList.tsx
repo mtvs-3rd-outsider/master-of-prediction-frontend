@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { BettingOrderStatisticsDTO } from "@/types/BettingOrderHistoryData";
 import apiClient from "@handler/fetch/axios";
 import { useParams } from "next/navigation";
+import BettingGraphFilterConstants from "@/constant/BettingGraphFilterConstants";
 
 interface Props {
   options: BettingOptions[] | [];
@@ -39,7 +40,7 @@ const BettingOptionList = ({ options, optionsRatio, winningOption }: Props) => {
   useEffect(() => {
     apiClient
       .get<BettingOrderHistoryDataProps>(
-        `/betting-products/orders?bettingId=${bettingId}`
+        `/betting-products/orders?bettingId=${bettingId}&timeRange=${BettingGraphFilterConstants.ALL}`
       )
       .then((res) => {
         setOptionDatas(res.data);
