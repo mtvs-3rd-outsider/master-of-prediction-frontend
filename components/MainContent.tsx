@@ -1,17 +1,14 @@
-"use client";
 import React, { useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import SearchInputSection from './SearchInputSection';
 import SearchResults from './SearchResults';
-import apiClient from '@handler/fetch/axios';
 import { fetchSearchResults } from '@handler/UserAPI';
 import HotTopicFeedList from './HotTopicFeedList';
 import StickyTabsWrapper from './StickyTabs';
 import BettingProducts from './BettingProducts';
 
 const MainContent: React.FC = () => {
-  const tabs = ["베팅", "게시글"];
   const [isHeaderVisible, setHeaderVisible] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,7 +47,6 @@ const MainContent: React.FC = () => {
       return undefined;
     },
     enabled: !!debouncedSearchTerm,
-    staleTime: 5 * 60 * 1000,
   });
 
   return (
@@ -65,7 +61,7 @@ const MainContent: React.FC = () => {
       />
       {!isSearching && (
         <>
-          <StickyTabsWrapper tabNames={tabs} onTabChange={setActiveTab} />
+          <StickyTabsWrapper tabNames={["베팅", "게시글"]} onTabChange={setActiveTab} />
           <div className="p-4">
             {activeTab === 0 && <BettingProducts />}
             {activeTab === 1 && <HotTopicFeedList sortBy={sortBy} />}
