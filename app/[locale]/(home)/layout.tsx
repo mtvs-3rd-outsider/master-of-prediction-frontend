@@ -22,12 +22,11 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
   const getFabUrl = () => {
     if (pathname.includes('/category-channel')) {
       return '/category-channel/regist'; // 카테고리 채널 경로
-    } else if (pathname.includes('/channel')) {
-      return '/channel/regist'; // 프로필 페이지 경로
     }
-     else if (pathname.includes('/hot-topic')) {
+     else if (pathname.includes('/hot-topic')||pathname.includes('/channel')||pathname.includes('')) {
       return '/hot-topic/create-feed'; // 핫토픽 feed 등록 경로
-    } else {
+    }
+    else {
       return null; // 기본 경로 또는 URL에 따라 렌더링하지 않음
     }
   };
