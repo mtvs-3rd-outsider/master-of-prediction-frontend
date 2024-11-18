@@ -8,38 +8,8 @@ import PanelItem from "@ui/PanelItem";
 import apiClient from "@api/axios";
 import { usePathname } from "next/navigation";
 import { useInView } from "react-intersection-observer";
+import { fetchFollowers, fetchFollowings } from "@handler/followApi";
 
-// Fetch followers
-const fetchFollowers = async (pageParam = 0, queryKey: string[]) => {
-  const channelId = queryKey[1];
-  const response = await apiClient.get(
-    `/subscriptions/channel/${channelId}/subscribers`,
-    {
-      params: {
-        isUserChannel: true,
-        page: pageParam,
-        size: 15,
-      },
-    }
-  );
-  return response.data;
-};
-
-// Fetch followings
-const fetchFollowings = async (pageParam = 0, queryKey: string[]) => {
-  const channelId = queryKey[1];
-  const response = await apiClient.get(
-    `/subscriptions/user/${channelId}/following`,
-    {
-      params: {
-        isUserChannel: true,
-        page: pageParam,
-        size: 15,
-      },
-    }
-  );
-  return response.data;
-};
 
 const HomePage: React.FC = () => {
   const tabs = ["Followers", "Followings"];
