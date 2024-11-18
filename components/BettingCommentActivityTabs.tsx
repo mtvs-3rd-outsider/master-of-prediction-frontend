@@ -43,8 +43,6 @@ const BettingCommentActivityTabs = ({ options, isBlind }: Props) => {
       });
   }, [bettingId]);
 
-  console.log("isBlind: ", isBlind);
-
   return (
     <Tabs.Root className="flex flex-col w-full " defaultValue="tab1">
       <Tabs.List className="shrink-0 flex " aria-label="Manage your account">

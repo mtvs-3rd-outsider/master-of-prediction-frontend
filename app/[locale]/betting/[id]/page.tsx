@@ -16,6 +16,7 @@ import {
   OptionsRatio,
 } from "@/types/BettingTypes";
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
+import NotFound from "@/app/not-found";
 
 function BettingDetailPage() {
   // 배팅 정보를 불러와서 각 노드에 전달
@@ -24,13 +25,20 @@ function BettingDetailPage() {
   const [optionsRatio, setOptionsRatio] = useState<OptionsRatio[]>(
     [] as OptionsRatio[]
   );
+  const [isNotFound, setIsNotFound] = useState(false);
   const { setOptionId } = BettingOptionChoiceStore();
 
   useEffect(() => {
-    apiClient(`betting-products/${params.id}`).then((res) => {
-      setBettingInfo(res.data);
-      setOptionId(res.data?.options[0]?.optionId);
-    });
+    apiClient(`betting-products/${params.id}`)
+      .then((res) => {
+        setBettingInfo(res.data);
+        setOptionId(res.data?.options[0]?.optionId);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 404) {
+          setIsNotFound(true);
+        }
+      });
 
     apiClient(`/betting-products/options/ratio?bettingId=${params.id}`).then(
       (res) => {
@@ -41,26 +49,34 @@ function BettingDetailPage() {
 
   return (
     <>
-      <main className="col-span-5 w-full border-x border-slate-200">
-        <BettingProductDetail
-          user={bettingInfo?.user || ({} as BettingCreater)}
-          product={bettingInfo?.product || ({} as BettingProduct)}
-          options={bettingInfo?.options || []}
-          productImages={bettingInfo?.productImages || []}
-          optionsRatio={optionsRatio}
-        />
-        <OrderForm options={bettingInfo?.options || []} className="xl:hidden" />
-        {/* TODO: 작은 화면일때 주문 디자인 추가 */}
-        {/* <OrderForm className="xl:hidden mx-auto" /> */}
-      </main>
-      <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
-        <div className="sticky top-0">
-          <Search />
-          <OrderForm options={bettingInfo?.options || []} />
-          <BettingProductsChatRoom id={params.id as string} />
-          <Footer />
-        </div>
-      </aside>
+      {isNotFound && NotFound()}
+      {!isNotFound && (
+        <>
+          <main className="col-span-5 w-full border-x border-slate-200">
+            <BettingProductDetail
+              user={bettingInfo?.user || ({} as BettingCreater)}
+              product={bettingInfo?.product || ({} as BettingProduct)}
+              options={bettingInfo?.options || []}
+              productImages={bettingInfo?.productImages || []}
+              optionsRatio={optionsRatio}
+            />
+            <OrderForm
+              options={bettingInfo?.options || []}
+              className="xl:hidden"
+            />
+            {/* TODO: 작은 화면일때 주문 디자인 추가 */}
+            {/* <OrderForm className="xl:hidden mx-auto" /> */}
+          </main>
+          <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
+            <div className="sticky top-0">
+              <Search />
+              <OrderForm options={bettingInfo?.options || []} />
+              <BettingProductsChatRoom id={params.id as string} />
+              <Footer />
+            </div>
+          </aside>
+        </>
+      )}
     </>
   );
 }
