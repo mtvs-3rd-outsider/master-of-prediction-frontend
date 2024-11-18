@@ -34,6 +34,7 @@ import Account from "./Account";
 import { useRouter } from "next/navigation";
 import { useDMListStore } from "@store/useDMListStore";
 import { RoomInfo } from "@store/useMessageStore";
+import BackButton from "./BackButton";
 type User = {
   name?: string;
   userName?: string;
@@ -67,10 +68,13 @@ interface ChatUIProps {
 type ReactionCount = { [reactionType: string]: number };
 export default function ChatUI({ roomId }: ChatUIProps) {
   const clientRef = useRef<any>(null);
-  const { userInfo, token } = useUserStore((state) => ({
+  const { userInfo, token, hasHydrated } = useUserStore((state) => ({
     userInfo: state.userInfo,
     token: state.userInfo?.token,
+    hasHydrated: state.hasHydrated,
   }));
+
+
   const { dmlist } = useDMListStore();
   const [reactions, setReactions] = useState<Record<number, ReactionVM[]>>({}); // 각 메시지에 대한 반응 상태
   const [messages, setMessages] = useState<Message[]>([]);
@@ -101,7 +105,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
   const [message, setMessage] = useState("");
   const sourceRef = useRef<any>(null);
   const sourceRefForReaction = useRef<any>(null);
-  const user: User = toUser(userInfo);
+  const [user, setUser] = useState<User>(); // User 상태로 초기화
   const touchTimeout = useRef<NodeJS.Timeout | null>(null);
   const { ref: loadMoreRef, inView: isInView } = useInView({
     rootMargin: "100px",
@@ -120,7 +124,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     userName: string;
     userImg: string;
   }
-
+  
   // 메시지 ref 맵을 저장하는 객체
   const messageRefs = useRef(new Map<number, HTMLDivElement>());
   // scrollToMessage 함수
@@ -150,40 +154,44 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     return response.data;
   };
   // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
-const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
+  const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   const filteredParticipants = currentRoom.participants.filter(
     (participant) => participant.userId.toString() != userInfo?.id
   );
 
-useEffect(() => {
-  const newUnreadCounts: Record<number, number> = {};
-  console.log(userLastReadTimes);
+  useEffect(() => {
+    const newUnreadCounts: Record<number, number> = {};
+    console.log(userLastReadTimes);
 
-  messages.forEach((message) => {
-    const messageId = message.id;
+    messages.forEach((message) => {
+      const messageId = message.id;
 
-    // messageId가 유효하고, 이전에 계산되지 않았거나 0이 아닌 경우에만 계산
-    if (messageId !== null && messageId !== undefined) {
-      if (unreadCounts[messageId] == undefined || unreadCounts[messageId] > 0) {
-        const count = calculateUnreadCount(
-          moment(message.sent)
-            .utcOffset(9)
-            .subtract(9, "hours")
-            .toLocaleString()
-        );
-        newUnreadCounts[messageId] = count;
-      } else {
-        newUnreadCounts[messageId] = unreadCounts[messageId];
+      // messageId가 유효하고, 이전에 계산되지 않았거나 0이 아닌 경우에만 계산
+      if (messageId !== null && messageId !== undefined) {
+        if (
+          unreadCounts[messageId] == undefined ||
+          unreadCounts[messageId] > 0
+        ) {
+          const count = calculateUnreadCount(
+            moment
+              .utc(message.sent)
+              // .utcOffset(9)
+              // .subtract(9, "hours")
+              .toLocaleString()
+          );
+          newUnreadCounts[messageId] = count;
+        } else {
+          newUnreadCounts[messageId] = unreadCounts[messageId];
+        }
       }
-    }
-  });
+    });
 
-  // 이전 상태와 병합하여 부분 업데이트
-  setUnreadCounts((prevUnreadCounts) => ({
-    ...prevUnreadCounts,
-    ...newUnreadCounts,
-  }));
-}, [messages, userLastReadTimes, setUserLastReadTimes]);
+    // 이전 상태와 병합하여 부분 업데이트
+    setUnreadCounts((prevUnreadCounts) => ({
+      ...prevUnreadCounts,
+      ...newUnreadCounts,
+    }));
+  }, [messages, userLastReadTimes, setUserLastReadTimes]);
 
   const {
     data,
@@ -360,11 +368,15 @@ useEffect(() => {
   };
 
   const handleSendMessage = async () => {
+     if (!user) {
+       return; // user가 없으면 메시지 전송을 중단
+     }
     const content = message;
     const mediaFile = fileInputRef.current?.files?.[0];
 
     if (content || mediaFile) {
       const sent = moment().toISOString();
+      console.log(sent);
       const replyToMessageId = replyTo?.id?.toString() || null;
       const replyContent = replyTo?.content?.toString() || undefined;
       const contentType = mediaFile
@@ -372,6 +384,7 @@ useEffect(() => {
           ? "IMAGE"
           : "VIDEO"
         : "PLAIN";
+      
       const userMessage: Message = {
         content: content,
         user,
@@ -513,7 +526,20 @@ useEffect(() => {
         fetchNextPage(); // 페이지에 없
       }
     }
-  }, [data, hasNextPage, targetMessageId]);
+  }, [data, hasNextPage, targetMessageId]); 
+
+  useEffect(() => {
+    // hydration이 완료된 후에만 로그인 상태 확인
+    if (hasHydrated && !userInfo) {
+      router.push("/login");
+    } else {
+      const convertedUser = toUser(userInfo);
+      if (convertedUser) setUser(convertedUser);
+    }
+  }, [hasHydrated, userInfo, router]);
+  if (!user) {
+    return null; // 리디렉션 전까지는 컴포넌트를 렌더링하지 않음
+  }
   const handleRemoveReaction = (messageId: number, reactionType: string) => {
     // 해당 메시지와 반응을 서버에 업데이트
     sendReaction(messageId, reactionType, "minus"); // false로 설정하여 반응 제거 전송
@@ -532,18 +558,17 @@ useEffect(() => {
     // });
   };
   const calculateUnreadCount = (messageSent: string): number => {
-    // 모든 사용자의 lastReadTime과 비교하여 읽지 않은 메시지 수 계산
     let unreadCount = 0;
 
-    // 각 사용자의 lastReadTime과 messageSent를 비교하여 읽지 않은 메시지인지 확인
     userLastReadTimes.forEach((readTime) => {
-      const lastReadDate = moment(readTime.lastReadTime).toLocaleString();
+      // lastReadTime을 UTC 시간으로 변환하여 비교
+      const lastReadDate = moment.utc(readTime.lastReadTime).add(9, "hours");
 
-      if (moment(lastReadDate).isBefore(messageSent)) {
+      if (lastReadDate.isBefore(moment.utc(messageSent))) {
         console.log("==================");
         console.log(readTime?.userId);
-        console.log(lastReadDate);
-        console.log(messageSent);
+        console.log(lastReadDate.toString());
+        console.log(moment.utc(messageSent).toString());
         console.log("==================");
 
         unreadCount++;
@@ -552,21 +577,20 @@ useEffect(() => {
 
     return unreadCount;
   };
-const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    e.stopPropagation(); // 이벤트 전파 방지
 
-    if (
-      e.target instanceof HTMLInputElement ||
-      e.target instanceof HTMLTextAreaElement
-    ) {
-      handleSendMessage();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.stopPropagation(); // 이벤트 전파 방지
+
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        handleSendMessage();
+      }
     }
-  }
-};
-
-
+  };
 
   const isDifferentDay = (
     currentMessage: Message,
@@ -580,7 +604,10 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
   return (
     <div className="flex flex-col h-screen mx-auto bg-white">
       {/* 그룹 아이콘 및 참여자 드롭다운 */}
-      <div className="flex items-center p-4 border-b border-gray-300 bg-gray-100">
+      <div className=" flex  items-center p-4 border-b border-gray-300 bg-gray-100">
+        <div className="top-0 left-0 p-4 flex justify-start w-full">
+          <BackButton />
+        </div>
         <Dropdown isOpen={isDropdownOpen} onOpenChange={setDropdownOpen}>
           <DropdownTrigger>
             <Button

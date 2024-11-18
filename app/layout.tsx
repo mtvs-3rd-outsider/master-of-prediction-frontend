@@ -47,9 +47,11 @@ const APP_NAME = "PWA App";
     },
   };
   
-  export const viewport: Viewport = {
-    themeColor: "#FFFFFF",
-  };
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 1,
+  width: "device-width",
+};
   export async function generateStaticParams() {
     unstable_setRequestLocale('ko'); // 기본 로케일을 설정하세요.
     return []; // 추가적인 정적 매개변수가 있으면 반환하세요.

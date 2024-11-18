@@ -31,7 +31,7 @@ const AccountNavItem = () => {
           <Avatar
             src={avatarUrl } // 사용자 이미지가 없으면 기본 이미지 사용
             alt={userName || "사용자"}
-            initials={userName ? userName[0].toUpperCase() : "U"} // 이름의 첫 글자 표시
+            initials={userName ? userName[0] : "U"} // 이름의 첫 글자 표시
           />
         </div>
 

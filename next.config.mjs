@@ -72,7 +72,11 @@ const nextConfig = withNextIntl(
           hostname: "master-of-prediction.shop",
         },
       ],
-      domains: ["localhost", "master-of-prediction.shop"], // localhost 도메인 추가
+      domains: [
+        "localhost",
+        "master-of-prediction.shop",
+        "file.master-of-prediction.shop",
+      ], // localhost 도메인 추가
     },
     webpack: (config, { dev, isServer }) => {
       if (!isServer) {

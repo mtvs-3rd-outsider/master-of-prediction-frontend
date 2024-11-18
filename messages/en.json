@@ -12,6 +12,10 @@
     "권한_없음": "You do not have the necessary permissions.",
     "서버_내부_오류": "Internal server error. Please try again later.",
     "문제가_발생했습니다": "An error occurred. Please try again.",
-    "요청이_성공적으로_처리되었습니다": "Your request was successfully processed."
-  
+    "요청이_성공적으로_처리되었습니다": "Your request was successfully processed.",
+  "게시글": "Posts",
+    "팔로워": "Followers",
+    "팔로잉": "Followings",
+    "채팅방 제거": "Delete Chat"
+
 }

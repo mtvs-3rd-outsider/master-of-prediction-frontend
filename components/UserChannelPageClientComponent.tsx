@@ -12,13 +12,22 @@ import useUserStore from '@store/useUserStore';
 import BettingProduct from './BettingProduct';
 import BettingList from './BettingList';
 import ChannelFeedList from './ChannelFeedList';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface UserChannelPageProps {
   user: MyChannelProps; // 서버에서 전달받은 유저 데이터
-  tabNames: string[];
+
 }
 
-const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user, tabNames }) => {
+const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user }) => {
+    const t = useTranslations();
+    const { userInfo } = useUserStore((state) => ({
+      userInfo: state.userInfo,
+    }));
+    const router = useRouter();
+  const tabNames = [t("게시글"), t("베팅")];
+
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {

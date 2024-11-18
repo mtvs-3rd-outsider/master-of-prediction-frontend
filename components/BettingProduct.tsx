@@ -79,7 +79,7 @@ const BettingProduct = (props: BettingProductType) => {
         </div>
         <div>
           <ul
-            className="mt-4 mb-4 px-4
+            className="mt-4 mb-4 px-4 justify-between
         flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3 "
           >
             <li className="">
@@ -96,9 +96,9 @@ const BettingProduct = (props: BettingProductType) => {
               <HeartIcon className="w-5 h-5" />
               23
             </li>
-            <li>
+            {/* <li>
               <ArrowUpTrayIcon className="w-5 h-5" />
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>

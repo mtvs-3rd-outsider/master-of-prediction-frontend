@@ -165,7 +165,10 @@ const Post: React.FC<PostItem> = ({
   };
 
   return (
-    <div className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer" onClick={onClick}>
+    <div
+      className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex-shrink-0">
         <HoverCard
           src={src}
@@ -194,36 +197,37 @@ const Post: React.FC<PostItem> = ({
             )}
           </div>
         </div>
-        
-        <div className="text-sm text-slate-900 mb-4">{content}</div>
-        
- {((mediaFiles && mediaFiles.length > 0) || (youtubeUrls && youtubeUrls.length > 0)) && (
-  <div className="mb-4">
-    <MediaGrid 
-      mediaFiles={mediaFiles || []} 
-      youtubeUrls={youtubeUrls || []} 
-      id={id} 
-    />
-  </div>
-)}
 
-{(isQuote&&quoteFeed) && (
-  <QuotePost 
-    quoteId={quoteFeed.quoteId}
-    quoteContent={quoteFeed.quoteContent}
-    quoteCreateAt={quoteFeed.quoteCreateAt}
-    quoteUser={quoteFeed.quoteUser}
-    quoteGuest={quoteFeed.quoteGuest}
-    mediaFileUrls={quoteFeed.mediaFileUrls}
-    youtubeUrls={quoteFeed.youtubeUrls}
-    onClick={() => router.push(`/feed/${quoteFeed.quoteId}`)}
-  />
-)}
+        <div className="text-sm text-slate-900 mb-4">{content}</div>
+
+        {((mediaFiles && mediaFiles.length > 0) ||
+          (youtubeUrls && youtubeUrls.length > 0)) && (
+          <div className="mb-4">
+            <MediaGrid
+              mediaFiles={mediaFiles || []}
+              youtubeUrls={youtubeUrls || []}
+              id={id}
+            />
+          </div>
+        )}
+
+        {isQuote && quoteFeed && (
+          <QuotePost
+            quoteId={quoteFeed.quoteId}
+            quoteContent={quoteFeed.quoteContent}
+            quoteCreateAt={quoteFeed.quoteCreateAt}
+            quoteUser={quoteFeed.quoteUser}
+            quoteGuest={quoteFeed.quoteGuest}
+            mediaFileUrls={quoteFeed.mediaFileUrls}
+            youtubeUrls={quoteFeed.youtubeUrls}
+            onClick={() => router.push(`/feed/${quoteFeed.quoteId}`)}
+          />
+        )}
 
         {children}
 
         <div>
-          <ul className="flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3">
+          <ul className="flex justify-between gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3">
             <li>
               <ChartBarSquareIcon className="w-5 h-5" />
               {viewCount}
@@ -233,7 +237,7 @@ const Post: React.FC<PostItem> = ({
               {commentsCount}
             </li>
             <li>
-              <ReuploadMenu 
+              <ReuploadMenu
                 feedId={id}
                 isShare={isShared}
                 shareCount={currentShareCount}

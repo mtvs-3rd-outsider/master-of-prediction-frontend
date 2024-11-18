@@ -52,10 +52,8 @@ export default function LoginPage() {
     router.push("/");
   };
 
-  const handleGoogleLogin = () => {
-    router.push(
-      "https://master-of-prediction.shop:8081/oauth2/authorization/google"
-    );
+   const handleGoogleLogin = () => {
+    router.push(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL!);
 
     
   };
@@ -110,7 +108,7 @@ export default function LoginPage() {
               {error && <p className="text-red-500 mt-2">{error}</p>}
               <div className="text-right mt-2">
                 <Link
-                  href="#"
+                  href="/forgot-password"
                   className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"
                 >
                   Forgot Password?

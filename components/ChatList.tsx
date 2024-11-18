@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "@handler/fetch/axios";
 import useUserStore from "@store/useUserStore";
 import { useRouter } from "next/navigation";
 import ChatItem from "./ChatItem";
 import { RoomInfo, useMessageStore } from "@store/useMessageStore";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@nextui-org/dropdown";
-import { Button } from "@nextui-org/button";
 import { useDMListStore } from "@store/useDMListStore";
+
 export interface ParticipantDTO {
   userId: number;
   userName: string;
@@ -35,7 +28,7 @@ export interface ChatThreadDTO {
 const DMList: React.FC = () => {
   const router = useRouter();
   const { messageMap, setMessageMap } = useMessageStore();
-  const { dmlist, setDMLIst } = useDMListStore(); // zustand store에서 가져오기
+  const { dmlist, setDMLIst } = useDMListStore();
   const userInfo = useUserStore((state) => state.userInfo);
   const { ref: loadMoreRef, inView: isInView } = useInView({
     threshold: 0.5,
@@ -70,8 +63,9 @@ const DMList: React.FC = () => {
       return undefined;
     },
     enabled: !!userInfo,
-    staleTime: 0, // 데이터가 항상 최신인지 확인
+    staleTime: 0,
   });
+
   useEffect(() => {
     if (data) {
       const updatedMessageMap = data.pages.reduce<Record<string, RoomInfo>>(
@@ -130,13 +124,11 @@ const DMList: React.FC = () => {
   const handleDeleteThread = async (roomId: number) => {
     try {
       await apiClient.delete(`/chat-threads/${roomId}`);
-
-      // 삭제된 채팅방을 dmlist 상태에서 제거
-   setDMLIst((prev: Record<string, RoomInfo>): Record<string, RoomInfo> => {
-     const updatedList = { ...prev };
-     delete updatedList[roomId.toString()];
-     return updatedList;
-   });
+      setDMLIst((prev: Record<string, RoomInfo>): Record<string, RoomInfo> => {
+        const updatedList = { ...prev };
+        delete updatedList[roomId.toString()];
+        return updatedList;
+      });
     } catch (error) {
       console.error("Failed to delete chat thread:", error);
     }
@@ -148,6 +140,11 @@ const DMList: React.FC = () => {
         <p>Loading...</p>
       ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
+      ) : Object.keys(dmlist).length === 0 ? (
+        <div className="flex flex-col   justify-center h-screen font-GangwonEduPowerExtraBoldA">
+          <p className="text-center text-2xl">쪽지가 아직 없습니다.</p>
+          <p className="text-center text-4xl ">쪽지를 보내 보세요!</p>
+        </div>
       ) : (
         <ul className="[&_li:last-child]:text-slate-500 [&_li:first-child]:text-lg divide-y divide-slate-200">
           {Object.entries(dmlist).map(([roomId, roomInfo]) => (
@@ -159,7 +156,7 @@ const DMList: React.FC = () => {
                 isGroupThread={roomInfo.isGroupThread}
                 onClick={() => router.push(`/messages/${roomId}`)}
                 unreadMessageCount={roomInfo.unreadMessageCount}
-                onDelete={() => handleDeleteThread(Number(roomId))} // 삭제 기능 추가
+                onDelete={() => handleDeleteThread(Number(roomId))}
               />
             </li>
           ))}

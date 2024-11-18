@@ -1,14 +1,15 @@
 import { UserInfo } from "@store/useUserStore";
 import { User } from "./Type";
 
-export function toUser(userInfo: UserInfo| null): User {
+export function toUser(userInfo: UserInfo | null): User | null {
     if (!userInfo || !userInfo.id) {
-        throw new Error("User ID is required"); // userInfo나 ID가 없는 경우 예외 처리
+        // userInfo가 null이거나 ID가 없으면 null 반환
+        return null;
     }
     return {
-      id: userInfo.id,
-      name: userInfo.displayName,
-      avatarImageLink: userInfo.avatarUrl,
-      userName: userInfo.userName,
+        id: userInfo.id,
+        name: userInfo.displayName,
+        avatarImageLink: userInfo.avatarUrl,
+        userName: userInfo.userName,
     };
-  }
+}

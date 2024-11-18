@@ -18,6 +18,8 @@ const config: Config = {
       fontFamily: {
         default: ["var(--font-mona-sans)", ...fontFamily.sans],
         sans: ["var(--font-mona-sans)", ...fontFamily.sans],
+        GangwonEduPowerExtraBoldA: ["GangwonEduPowerExtraBoldA"],
+          nanum: ["NanumSquare", "sans-serif"]
       },
       colors: {
         slate: {
@@ -115,6 +117,14 @@ const config: Config = {
         },
       },
     }),
+     function ({ addUtilities }:any) {
+      addUtilities({
+        ".text-stroke": {
+          "-webkit-text-stroke": "0.7px black",
+          color: "white",
+        },
+      });
+    },
   ],
 };
 
