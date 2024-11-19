@@ -234,7 +234,7 @@ export default function Component() {
 
         <div className="flex justify-center">
           <Button
-            className="w-10 p-3"
+            // className="w-10 p-3"
             fullWidth
             color="primary"
             onClick={handleSubmit}
