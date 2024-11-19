@@ -1,9 +1,16 @@
 "use client";
 
+import BettingGraphFilterConstants from "@/constant/BettingGraphFilterConstants";
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
-import { BettingOrderStatisticsDTO } from "@/types/BettingOrderHistoryData";
+import {
+  BettingOrderHistoryData,
+  BettingOrderHistoryDataArray,
+  BettingOrderStatisticsDTO,
+} from "@/types/BettingOrderHistoryData";
 import { BettingOptions, OptionsRatio } from "@/types/BettingTypes";
+import apiClient from "@handler/fetch/axios";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LineChart,
@@ -64,13 +71,71 @@ const BettingOption = ({
   data,
   winningOption,
 }: Props) => {
+  const FILTER_1H = "1H";
+  const FILTER_6H = "6H";
+  const FILTER_1D = "1D";
+  const FILTER_1W = "1W";
+  const FILTER_1M = "1M";
+  const FILTER_ALL = "ALL";
+  const FILTER_OPTIONS = [
+    FILTER_1H,
+    FILTER_6H,
+    FILTER_1D,
+    FILTER_1W,
+    FILTER_1M,
+    FILTER_ALL,
+  ];
+
+  const [bettingOrderHistoryData, setBettingOrderHistoryData] =
+    useState<BettingOrderHistoryData>({
+      lastHour: [],
+      last6Hour: [],
+      oneDay: [],
+      oneWeek: [],
+      oneMonth: [],
+      all: [],
+    });
   const [state, setState] = useState(false);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
   const [optionRatio, setOptionRatio] = useState<number>(0);
+  const [cachedData, setCachedData] = useState({});
+  const [currentData, setCurrentData] = useState<BettingOrderStatisticsDTO[]>();
+  const [selectedFilter, setSelectedFilter] = useState(FILTER_ALL);
+  const bettingId = useParams().id;
+
+  useEffect(() => {
+    setBettingOrderHistoryData((prevData) => ({
+      ...prevData,
+      all: data != undefined ? data : [], // 'all' 필드 업데이트
+    }));
+    setCurrentData(data);
+  }, [data]);
 
   const handleClick = () => {
     setState(!state);
     setOptionId(currentOptionId);
+  };
+
+  useEffect(() => {
+    // 필터링된 데이터를 가져오는 함수
+    apiClient
+      .get<BettingOrderHistoryDataArray>(
+        `/betting-products/orders?bettingId=${bettingId}&timeRange=${BettingGraphFilterConstants[selectedFilter]}`
+      )
+      .then((res) => {
+        setBettingOrderHistoryData((prevData) => ({
+          ...prevData,
+          [BettingGraphFilterConstants[selectedFilter]]:
+            res.data != undefined && res.data != null
+              ? res.data[`${currentOptionId}`]
+              : [],
+        }));
+        setCurrentData(res.data[`${currentOptionId}`]);
+      });
+  }, [selectedFilter, bettingId, currentOptionId]);
+
+  const handleButtonClick = (filter: string) => {
+    setSelectedFilter(filter);
   };
 
   useEffect(() => {
@@ -130,12 +195,11 @@ const BettingOption = ({
           <p>{optionRatio}%</p>
         </div>
       </li>
-      {/* <div style={{ width: "300px", height: "300px" }}> */}
       {state && (
         <div className="w-full h-56">
           <ResponsiveContainer width="100%" height="90%">
             <LineChart
-              data={data}
+              data={currentData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={3} />
@@ -159,12 +223,15 @@ const BettingOption = ({
             </LineChart>
           </ResponsiveContainer>
           <div className="flex gap-4 h-auto">
-            <button className="rounded-lg hover:bg-gray-400 px-4">1H</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">6H</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">1D</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">1W</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">1M</button>
-            <button className="rounded-lg hover:bg-gray-400 px-4">ALL</button>
+            {FILTER_OPTIONS.map((filter) => (
+              <button
+                key={filter}
+                className="rounded-lg hover:bg-gray-400 px-4"
+                onClick={() => handleButtonClick(filter)}
+              >
+                {filter}
+              </button>
+            ))}
           </div>
         </div>
       )}
