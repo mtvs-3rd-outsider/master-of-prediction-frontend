@@ -2,35 +2,47 @@
 
 import React from "react";
 import { Button } from "@nextui-org/react";
-import { PlusIcon } from "@heroicons/react/24/solid";
-import { useRouter } from "next/navigation";
+import { PlusIcon } from '@heroicons/react/24/solid';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface FloatingActionButtonProps {
-  href: string; // URL을 받아서 버튼이 이동할 경로로 사용
-  text?: string; // 버튼에 표시할 텍스트, 선택적
+  href: string;
 }
 
-export default function FloatingActionButton({
-  href,
-  text = "",
-}: FloatingActionButtonProps) {
+export default function FloatingActionButton({ href }: FloatingActionButtonProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleClick = () => {
-    router.push(href); // 버튼을 누르면 해당 경로로 이동
+    let channelType;
+    let channelId = pathname.split('/').pop();
+
+    // URL 패턴에 따라 channelType 결정
+    if (pathname.includes('/channel/')) {
+      channelType = 'MYCHANNEL';
+    } else if (pathname.includes('/category-channel/')) {
+      channelType = 'CATEGORYCHANNEL';
+    }
+
+    // 유효한 channelId가 있는 경우에만 쿼리 파라미터 추가
+    if (channelId && !isNaN(Number(channelId))) {
+      router.push(`${href}?channelId=${channelId}&channelType=${channelType}`);
+    } else {
+      router.push(href);
+    }
   };
 
   return (
-    <div className="fixed bottom-20 right-4 md:bottom-4">
-      <Button
-        color="primary"
-        aria-label="Add"
-        className="rounded-full p-3 shadow-lg"
-        onPress={handleClick} // 버튼 클릭 시 URL 이동
-      >
-        <PlusIcon className="h-8 w-8" />
-        {text && <span>{text}</span>} {/* 텍스트가 있을 때만 표시 */}
-      </Button>
-    </div>
+      <div className="fixed bottom-20 right-4 md:bottom-4">
+        <Button
+            isIconOnly
+            color="primary"
+            aria-label="Add"
+            className="rounded-full p-3 shadow-lg"
+            onPress={handleClick}
+        >
+          <PlusIcon className="h-8 w-8" />
+        </Button>
+      </div>
   );
 }

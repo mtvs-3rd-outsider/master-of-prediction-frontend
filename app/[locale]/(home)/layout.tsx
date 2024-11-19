@@ -2,7 +2,7 @@
 import '@styles/styles.css';
 import { ReactNode } from 'react';
 import Nav from '@ui/Nav';
-import { usePathname } from 'next/navigation'; 
+import { usePathname, useSearchParams } from 'next/navigation'; 
 import { NextUIProvider } from "@nextui-org/system";
 import FloatingActionButton from "@components/FloatingActionButton";
 import useUserStore from '@store/useUserStore';
@@ -12,39 +12,70 @@ type LayoutProps = {
   children: ReactNode;
 };
 
+interface FabConfig {
+  url: string;
+  channelInfo?: {
+    id?: string;
+    type?: string;
+  } | null;
+}
+
 export default function RootLayout({ children }: LayoutProps): ReactNode {
-  const pathname = usePathname(); // 현재 URL 경로를 추적
+  const pathname = usePathname(); 
+  const searchParams = useSearchParams();
   const { userInfo } = useUserStore((state) => ({
     userInfo: state.userInfo,
   }));
 
-  // Floating Action Button의 경로를 반환하는 함수
-  const getFabUrl = () => {
-    if (pathname.includes('/category-channel')) {
-      return '/category-channel/regist'; // 카테고리 채널 경로
+  const getFabConfig = (): FabConfig | null => {
+    if (pathname.endsWith('/category-channel')) {
+      return {
+        url: '/category-channel/regist',
+        channelInfo: null
+      };
+    } else if (pathname.includes('/channel')) {
+      const channelId = searchParams?.get('channelId');
+      return {
+        url: '/hot-topic/create-feed',
+        channelInfo: channelId ? {
+          id: channelId,
+          type: 'MYCHANNEL'
+        } : undefined
+      };
+    } else if(pathname.includes('/category-channel')){
+      const channelId = searchParams?.get('channelId');
+      return {
+        url: '/hot-topic/create-feed',
+        channelInfo: channelId ? {
+          id: channelId,
+          type: 'CATEGORYCHANNEL'
+        } : undefined
+      };
     }
-     else if (pathname.includes('/hot-topic')||pathname.includes('/channel')||pathname.includes('')) {
-      return '/hot-topic/create-feed'; // 핫토픽 feed 등록 경로
-    }
-    else {
-      return null; // 기본 경로 또는 URL에 따라 렌더링하지 않음
-    }
+    return null;
   };
 
-  const fabUrl = getFabUrl();
+  const fabConfig = getFabConfig();
 
   return (
     <NextUIProvider>
       <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
-        {/* Nav 컴포넌트 */}
         <Nav />
         <TanstackQueryProvider>
           {children}
         </TanstackQueryProvider>
-
-        {/* FloatingActionButton: 로그인 상태에서만 렌더링, 특정 경로에만 표시 */}
-        {pathname.includes('/category-channel') && !userInfo ? null : (
-          fabUrl && <FloatingActionButton href={fabUrl} />
+  
+        {/* 
+          1. pathname이 정확히 /category-channel으로 끝나고 비회원인 경우 버튼 숨김
+          2. pathname이 /category-channel을 포함하지만 정확히 그걸로 끝나지 않는 경우 회원/비회원 모두에게 버튼 표시
+          3. 그 외의 경로에서는 fabConfig가 있을 때 버튼 표시
+        */}
+        {pathname.endsWith('/category-channel') && !userInfo ? null : (
+          fabConfig && (
+            <FloatingActionButton 
+              href={fabConfig.url}
+            />
+          )
         )}
       </div>
     </NextUIProvider>
