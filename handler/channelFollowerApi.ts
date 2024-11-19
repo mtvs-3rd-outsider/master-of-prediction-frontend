@@ -1,18 +1,22 @@
-import apiClient from "./fetch/axios";
+import axios from '@handler/fetch/axios';
+import { ChannelInfo } from '@components/types/channelInfoDTO';
 
-apiClient
-// Fetch followings
-export const fetchFollowings = async (pageParam = 0, queryKey: string[]) => {
-    const channelId = queryKey[1];
-    const response = await apiClient.get(
-      `/subscriptions/user/${channelId}/following`,
-      {
-        params: {
-          isUserChannel: true,
-          page: pageParam,
-          size: 15,
-        },
-      }
-    );
-    return response.data;
-  };
+interface FollowingResponse {
+  content: ChannelInfo[];
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
+export const getFollowingChannels = async (userId: number): Promise<FollowingResponse> => {
+  const response = await axios.get(`/subscriptions/user/${userId}/following`, {
+    params: {
+      isUserChannel: true,
+      page: 0,
+      size: 15,
+    },
+  });
+  return response.data;
+};
