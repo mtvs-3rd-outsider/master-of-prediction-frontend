@@ -8,6 +8,8 @@ import { getFeedById } from '@/handler/feedApi';
 import { FeedResponseDTO } from '@components/types/feedResponseDTO';
 import GuestLoginModal from '@components/GuestLoginModal';
 import axios from '@/handler/fetch/axios';
+import {ChannelInfo}from '@/components/types/channelInfoDTO';
+import {getChannelById} from '@/handler/categoryChannelApi';
 
 export default function CreateFeedPage() {
   const router = useRouter();
@@ -24,6 +26,24 @@ export default function CreateFeedPage() {
   const userInfo = useUserStore((state) => state.userInfo);
   const [feedChannelId, setFeedChannelId] = useState<string | null>(searchParams?.get('channelId'));
   const [feedChannelType, setFeedChannelType] = useState<string | null>(searchParams?.get('channelType'));
+  const [channelInfo, setChannelInfo] = useState<ChannelInfo | null>(null);
+
+  // 채널 정보 로드
+  useEffect(() => {
+    const loadChannelInfo = async () => {
+      if (feedChannelId && feedChannelType === 'CATEGORYCHANNEL') {
+        try {
+          const channelData = await getChannelById(feedChannelId);
+          setChannelInfo(channelData);
+        } catch (error) {
+          console.error('Error loading channel info:', error);
+        }
+      }
+    };
+
+    loadChannelInfo();
+  }, [feedChannelId, feedChannelType]);
+
 
   const quoteId = searchParams?.get('quoteId');
  // 인용하기인 경우 channel 정보 설정
@@ -134,9 +154,16 @@ useEffect(() => {
           },
         });
       }
-  
       if (response.status < 300) {
-        router.push('/hot-topic');
+        // 채널 타입과 ID에 따라 적절한 경로로 리다이렉션
+        if (feedChannelType === 'CATEGORYCHANNEL') {
+          router.push(`/category-channel/${feedChannelId}`);
+        } else if (feedChannelType === 'MYCHANNEL') {
+          router.push(`/channel/${feedChannelId}`);
+        } else {
+          // 기본값으로 hot-topic으로 이동
+          router.push('/hot-topic');
+        }
       }
     } catch (error) {
       console.error('Error creating feed:', error);
@@ -161,8 +188,36 @@ useEffect(() => {
     console.log('Is Quote Post:', !!quoteId);
   }, [feedChannelId, feedChannelType, quoteId, quoteFeed]);
 
+
+  const renderChannelHeader = () => {
+    if (feedChannelType === 'MYCHANNEL') {
+      return (
+        <div className="px-4 py-2 bg-gray-50 border-b">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">{userInfo?.displayName || userInfo?.userName}</h2>
+            <p className="text-sm text-gray-600 mt-1">@{userInfo?.userName}</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (channelInfo) {
+      return (
+        <div className="px-4 py-2 bg-gray-50 border-b">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">{channelInfo.displayName}</h2>
+            <span className="text-sm text-gray-500">카테고리 채널</span>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="space-y-4">
+      {renderChannelHeader()}
       <FeedForm 
         onSubmit={handleSubmit} 
         quoteFeed={quoteFeed} 
