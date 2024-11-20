@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import CategoryChannel from '@components/CategoryCannel'; // CategoryChannel 컴포넌트 임포트
 import Tabs from '@components/StickyTabs'; // Tabs 컴포넌트 임포트
-
+import ChannelFeedList from './ChannelFeedList';
+import BettingList from './BettingList';
 interface CategoryPageProps {
   category: any; // 서버에서 전달받은 카테고리 데이터
   tabNames: string[];
@@ -27,8 +28,14 @@ const CategoryPageClientComponent: React.FC<CategoryPageProps> = ({ category, ta
 
       {/* 선택된 탭에 따라 표시할 콘텐츠 */}
       <div className="mt-4">
-        {activeTab === 0 && <div>포스트 콘텐츠...</div>} {/* 포스트 탭 */}
-        {activeTab === 1 && <div>활동 내역 콘텐츠...</div>} {/* 활동 내역 탭 */}
+      <div className="tab-content">
+        {activeTab === 0 && <div>
+          <ChannelFeedList channelId={category.channelId} channelType='CATEGORYCHANNEL'/>
+          </div>}
+        {activeTab === 1 &&  <div>
+             <BettingList/>
+             </div>}
+      </div>
       </div>
     </div>
   );

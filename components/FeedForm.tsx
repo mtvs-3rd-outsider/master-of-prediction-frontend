@@ -12,12 +12,11 @@ import { FreeMode } from 'swiper/modules';
 import Image from "next/image";
 import QuotePost from '@ui/QuotePost';
 import { FeedResponseDTO } from '@components/types/feedResponseDTO';
-import { UserDTO, GuestDTO } from '@components/types/feedResponseDTO';
 
 interface FeedFormProps {
   onSubmit: (content: string, media: File[], youtubeUrls: string[]) => void;
-  quoteFeed?: FeedResponseDTO | null; // 인용할 게시글 추가
-  isSubmitting?: boolean; // isSubmitting 속성 추가
+  quoteFeed?: FeedResponseDTO | null;
+  isSubmitting: boolean;
 }
 
 const YouTubeIcon = () => (
@@ -26,8 +25,7 @@ const YouTubeIcon = () => (
   </svg>
 );
 
-
-const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
+const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed, isSubmitting }) => {
   const [content, setContent] = useState('');
   const [media, setMedia] = useState<File[]>([]);
   const [youtubeUrls, setYoutubeUrls] = useState<string[]>([]);
@@ -37,6 +35,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!content.trim() || isSubmitting) return; // 내용이 비어있거나 제출 중이면 리턴
     onSubmit(content, media, youtubeUrls);
   };
 
@@ -63,13 +62,23 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
   const handleRemoveYoutubeUrl = (index: number) => {
     setYoutubeUrls(prev => prev.filter((_, i) => i !== index));
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex justify-between items-center mb-4 relative p-4">
         <BackButton size="lg"/>
-        <h1 className="text-lg font-bold absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">새 게시물 작성</h1>
-        <Button type="submit" color="primary" radius='full' className="h-7" size='sm'>
-          게시하기
+        <h1 className="text-lg font-bold absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          새 게시물 작성
+        </h1>
+        <Button 
+          type="submit" 
+          color="primary" 
+          radius='full' 
+          className="h-7" 
+          size='sm'
+          isDisabled={!content.trim() || isSubmitting} // 내용이 비어있거나 제출 중일 때 비활성화
+        >
+          {isSubmitting ? '게시중...' : '게시하기'}
         </Button>
       </div>
 
@@ -78,7 +87,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
           isIconOnly={true}
           onClick={() => fileInputRef.current?.click()}
           startContent={<CameraIcon className="h-5 w-5" />}
-          disabled={media.length + youtubeUrls.length >= 4}
+          isDisabled={media.length + youtubeUrls.length >= 4 || isSubmitting}
           className='x-1 bg-white'
         />
         <input
@@ -88,6 +97,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
           accept="image/*,video/*"
           multiple
           hidden
+          disabled={isSubmitting}
         />
         {isYoutubeInputOpen ? (
           <div className="flex-grow flex space-x-2">
@@ -96,11 +106,20 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
               value={currentYoutubeUrl}
               onChange={(e) => setCurrentYoutubeUrl(e.target.value)}
               className="flex-grow"
+              isDisabled={isSubmitting}
             />
-            <Button size="sm" onClick={handleYoutubeUrlSubmit} disabled={media.length + youtubeUrls.length >= 4}>
+            <Button 
+              size="sm" 
+              onClick={handleYoutubeUrlSubmit} 
+              isDisabled={media.length + youtubeUrls.length >= 4 || isSubmitting}
+            >
               추가
             </Button>
-            <Button size="sm" onClick={() => setIsYoutubeInputOpen(false)}>
+            <Button 
+              size="sm" 
+              onClick={() => setIsYoutubeInputOpen(false)}
+              isDisabled={isSubmitting}
+            >
               취소
             </Button>
           </div>
@@ -109,19 +128,20 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
             isIconOnly={true}
             onClick={() => setIsYoutubeInputOpen(true)}
             startContent={<YouTubeIcon />}
-            disabled={media.length + youtubeUrls.length >= 4}
+            isDisabled={media.length + youtubeUrls.length >= 4 || isSubmitting}
             className='x-1 bg-white'
           />
         )}
       </div>
 
-  <Textarea
+      <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="무슨 일이 일어나고 있나요?"
         className="w-full m-0"
         minRows={1}
         maxRows={10}
+        isDisabled={isSubmitting}
         classNames={{
           input: "border-l-0 border-r-0 rounded-none bg-white",
           inputWrapper: "border-l-0 border-r-0 rounded-none shadow-none bg-white"
@@ -141,6 +161,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
                 type="button"
                 onClick={() => handleRemoveMedia(index)}
                 className="absolute top-2 right-2 z-10 bg-black bg-opacity-50 rounded-full p-1"
+                disabled={isSubmitting}
               >
                 <XMarkIcon className="h-5 w-5 text-white" />
               </button>
@@ -157,6 +178,7 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
                 type="button"
                 onClick={() => handleRemoveYoutubeUrl(index)}
                 className="absolute top-2 right-2 z-10 bg-black bg-opacity-50 rounded-full p-1"
+                disabled={isSubmitting}
               >
                 <XMarkIcon className="h-5 w-5 text-white" />
               </button>
@@ -169,19 +191,20 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit, quoteFeed }) => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="rounded-[20px]"
-              ></iframe>
+              />
             </SwiperSlide>
           ))}
         </Swiper>
       )}
+
       {quoteFeed && (
         <div className="mt-4">
-          <QuotePost
+          <QuotePost 
             quoteId={quoteFeed.id}
             quoteContent={quoteFeed.content}
             quoteCreateAt={quoteFeed.createdAt}
-            quoteUser={quoteFeed.user || null}
-            quoteGuest={quoteFeed.guest || null}
+            quoteUser={quoteFeed.user||null}
+            quoteGuest={quoteFeed.guest||null}
             mediaFileUrls={quoteFeed.mediaFiles?.map(file => file.fileUrl) || []}
             youtubeUrls={quoteFeed.youTubeVideos?.map(video => video.youtubeUrl) || []}
             onClick={() => {}} // 작성 폼에서는 클릭 동작 불필요
