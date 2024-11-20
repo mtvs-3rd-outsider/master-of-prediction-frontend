@@ -20,7 +20,7 @@ export default function RootLayout({
   }));
   const clientRef = useRef<any>(null);
   useEffect(() => {
-    if (userInfo && hasHydrated) {
+    if (userInfo) {
       // `status.connect` 엔드포인트만 등록, userInfo가 있을 때만 token을 포함
       const selectedStreams = [
         {
@@ -37,7 +37,7 @@ export default function RootLayout({
         channels: [],
         streams: selectedStreams,
       });
-    } else {
+    } else (!userInfo) {
       // userInfo가 없을 때 token 없이 초기화
       RSocketClientSetup.init({
         clientRef,

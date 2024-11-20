@@ -2,7 +2,6 @@ import { RSocketClient, BufferEncoders, MESSAGE_RSOCKET_COMPOSITE_METADATA } fro
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import { Flowable } from "rsocket-flowable";
 import { createMetadata, createSetupMetadata } from "@util/metadataUtils";
-import { Message } from "@ui/ChatUI";
 
 interface StreamConfig {
     endpoint: string;
