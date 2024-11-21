@@ -61,7 +61,9 @@ const BettingActivity = ({ activity }: Props) => {
               />
               {node.point < 0 ? (
                 <div className="flex justify-center items-center gap-4">
-                  <span className=" font-bold text-red-500">sold </span>
+                  <span className=" font-bold text-red-500">
+                    {messages["판매"]}{" "}
+                  </span>
                   <span className="font-bold">{node.content}</span>
                   <span> {node.point * -1}p</span>
                 </div>

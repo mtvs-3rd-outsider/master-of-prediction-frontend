@@ -4,7 +4,6 @@ import * as Tabs from "@radix-ui/react-tabs";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import BuyOrder from "./BuyOrder";
 import SellOrder from "./SellOrder";
-import useUserStore from "@store/useUserStore";
 import { useEffect, useState } from "react";
 import apiClient from "@handler/fetch/axios";
 import { BettingOptions } from "@/types/BettingTypes";
@@ -17,10 +16,20 @@ import { useTranslations } from "next-intl";
 interface OrderFormProps {
   className?: string;
   options: BettingOptions[] | [];
+  onCloseModal?: () => void; // 모달 닫기 함수 추가
+  onOpenAlert: (
+    title: string,
+    description: string,
+    confirmHandler: () => void
+  ) => void;
 }
 
-export default function OrderForm({ className, options }: OrderFormProps) {
-  // const userId = useUserStore.getState().userInfo?.id;
+export default function OrderForm({
+  className,
+  options,
+  onCloseModal,
+  onOpenAlert,
+}: OrderFormProps) {
   const userId = 1;
   const [userPoint, setUserPoint] = useState<number>(0);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
@@ -49,7 +58,21 @@ export default function OrderForm({ className, options }: OrderFormProps) {
       }
     });
   }, [optionId, orderHistory]);
+  const handleBuy = () => {
+    const confirmHandler = () => {
+      // 구매 API 호출 로직
+      console.log("구매 완료");
+    };
+    onOpenAlert("구매 확인", "이 옵션을 구매하시겠습니까?", confirmHandler);
+  };
 
+  const handleSell = () => {
+    const confirmHandler = () => {
+      // 판매 API 호출 로직
+      console.log("판매 완료");
+    };
+    onOpenAlert("판매 확인", "이 옵션을 판매하시겠습니까?", confirmHandler);
+  };
   useEffect(() => {
     apiClient
       .get(`/user-point/${userId}`)
@@ -61,11 +84,15 @@ export default function OrderForm({ className, options }: OrderFormProps) {
       });
   }, [userId, bettingId]);
 
+  const handleTabClick = (value: string) => {
+    if (onCloseModal) {
+      onCloseModal(); // 모달 닫기 함수 호출
+    }
+  };
+
   return (
-    <div
-      className={`${className} flex flex-col w-full  shadow-blackA2`}
-    >
-      <div className="flex gap-4 py-4 px-4 ">
+    <div className={`${className} flex flex-col w-full shadow-blackA2`}>
+      <div className="flex gap-4 py-4 px-4">
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
           {optionsByOptionId?.imgUrl && (
             <Image
@@ -101,27 +128,33 @@ export default function OrderForm({ className, options }: OrderFormProps) {
           </Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content
-          className="grow p-5 bg-white rounded-b-md outline-none  "
+          className="grow p-5 bg-white rounded-b-md outline-none"
           value="tab1"
         >
           <BuyOrder
+            onOpenAlert={onOpenAlert}
+            onCloseModal={onCloseModal}
             userPoint={userPoint}
             setUserPoint={setUserPoint}
             options={options}
+            handleEvent={handleBuy}
             setOrderHistory={setOrderHistory}
             optionsByOptionId={optionsByOptionId}
             choiceOptionhistory={choiceOptionhistory}
           />
         </Tabs.Content>
         <Tabs.Content
-          className="grow p-5 bg-white rounded-b-md outline-none "
+          className="grow p-5 bg-white rounded-b-md outline-none"
           value="tab2"
         >
           <SellOrder
+            onOpenAlert={onOpenAlert}
+            onCloseModal={onCloseModal}
             userPoint={userPoint}
             setUserPoint={setUserPoint}
             options={options}
             orderHistory={orderHistory}
+            handleEvent={handleSell}
             setOrderHistory={setOrderHistory}
             optionsByOptionId={optionsByOptionId}
             choiceOptionhistory={choiceOptionhistory}

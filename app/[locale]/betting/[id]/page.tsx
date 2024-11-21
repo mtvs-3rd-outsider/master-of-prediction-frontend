@@ -17,22 +17,41 @@ import OrderForm from "@ui/OrderForm";
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   Button,
   useDisclosure,
 } from "@nextui-org/react";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { FaShoppingCart } from "react-icons/fa";
+import ConfirmDialog from "@ui/ConfirmDialog";
 
 function BettingDetailPage() {
   const params = useParams();
   const [bettingInfo, setBettingInfo] = useState<BettingProductInfo>();
   const [optionsRatio, setOptionsRatio] = useState<OptionsRatio[]>([]);
   const [isNotFound, setIsNotFound] = useState(false);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { setOptionId } = BettingOptionChoiceStore();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // AlertDialog 상태
+  const [isAlertOpen, setAlertOpen] = useState(false);
+  const [alertData, setAlertData] = useState({ amount: 0, content: "" });
+
+  const handleOpenAlert = (amount: number, content: string) => {
+    setAlertData({ amount, content });
+    setAlertOpen(true);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogContent, setDialogContent] = useState({
+    title: "",
+    description: "",
+    confirmHandler: () => {},
+  });
   useEffect(() => {
     apiClient(`betting-products/${params.id}`)
       .then((res) => {
@@ -63,7 +82,18 @@ function BettingDetailPage() {
       }
     );
   }, [params.id, setOptionId]);
+  const handleOpenDialog = (
+    title: string,
+    description: string,
+    confirmHandler: () => void
+  ) => {
+    setDialogContent({ title, description, confirmHandler });
+    setDialogOpen(true);
+  };
 
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
   return (
     <>
       {isNotFound && NotFound()}
@@ -79,37 +109,41 @@ function BettingDetailPage() {
               postStats={bettingInfo?.postStats || ({} as PostStatsNavState)}
             />
           </main>
-          <aside className="col-span-3 hidden xl:flex flex-col w-[350px] rou">
-            <div className="sticky top-0 shadow-[0_2px_10px]  shadow-blackA2 rounded-md">
-              <OrderForm options={bettingInfo?.options || []} />
-            </div>
+          <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
+            <OrderForm
+              options={bettingInfo?.options || []}
+              onOpenAlert={handleOpenDialog}
+            />
           </aside>
 
           {/* 모바일 환경에서 주문하기 아이콘 */}
-          <button
-            className="fixed bottom-16 left-10 bg-blue-600 text-white p-4 rounded-full shadow-lg xl:hidden flex items-center justify-center"
-            onClick={onOpen}
+          <Button
+            className="fixed bottom-16 right-5 bg-blue-600 text-white p-4 rounded-full shadow-lg xl:hidden flex items-center justify-center"
+            onPress={onOpen}
           >
             <FaShoppingCart size={16} />
-          </button>
+          </Button>
 
-          {/* 주문하기 모달 */}
-          <Modal
-            isOpen={isOpen}
-            placement="bottom-center"
-            onOpenChange={onOpenChange}
-          >
+          <Modal isOpen={isOpen} placement="bottom-center" onClose={onClose}>
             <ModalContent>
               {(onClose) => (
                 <>
-                  <ModalHeader className="text-lg font-bold">
-                    주문하기
-                  </ModalHeader>
                   <ModalBody>
-                    <OrderForm options={bettingInfo?.options || []} />
+                    {/* 모달 닫기 함수 전달 */}
+                    <OrderForm
+                      options={bettingInfo?.options || []}
+                      className="py-4"
+                      onCloseModal={onClose}
+                      onOpenAlert={handleOpenDialog}
+                    />
                   </ModalBody>
                   <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
+                    <Button
+                      color="danger"
+                      variant="light"
+                      onPress={onClose}
+                      className="text-sm"
+                    >
                       닫기
                     </Button>
                   </ModalFooter>
@@ -117,10 +151,24 @@ function BettingDetailPage() {
               )}
             </ModalContent>
           </Modal>
+          {/* ConfirmDialog */}
+          <ConfirmDialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            title={dialogContent.title}
+            description={dialogContent.description}
+            onConfirm={() => {
+              dialogContent.confirmHandler();
+              handleCloseDialog();
+            }}
+            confirmText="확인" // 추가
+            cancelText="취소" // 추가
+          />
         </>
       )}
     </>
   );
 }
+
 
 export default BettingDetailPage;

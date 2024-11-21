@@ -85,15 +85,22 @@ function BettingProductDetail(props: BettingProductInfo) {
   const deadlineDateTime = new Date(
     `${product.deadlineDate}T${product.deadlineTime}`
   );
-  const formattedDate = deadlineDateTime.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  const tooltipTime = deadlineDateTime.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const isValidDate = !isNaN(deadlineDateTime.getTime());
+ const formattedDate = isValidDate
+   ? deadlineDateTime.toLocaleDateString("en-US", {
+       year: "numeric",
+       month: "short",
+       day: "numeric",
+     })
+   : "";
+
+ const tooltipTime = isValidDate
+   ? deadlineDateTime.toLocaleTimeString("en-US", {
+       hour: "2-digit",
+       minute: "2-digit",
+     })
+   : "";
+
   return (
     <>
       <div className="px-6 pt-6">
