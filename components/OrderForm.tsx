@@ -63,7 +63,7 @@ export default function OrderForm({ className, options }: OrderFormProps) {
 
   return (
     <div
-      className={`${className} flex flex-col w-full shadow-[0_2px_10px] shadow-blackA2`}
+      className={`${className} flex flex-col w-full  shadow-blackA2`}
     >
       <div className="flex gap-4 py-4 px-4 ">
         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">

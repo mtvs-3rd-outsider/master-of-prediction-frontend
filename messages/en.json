@@ -37,5 +37,12 @@
   "미리보기 이미지": "Preview Image",
   "선택지 추가하기": "Add Option (Default: 2)",
   "마감일자": "Deadline",
-  "취소": "Cancel"
+  "취소": "Cancel",
+  "구매": "bought",
+  "판매": "sold",
+  "초": "s",
+  "분": "m",
+  "시간": "h",
+  "일": "d"
+
 }

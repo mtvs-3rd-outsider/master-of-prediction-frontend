@@ -24,6 +24,7 @@ import useOptimisticMutation from "@handler/useOptimisticMutation";
 import { MyChannelProps } from "@/app/[locale]/(home)/channel/[userId]/page";
 import DropdownNext from "./DropdownAccountNavItem";
 import { useTranslations } from "next-intl";
+import { tierLabels } from "./TierBadge";
 
 
 // 구독 상태를 서버에서 가져오는 함수
@@ -32,30 +33,35 @@ interface UserChannelPageProps {
 }
 
 const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
- const t = useTranslations();
- 
+  const t = useTranslations();
+
   const fetchFollowers = async (channelId?: string) => {
-    const response = await apiClient.get(`/subscriptions/channel/${channelId}/subscribers/count?isUserChannel=true`);
+    const response = await apiClient.get(
+      `/subscriptions/channel/${channelId}/subscribers/count?isUserChannel=true`
+    );
     setFollowerCount(response.data);
     return response.data;
   };
-  
+
   // 팔로잉 목록을 가져오는 함수
   const fetchFollowing = async (channelId?: string) => {
-    const response = await apiClient.get(`/subscriptions/user/${channelId}/following/count?isUserChannel=true`);
+    const response = await apiClient.get(
+      `/subscriptions/user/${channelId}/following/count?isUserChannel=true`
+    );
     setFollowingCount(response.data);
     return response.data;
   };
   const fetchSubscriptionStatus = async (channelId?: string) => {
-    const response = await apiClient.get(`/subscription?channelId=${channelId}&isUserChannel=true`);
-    setIsSubscribed(response.data)
+    const response = await apiClient.get(
+      `/subscription?channelId=${channelId}&isUserChannel=true`
+    );
+    setIsSubscribed(response.data);
     return response.data;
   };
-  
   const [isSubscribed, setIsSubscribed] = useState(false); // 로컬 구독 상태
   const [followerCount, setFollowerCount] = useState(0); // 로컬 구독 상태
   const [followingCount, setFollowingCount] = useState(0); // 로컬 구독 상태
-  const userInfo = useUserStore(state=> state?.userInfo)
+  const userInfo = useUserStore((state) => state?.userInfo);
   console.log(user);
   const router = useRouter();
   const pathname = usePathname(); // 현재 경로 가져오기
@@ -65,46 +71,46 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
   };
 
   const handleClick = () => {
-    router.push('profile-edit');
+    router.push("profile-edit");
   };
   const isLoggedIn = Boolean(userInfo); // 로그인 여부를 확인하는 추가 코드
-    // 현재 채널이 내 채널인지 검증 (user.user_name과 현재 로그인한 사용자를 비교)
-    const isMyChannel = user?.userId == userInfo?.id;
-    const { isLoading } = useQuery({
-      queryKey: ['subscriptionStatus',user?.userId], // queryKey로 검색 쿼리를 관리
-      queryFn: () => fetchSubscriptionStatus(user?.userId), // 검색 API 호출 함수
-      enabled: isLoggedIn && !isMyChannel, // searchQuery가 존재할 때만 요청 수행
-      staleTime: 0 , // 5분 동안 캐시 상태 유지
-      refetchOnMount:"always",
-    });
-    const {  isLoading: isFollowersLoading } = useQuery({
-      queryKey: ["followerCount", user?.userId],
-      queryFn: () => fetchFollowers(user?.userId),
-      enabled: !!user?.userId,  // userId가 있을 때만 호출
-      staleTime: 0, // 캐시 시간 5분
-      refetchOnMount:"always",
-    });
-    
-    const {isLoading: isFollowingLoading } = useQuery({
-      queryKey: ["followingCount", user?.userId],
-      queryFn: () => fetchFollowing(user?.userId),
-      enabled: !!user?.userId,  // userId가 있을 때만 호출
-      staleTime: 0, // 캐시 시간 5분
-      refetchOnMount:"always",
+  // 현재 채널이 내 채널인지 검증 (user.user_name과 현재 로그인한 사용자를 비교)
+  const isMyChannel = user?.userId == userInfo?.id;
+  const { isLoading } = useQuery({
+    queryKey: ["subscriptionStatus", user?.userId], // queryKey로 검색 쿼리를 관리
+    queryFn: () => fetchSubscriptionStatus(user?.userId), // 검색 API 호출 함수
+    enabled: isLoggedIn && !isMyChannel, // searchQuery가 존재할 때만 요청 수행
+    staleTime: 0, // 5분 동안 캐시 상태 유지
+    refetchOnMount: "always",
+  });
+  const { isLoading: isFollowersLoading } = useQuery({
+    queryKey: ["followerCount", user?.userId],
+    queryFn: () => fetchFollowers(user?.userId),
+    enabled: !!user?.userId, // userId가 있을 때만 호출
+    staleTime: 0, // 캐시 시간 5분
+    refetchOnMount: "always",
+  });
 
-    });
+  const { isLoading: isFollowingLoading } = useQuery({
+    queryKey: ["followingCount", user?.userId],
+    queryFn: () => fetchFollowing(user?.userId),
+    enabled: !!user?.userId, // userId가 있을 때만 호출
+    staleTime: 0, // 캐시 시간 5분
+    refetchOnMount: "always",
+  });
 
-    const fetchSubscripition=   async (actionType :string) => {
-        return apiClient.post(`/channel/subscription`,{
-          channelId: user?.userId,
-          isUserChannel: true,
-          actionType: actionType
-        });
-  }
-// 구독/구독 취소 API 요청을 처리하는 mutation
-const toggleSubscription  = useOptimisticMutation({
-  queryKey:  ["subscriptionStatus", user?.userId], // 쿼리 키를 명확하게 설정
-  mutationFn: ()=> fetchSubscripition(!isSubscribed ? "unsubscribe" : "subscribe"),
+  const fetchSubscripition = async (actionType: string) => {
+    return apiClient.post(`/channel/subscription`, {
+      channelId: user?.userId,
+      isUserChannel: true,
+      actionType: actionType,
+    });
+  };
+  // 구독/구독 취소 API 요청을 처리하는 mutation
+  const toggleSubscription = useOptimisticMutation({
+    queryKey: ["subscriptionStatus", user?.userId], // 쿼리 키를 명확하게 설정
+    mutationFn: () =>
+      fetchSubscripition(!isSubscribed ? "unsubscribe" : "subscribe"),
     onMutateFn: async () => {
       // 낙관적 업데이트: 버튼 클릭 시 즉시 상태 변경
       setIsSubscribed((prev) => !prev);
@@ -114,19 +120,19 @@ const toggleSubscription  = useOptimisticMutation({
       // 에러가 발생하면 이전 상태로 롤백
       setIsSubscribed((prev) => !prev);
       setFollowerCount((prev) => prev + (isSubscribed ? 1 : -1)); // 롤백 followingCount 상태
-    }
-});
+    },
+  });
 
-// 구독/구독 취소 버튼 클릭 핸들러
-const handleSubscribeToggle = () => {
-  toggleSubscription.mutate(null);
-};
+  // 구독/구독 취소 버튼 클릭 핸들러
+  const handleSubscribeToggle = () => {
+    toggleSubscription.mutate(null);
+  };
 
   // user가 없을 때 아무것도 렌더링하지 않도록 방어 코드 추가
   if (!user) {
     return null;
   }
-    
+
   return (
     <div className="p-4">
       <div className="sticky overflow-hidden">
@@ -179,7 +185,9 @@ const handleSubscribeToggle = () => {
 
         <div>
           <div className="inline-flex gap-1">
-            <TierIcon name={user.tier_name} size={35} className="px-2" />{" "}
+            {tierLabels[user.tier_name] && (
+              <TierIcon name={user.tier_name} size={35} className="px-2" />
+            )}
             <h1 className="text-md m-auto font-bold">
               {user.display_name || user.user_name}
             </h1>{" "}

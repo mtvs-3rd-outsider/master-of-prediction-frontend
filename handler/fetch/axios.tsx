@@ -50,7 +50,6 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터
 apiClient.interceptors.response.use(
   (response) => {
-    const messages = useTranslationStore.getState().messages;
     // 200번대 응답일 경우 성공 토스트 표시 (백엔드에서 받은 메시지 사용)
     if (response.status >= 200 && response.status < 300 && response.data?.message) {
       toast.success(response.data?.message);

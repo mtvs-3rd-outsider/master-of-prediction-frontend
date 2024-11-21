@@ -1,16 +1,10 @@
 "use client";
 
-import Search from "@ui/Search";
-import Footer from "@ui/Footer";
-import BettingProductDetail from "@ui/BettingProductsDetail";
-import OrderForm from "@ui/OrderForm";
-import BettingProductsChatRoom from "@ui/BettnigProductsChatRoom";
 import { useEffect, useState } from "react";
-import apiClient from "@handler/fetch/axios";
 import { useParams } from "next/navigation";
+import apiClient from "@handler/fetch/axios";
 import {
   BettingCreater,
-  BettingOptions,
   BettingProduct,
   BettingProductInfo,
   OptionsRatio,
@@ -18,15 +12,25 @@ import {
 } from "@/types/BettingTypes";
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 import NotFound from "@/app/not-found";
+import BettingProductDetail from "@ui/BettingProductsDetail";
+import OrderForm from "@ui/OrderForm";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@nextui-org/react";
+import { FaShoppingCart } from "react-icons/fa";
 
 function BettingDetailPage() {
-  // 배팅 정보를 불러와서 각 노드에 전달
   const params = useParams();
   const [bettingInfo, setBettingInfo] = useState<BettingProductInfo>();
-  const [optionsRatio, setOptionsRatio] = useState<OptionsRatio[]>(
-    [] as OptionsRatio[]
-  );
+  const [optionsRatio, setOptionsRatio] = useState<OptionsRatio[]>([]);
   const [isNotFound, setIsNotFound] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { setOptionId } = BettingOptionChoiceStore();
 
   useEffect(() => {
@@ -34,7 +38,6 @@ function BettingDetailPage() {
       .then((res) => {
         const bettingInfo = res.data;
         const bettingId = [Number(params.id) * -1];
-        console.log("bettingId: ", bettingId);
         apiClient
           .get(`/feeds/betting?ids=${bettingId}`)
           .then((response_feeds) => {
@@ -47,8 +50,6 @@ function BettingDetailPage() {
               setIsNotFound(true);
             }
           });
-        // setBettingInfo(res.data);
-        // setOptionId(res.data?.options[0]?.optionId);
       })
       .catch((error) => {
         if (error.response && error.response.status === 404) {
@@ -77,21 +78,45 @@ function BettingDetailPage() {
               optionsRatio={optionsRatio}
               postStats={bettingInfo?.postStats || ({} as PostStatsNavState)}
             />
-            <OrderForm
-              options={bettingInfo?.options || []}
-              className="xl:hidden"
-            />
-            {/* TODO: 작은 화면일때 주문 디자인 추가 */}
-            {/* <OrderForm className="xl:hidden mx-auto" /> */}
           </main>
-          <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
-            <div className="sticky top-0">
-              {/* <Search /> */}
+          <aside className="col-span-3 hidden xl:flex flex-col w-[350px] rou">
+            <div className="sticky top-0 shadow-[0_2px_10px]  shadow-blackA2 rounded-md">
               <OrderForm options={bettingInfo?.options || []} />
-              <BettingProductsChatRoom id={params.id as string} />
-              {/* <Footer /> */}
             </div>
           </aside>
+
+          {/* 모바일 환경에서 주문하기 아이콘 */}
+          <button
+            className="fixed bottom-16 left-10 bg-blue-600 text-white p-4 rounded-full shadow-lg xl:hidden flex items-center justify-center"
+            onClick={onOpen}
+          >
+            <FaShoppingCart size={16} />
+          </button>
+
+          {/* 주문하기 모달 */}
+          <Modal
+            isOpen={isOpen}
+            placement="bottom-center"
+            onOpenChange={onOpenChange}
+          >
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalHeader className="text-lg font-bold">
+                    주문하기
+                  </ModalHeader>
+                  <ModalBody>
+                    <OrderForm options={bettingInfo?.options || []} />
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={onClose}>
+                      닫기
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
         </>
       )}
     </>
