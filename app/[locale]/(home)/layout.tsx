@@ -68,7 +68,7 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
             }
           : undefined,
       };
-    } else if (pathname.includes("/betting")) {
+    } else if (pathname.endsWith("/betting")) {
       return {
         url: "/betting/add",
         label: FAB_LABELS["/betting/add"],
