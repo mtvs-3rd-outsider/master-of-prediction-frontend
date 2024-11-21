@@ -46,6 +46,7 @@ export interface BettingProductType {
   bettingId: number;
   blindName: string | null;
   postStats: null | PostStatsNavState;
+  createdAt: string;
 }
 
 export interface OptionsRatio {

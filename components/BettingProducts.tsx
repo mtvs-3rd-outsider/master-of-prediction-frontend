@@ -99,6 +99,7 @@ const BettingProducts = () => {
                   bettingId={node.bettingId}
                   blindName={node.blindName}
                   postStats={node.postStats}
+                  createdAt={node.createdAt}
                 />
               </li>
             ))}
