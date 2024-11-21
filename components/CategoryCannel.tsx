@@ -167,11 +167,6 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
 
       <div className="mt-2">
         <div className="inline-flex gap-1">
-          <TierIcon
-            name={channel?.displayName || "기본 이름"}
-            size={35}
-            className="px-2"
-          />
           <h1 className="text-md m-auto font-bold">
             {channel?.displayName || "기본 이름"}
           </h1>

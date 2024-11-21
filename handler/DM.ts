@@ -22,4 +22,12 @@ export const updateLastMessage = async (senderId: number, receiverId: number, la
     } catch (error) {
       console.error('Failed to update last message:', error);
     }
+};
+  
+
+export const fetchDMs = async (pageParam: number, roomId: string ) => {
+    const response = await apiClient.get(`/messages/room/${roomId}`, {
+      params: { page: pageParam, size: 10 },
+    });
+    return response.data;
   };

@@ -25,6 +25,7 @@ import {
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { FaShoppingCart } from "react-icons/fa";
 import ConfirmDialog from "@ui/ConfirmDialog";
+import ChatUI from "@ui/BettnigProductsChatRoom";
 
 function BettingDetailPage() {
   const params = useParams();
@@ -110,10 +111,14 @@ function BettingDetailPage() {
             />
           </main>
           <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
-            <OrderForm
-              options={bettingInfo?.options || []}
-              onOpenAlert={handleOpenDialog}
-            />
+            <div className="  shadow-md">
+              <OrderForm
+                options={bettingInfo?.options || []}
+                onOpenAlert={handleOpenDialog}
+              />
+            </div>
+
+            <ChatUI roomId={params.id} />
           </aside>
 
           {/* 모바일 환경에서 주문하기 아이콘 */}

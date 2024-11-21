@@ -257,8 +257,17 @@ function BettingProductDetail(props: BettingProductInfo) {
         <div>
           <ul
             className="mt-4 mb-4 
-        flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3 "
+    flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3"
           >
+            {/* 조회수 항상 표시 */}
+            {postStats && (
+              <li className="flex items-center gap-x-2">
+                <ChartBarSquareIcon className="w-4 h-4 text-gray-500" />
+                <span>{postStats.viewCount} </span>
+              </li>
+            )}
+
+            {/* 나머지 통계 정보 */}
             {postStats && Object.keys(postStats).length > 0 && (
               <PostStatsNav
                 viewCount={postStats.viewCount}

@@ -14,19 +14,17 @@ import { Textarea } from "@nextui-org/input";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import useUserStore from "@store/useUserStore";
+import { RSocketClientSetup } from "@/hooks/useRSocketConnection";
+import { createMetadata } from "@util/metadataUtils";
+import { Message, User } from "./ChatUI";
+import { toUser } from "@util/Converter";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { fetchDMs } from "@handler/DM";
+import { useInView } from "react-intersection-observer";
+import { isDifferentDay } from "@util/Date";
+import Link from "next/link";
 
-// 메시지 및 유저 타입 정의
-type User = {
-  name?: string;
-  avatarImageLink?: string;
-};
 
-type Message = {
-  content: string;
-  user: User;
-  sent: string; // ISO 포맷의 날짜 문자열
-  roomId: number;
-};
 
 export default function ChatUI({id}:any ) {
   const messageInputRef = useRef<any>(null);
@@ -34,105 +32,59 @@ export default function ChatUI({id}:any ) {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-  const [roomId, setRoom] = useState<any>("bet-"+id);
+  const [roomId, setRoom] = useState<any>("bet-" + id);
   const [endpoint, setEndpoint] = useState<any>(null);
-  const userInfo =useUserStore(state=> state.userInfo);
+  const { userInfo, token, hasHydrated } = useUserStore((state) => ({
+    userInfo: state.userInfo,
+    token: state.userInfo?.token,
+    hasHydrated: state.hasHydrated,
+  }));
+  const { ref: loadMoreRef, inView: isInView } = useInView({
+    rootMargin: "100px",
+    threshold: 0.5,
+    triggerOnce: false,
+    root: chatContainerRef.current,
+  });
   // RSocket 관련 상태 및 변수
   const clientRef = useRef<any>(null);
   const sourceRef = useRef<any>(null);
-  const user: User = { name: userInfo?.displayName, avatarImageLink: userInfo?.avatarUrl }; // 현재 사용자를 하드코딩했으나 동적으로 변경 가능
+  const [user, setUser] = useState<User>(); // User 상태로 초기화
 
+  useEffect(() => {
+    // hydration이 완료된 후에만 로그인 상태 확인
+    if (hasHydrated && !userInfo) {
+    } else {
+      const convertedUser = toUser(userInfo);
+      if (convertedUser) setUser(convertedUser);
+    }
+  }, [hasHydrated, userInfo]);
   // RSocket 초기화
   useEffect(() => {
-    const client = new RSocketClient({
-      transport: new RSocketWebSocketClient(
-        {
-          url: process.env.NEXT_PUBLIC_RSOCKET_URL!, // RSocket 서버 URL
-        },
-        BufferEncoders
-      ),
-      setup: {
-        dataMimeType: "application/json",
-        metadataMimeType: MESSAGE_RSOCKET_COMPOSITE_METADATA.toString(),
-        keepAlive: 5000,
-        lifetime: 60000,
-      },
-    });
-
-    client.connect().then((rsocket) => {
-      clientRef.current = rsocket;
-      // setRoom(2);
-      setEndpoint(`api.v1.messages.stream/${roomId}`);
-
-      // 메시지 수신 스트림 설정
-      rsocket
-        .requestChannel(
-          new Flowable((source) => {
-            sourceRef.current = source;
-            source.onSubscribe({
-              cancel: () => {},
-              request: (n) => {},
-            });
-          })
-        )
-        .subscribe({
-          onComplete: () => {
-            console.log("requestChannel onComplete");
+    if (userInfo) {
+      RSocketClientSetup.init({
+        clientRef,
+        token: token, // 토큰이 유저 정보에 포함된 경우
+        channels: [{ sourceRef: sourceRef, onNext: (x) => x }],
+        streams: [
+          {
+            endpoint: `api.v1.messages.stream/${roomId}`,
+            onNext: (message: Message) => {
+              setMessages((prev) => [...prev, message]);
+              if (!isAtBottom) setShowNewMessageAlert(() => true); // 새 메시지 알림
+            },
           },
-          onSubscribe: (subscription) => {
-            subscription.request(1000); // 수신할 메시지 수 설정
-            console.log("requestChannel onSubscribe");
-          },
-          onError: (error) => {
-            console.log("requestChannel e: ", error);
-          },
-          onNext: (payload) => {
-            console.log("requestChannel onNext: ", payload);
-          },
-        });
-
-        rsocket
-        .requestStream({
-          metadata: encodeAndAddWellKnownMetadata(
-            Buffer.alloc(0),
-            MESSAGE_RSOCKET_ROUTING,
-            Buffer.from(String.fromCharCode(endpoint.length) + endpoint)
-          ),
-        })
-        .subscribe({
-          onComplete: () => {
-            console.log("requestStream onComplete");
-          },
-          onSubscribe: (subscription) => {
-            console.log("requestStream onSubscribe");
-            subscription.request(1000); // 수신할 메시지 수 설정
-          },
-          onNext: (e: any) => {
-            try {
-              const v = JSON.parse(e.data);
-              console.log("requestStream onNext", v);
-              setMessages((prevMessages) => [...prevMessages, v]);
-            } catch (error) {
-              console.error("JSON parsing error: ", error);
-            }
-          },
-          onError: (error) => {
-            console.log("requestStream e: ", error);
-          },
-    });
-
-    });
-
+        ],
+      });
+    }
     return () => {
-      if (clientRef.current) {
-        clientRef.current.close();
-      }
+      clientRef.current?.close();
     };
-  }, [endpoint, roomId]);
+  }, [roomId, userInfo]);
 
   const handleScroll = () => {
     if (chatContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      const { scrollTop, scrollHeight, clientHeight } =
+        chatContainerRef.current;
       const isBottom = scrollTop + clientHeight >= scrollHeight - 10;
       setIsAtBottom(isBottom);
 
@@ -141,53 +93,103 @@ export default function ChatUI({id}:any ) {
       }
     }
   };
-
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    error: infiniteError,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["chatMessages", roomId],
+    queryFn: ({ pageParam = 1 }) => fetchDMs(pageParam, roomId),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      !lastPage.last ? lastPage.number + 1 : undefined,
+    enabled: !!userInfo,
+  });
+  useEffect(() => {
+    if (isInView && hasNextPage) {
+      if (chatContainerRef.current) {
+        const currentScrollHeight = chatContainerRef.current.scrollHeight;
+        chatContainerRef.current.scrollTop = currentScrollHeight * 0.1; // offset을 조정하여 내려가는 위치 설정
+      }
+      fetchNextPage();
+    }
+  }, [isInView, hasNextPage, fetchNextPage]);
+  // 메시지 ref 맵을 저장하는 객체
+  const messageRefs = useRef(new Map<number, HTMLDivElement>());
+  // 페이지가 업데이트되거나 스크롤될 때 메시지를 찾고 계속 시도
+  const targetMessageId = useRef<number | null>(null); // 이동할 메시지 ID
+  useEffect(() => {
+    if (targetMessageId.current !== null) {
+      const messageElement = messageRefs.current.get(targetMessageId.current);
+      if (messageElement) {
+        setTimeout(() => {
+          messageElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          targetMessageId.current = null; // 스크롤 성공 시 target 초기화
+        }, 1000); // 1초 지연 후 스크롤
+      } else {
+        if (chatContainerRef.current) {
+          const currentScrollHeight = chatContainerRef.current.scrollHeight;
+          chatContainerRef.current.scrollTop = 0;
+        }
+        fetchNextPage(); // 페이지에 없
+      }
+    }
+  }, [data, hasNextPage, targetMessageId]);
+  useEffect(() => {
+    if (data) {
+      const fetchedMessages = data.pages.flatMap((page) => page.content);
+      setMessages((prev) => [...fetchedMessages.reverse(), ...prev]);
+    }
+  }, [data]);
   // 메시지 전송 처리
   const handleSendMessage = () => {
-    const content = messageInputRef.current.value;
-    if (content && sourceRef.current) {
-      messageInputRef.current.value = "";
+    if (!user) {
+      return;
+    }
 
-    const newChat: Message = {
+    const content = messageInputRef.current.value;
+    const replyToMessageId = null;
+    const replyContent = undefined;
+    const sent = moment().toISOString();
+    messageInputRef.current.value = "";
+    const userMessage: Message = {
       content: content,
-      user: user,
-      sent: new Date().toISOString(),
-      roomId: roomId, // 채팅방 ID는 고정값으로 설정
+      user,
+      sent,
+      roomId: roomId,
+      contentType: "PLAIN",
     };
-    
+
     // 메시지를 RSocket으로 전송
     if (content && sourceRef.current) {
-      messageInputRef.current.value = "";
-      sourceRef.current.onNext({
-        data: Buffer.from(
-          JSON.stringify({
-            content: content,
-            user: user,
-            sent: new Date().toISOString(),
-            roomId: roomId, // roomId를 메시지에 포함
-          })
-        ),
-        metadata: encodeAndAddWellKnownMetadata(
-          Buffer.alloc(0),
-          MESSAGE_RSOCKET_ROUTING,
-          Buffer.from(String.fromCharCode(endpoint.length) + endpoint)
-        ),
-      });
+      const channelMetadata = createMetadata(
+        `api.v1.messages.stream/${roomId}`,
+        token!
+      );
+      RSocketClientSetup.sendMessage(sourceRef, userMessage, channelMetadata);
     }
   };
-}
 
   // 새 메시지가 추가될 때 자동 스크롤
   useEffect(() => {
     if (chatContainerRef.current && isAtBottom) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     } else if (!isAtBottom) {
       setShowNewMessageAlert(true); // 스크롤이 맨 아래가 아닌 경우 알림 표시
     }
   }, [isAtBottom, messages]);
-
+  if (!user) {
+    return null;
+  }
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto bg-white">
+    <div className="flex flex-col h-screen max-w-md mx-auto w-full bg-white m-4">
       <ScrollShadow
         ref={chatContainerRef}
         onScroll={handleScroll}
@@ -196,47 +198,87 @@ export default function ChatUI({id}:any ) {
         orientation="horizontal"
         className="w-auto h-auto  flex-1 overflow-y-auto"
       >
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 ">
+          <div ref={loadMoreRef}>
+            {status === "pending" && <p>Loading messages...</p>}
+            {infiniteError && (
+              <p>Error loading messages: {infiniteError.message}</p>
+            )}
+          </div>
+
           {messages.map((message, index) => {
+               const showDateHeader = isDifferentDay(
+                 message,
+                 messages[index - 1]
+               );
+
             return (
-              <div
-                key={index}
-                className={`flex items-start space-x-2 ${message.user.name === user.name ? "justify-end" : ""}`}
-              >
-                <Avatar size={32} src={message.user.avatarImageLink || undefined} />
-                <div
-                  className={`max-w-xs p-2 ${message.user.name === user.name ? "text-right" : "text-left"}`}
-                >
-                  <p className="font-semibold">
-                    {message.user.name}{" "}
-                    <span className="text-xs text-gray-500">
-                      {moment(message.sent).format("DD-MM-YYYY, HH:mm:ss")}
-                    </span>
-                  </p>
-                  {/* React Markdown으로 콘텐츠 렌더링 */}
-                  <ReactMarkdown
-    remarkPlugins={[remarkGfm]}
-    components={{
-      table: ({ node, ...props }) => (
-        <table className="table-auto border-collapse border border-gray-400" {...props} />
-      ),
-      th: ({ node, ...props }) => (
-        <th className="border border-gray-300 px-4 py-2" {...props} />
-      ),
-      td: ({ node, ...props }) => (
-        <td className="border border-gray-300 px-4 py-2" {...props} />
-      ),
-    }}
-  >
-    {message.content}
-  </ReactMarkdown>
+              <div key={index} className="space-y-2">
+                {showDateHeader && (
+                  <div className="text-center text-xs text-gray-500 py-2">
+                    {moment.utc(message.sent).format("MMMM D, YYYY")}
+                  </div>
+                )}
+                {/* {message.user.id != user.id && (
+                  <Link
+                    href={`/channel/${message.user.id}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-full overflow-hidden bg-white"
+                  >
+                    <Avatar
+                      size={32}
+                      src={message.user.avatarImageLink || ""}
+                      alt={message.user.name || ""}
+                    />
+                  </Link>
+                )} */}
+                <div className="relative max-w-xs p-2 rounded-lg">
+                  <div
+                    className={`${
+                      message.user.id == user.id
+                        ? "bg-sky-100 text-black shadow-md"
+                        : "bg-white text-black shadow-md"
+                    }`}
+                    style={{
+                      borderRadius: "15px",
+                      padding: "8px 12px",
+                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                      wordBreak: "break-word", // 긴 단어를 줄바꿈
+                    }}
+                  >
+                    {/* 더보기 및 반응 선택 버튼 */}
+                    <div
+                      className={`absolute top-1/2 flex items-center -translate-y-1/2 ${
+                        message.user.id == user.id
+                          ? "left-1  -translate-x-[90px]"
+                          : "right-1 flex-row-reverse  translate-x-[90px]"
+                      }`}
+                      style={{ top: "50%" }} // 중앙 정렬을 위한 위치 설정
+                    >
+                   
+                    </div>
+                    
+                    <p className="font-semibold">
+                      {message.user.name}
+                      <span className="text-xs text-gray-500">
+                        @{message.user.userName}
+                      </span>{" "}
+                      <span className="text-xs text-gray-500">
+                        {moment.utc(message.sent).format("HH:mm:ss")}
+                      </span>
+                    </p>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {message.content}
+                      </ReactMarkdown>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       </ScrollShadow>
-  
+
       {/* New message alert */}
       {showNewMessageAlert && (
         <div className="px-4 pb-2">
@@ -244,7 +286,8 @@ export default function ChatUI({id}:any ) {
             color="primary"
             onClick={() => {
               if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+                chatContainerRef.current.scrollTop =
+                  chatContainerRef.current.scrollHeight;
                 setShowNewMessageAlert(false);
               }
             }}
@@ -253,14 +296,19 @@ export default function ChatUI({id}:any ) {
           </Chip>
         </div>
       )}
-  
+
       <div className="p-4 border-t flex">
         <Textarea
           className="flex-1"
           placeholder="메시지 입력"
           ref={messageInputRef}
         />
-        <Button className="w-8 h-8" type="submit" isIconOnly onClick={handleSendMessage}>
+        <Button
+          className="w-8 h-8"
+          type="submit"
+          isIconOnly
+          onClick={handleSendMessage}
+        >
           <ArrowUpIcon className="h-4 w-4" />
           <span className="sr-only">Send</span>
         </Button>

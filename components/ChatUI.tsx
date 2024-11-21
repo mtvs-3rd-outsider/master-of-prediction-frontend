@@ -35,7 +35,9 @@ import { useRouter } from "next/navigation";
 import { useDMListStore } from "@store/useDMListStore";
 import { RoomInfo } from "@store/useMessageStore";
 import BackButton from "./BackButton";
-type User = {
+import { fetchDMs } from "@handler/DM";
+import { isDifferentDay } from "@util/Date";
+export type User = {
   name?: string;
   userName?: string;
   avatarImageLink?: string;
@@ -45,8 +47,8 @@ export type Message = {
   content: string;
   user: User;
   sent: string;
-  roomId: number;
-  replyToMessageId: string | null;
+  roomId: number | string;
+  replyToMessageId?: string | null;
   replyContent?: string;
   contentType: string;
   mediaUrl?: string; // mediaType 제거
@@ -147,12 +149,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
   //  };
   const targetMessageId = useRef<number | null>(null); // 이동할 메시지 ID
   console.log(messages);
-  const fetchDMs = async (pageParam: number) => {
-    const response = await apiClient.get(`/messages/room/${roomId}`, {
-      params: { page: pageParam, size: 10 },
-    });
-    return response.data;
-  };
+
   // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
   const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   const filteredParticipants = currentRoom.participants.filter(
@@ -202,7 +199,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     status,
   } = useInfiniteQuery({
     queryKey: ["chatMessages", roomId],
-    queryFn: ({ pageParam = 1 }) => fetchDMs(pageParam),
+    queryFn: ({ pageParam = 1 }) => fetchDMs(pageParam,roomId),
     initialPageParam: 0,
     getNextPageParam: (lastPage) =>
       !lastPage.last ? lastPage.number + 1 : undefined,
@@ -389,7 +386,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
         content: content,
         user,
         sent,
-        roomId: parseInt(roomId),
+        roomId: roomId,
         replyToMessageId,
         contentType,
         replyContent,
@@ -592,15 +589,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     }
   };
 
-  const isDifferentDay = (
-    currentMessage: Message,
-    previousMessage?: Message
-  ) => {
-    return previousMessage
-      ? moment.utc(currentMessage.sent).format("YYYY-MM-DD") !==
-          moment.utc(previousMessage.sent).format("YYYY-MM-DD")
-      : true;
-  };
+
   return (
     <div className="flex flex-col h-screen mx-auto bg-white">
       {/* 그룹 아이콘 및 참여자 드롭다운 */}
