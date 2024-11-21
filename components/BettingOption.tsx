@@ -196,7 +196,7 @@ const BettingOption = ({
         </div>
       </li>
       {state && (
-        <div className="w-full h-56">
+        <div className="w-full h-72 py-4 sm:py-8">
           <ResponsiveContainer width="100%" height="90%">
             <LineChart
               data={currentData}
@@ -222,11 +222,14 @@ const BettingOption = ({
               />
             </LineChart>
           </ResponsiveContainer>
-          <div className="flex gap-4 h-auto">
+          <div className="flex gap-2 h-auto">
             {FILTER_OPTIONS.map((filter) => (
               <button
                 key={filter}
-                className="rounded-lg hover:bg-gray-400 px-4"
+                className={`rounded-lg ${
+                  filter !== selectedFilter && "hover:bg-gray-200"
+                } px-4
+                ${filter === selectedFilter && "bg-black text-white"} `}
                 onClick={() => handleButtonClick(filter)}
               >
                 {filter}
