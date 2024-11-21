@@ -26,8 +26,11 @@ export const fetchFollowings = async (pageParam = 0, queryKey: string[]) => {
         isUserChannel: true,
         page: pageParam,
         size: 15,
+        flag: "ALL"
+
       },
     }
   );
+  console.log(response.data)
   return response.data;
 };
