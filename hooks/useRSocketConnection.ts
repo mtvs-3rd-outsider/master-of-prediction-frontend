@@ -20,13 +20,31 @@ interface RSocketClientSetupConfig {
 }
 
 export const RSocketClientSetup = {
+   async init2({ token, channels, streams }: Omit<RSocketClientSetupConfig, "clientRef">) {
+    const client = createRSocketClient(token);
+
+    // RSocket 연결 후 채널 및 스트림 설정
+    const rsocket = await client.connect();
+
+    // 채널 설정
+    channels?.forEach(({ sourceRef, onNext }) => {
+      setupRequestChannel(rsocket, sourceRef, onNext);
+    });
+
+    // 스트림 설정
+    streams?.forEach(({ endpoint, onNext }) => {
+      setupRequestStream(rsocket, endpoint, token, onNext);
+    });
+
+    return rsocket; // rsocket 객체 반환
+  },
+
     init(
        { clientRef,
         token,
         channels,
         streams} : RSocketClientSetupConfig) {
         const client = createRSocketClient(token);
-    
         client.connect().then((rsocket) => {
           clientRef.current = rsocket;
     
@@ -50,7 +68,19 @@ export const RSocketClientSetup = {
           data: payload,
           metadata,
         });
-      },
+  },
+      
+ sendEvent(rsocket: any, endpoint: string, data: any) {
+  if (rsocket) {
+    rsocket.fireAndForget({
+      data: Buffer.from(JSON.stringify(data)),
+      metadata: createMetadata(endpoint),
+    });
+  }
+}
+
+
+      
 };
 
 // Helper function to create an RSocketClient instance

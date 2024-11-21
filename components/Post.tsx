@@ -213,6 +213,11 @@ const handleGuestAuth = async (guestId: string, guestPassword: string) => {
             followers={followers}
             description={description}
           />
+          <div>
+            {userInfo?.id === userId ? (
+              <DropdownMenuMyDemo feedId={id} />
+            ) : null}
+          </div>
         </div>
         <div className="flex flex-col flex-1">
           <div className="flex flex-1">
