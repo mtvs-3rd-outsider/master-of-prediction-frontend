@@ -39,7 +39,6 @@ function BettingDetailPage() {
           .get(`/feeds/betting?ids=${bettingId}`)
           .then((response_feeds) => {
             bettingInfo.postStats = response_feeds.data[0];
-            console.log("bettingInfo: ", bettingInfo);
             setBettingInfo(bettingInfo);
             setOptionId(res.data?.options[0]?.optionId);
           })
