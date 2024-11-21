@@ -623,12 +623,11 @@ export default function ChatUI({ roomId }: ChatUIProps) {
               }명`}
         </div>
       </div>
-
       <ScrollShadow
         ref={chatContainerRef}
         onScroll={handleScroll}
         offset={100}
-        className="flex-1 overflow-y-auto overflow-x-hidden"
+        className="flex-1 overflow-y-auto overflow-x-hidden pb-[70px] lg:pb-0 "
       >
         <div className="p-4 space-y-4">
           <div ref={loadMoreRef}>
