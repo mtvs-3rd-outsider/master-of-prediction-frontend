@@ -27,12 +27,6 @@ const BettingProduct = (props: BettingProductType) => {
         <Link href={`/betting/` + bettingId}>
           <div className="flex flex-1 items-center gap-x-2 px-4 py-4">
             {blindName === null ? (
-              //    <Userinfo
-              //    name={name}
-              //    username={username}
-              //    date={date}
-              //    tierName="novice"
-              //  />
               <Account
                 userName={userName}
                 avatarUrl={userImg}

@@ -79,6 +79,7 @@ const BettingList: React.FC = () => {
                     bettingId={node.bettingId}
                     blindName={node.blindName}
                     postStats={node.postStats}
+                    createdAt={node.createdAt}
                   />
                 </li>
               ))}
