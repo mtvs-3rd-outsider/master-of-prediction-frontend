@@ -9,11 +9,10 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-const APP_NAME = "PWA App";
-const APP_DEFAULT_TITLE = "My Awesome PWA App";
-const APP_TITLE_TEMPLATE = "%s - PWA App";
-const APP_DESCRIPTION = "Best PWA app in the world!";
-
+const APP_NAME = "예측의 달인";
+const APP_DEFAULT_TITLE = "예측의 달인";
+const APP_TITLE_TEMPLATE = "%s ";
+const APP_DESCRIPTION = "예측의 달인";
 export const metadata: Metadata = {
   applicationName: APP_NAME,
   title: {

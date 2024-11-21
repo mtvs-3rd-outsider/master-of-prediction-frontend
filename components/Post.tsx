@@ -221,9 +221,6 @@ const Post: React.FC<PostItem> = ({
             description={description}
           />
           <div>
-            {userInfo?.id === userId ? (
-              <DropdownMenuMyDemo feedId={id} />
-            ) : null}
           </div>
         </div>
         <div className="flex flex-col flex-1">

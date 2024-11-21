@@ -47,7 +47,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
     try {
       const response = await getFeedsBySort(page);
       const newFeeds = response.content;
-
+      console.log(newFeeds);
       if (newFeeds.length === 0) {
         setHasMore(false);
       } else {
