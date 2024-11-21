@@ -1,5 +1,8 @@
 import Avatar from "@rd/Avatar";
 import TierBadge from "@ui/TierBadge";
+import { formatDistanceToNow } from "date-fns";
+import moment from "moment";
+import { ko } from "date-fns/locale";
 
 interface AccountProps {
   userName?: string;
@@ -8,6 +11,7 @@ interface AccountProps {
   tier?: string;
   className?: string; // className 속성을 추가
   onClick?: () => void;
+  date?: string;
 }
 
 const Account = ({
@@ -17,7 +21,29 @@ const Account = ({
   tier,
   className,
   onClick,
+  date,
 }: AccountProps) => {
+  let formattedDate = "";
+
+  console.log("date", date);
+  if (date) {
+    try {
+      // Moment를 사용하여 문자열을 Date 객체로 변환
+      const parsedDate = moment(
+        new Date(date).toLocaleString(),
+        "YYYY. MM. DD. A hh:mm:ss"
+      ).toDate();
+
+      // 현재 시간과 비교
+      formattedDate = formatDistanceToNow(parsedDate, {
+        addSuffix: true,
+        locale: ko,
+      });
+    } catch (error) {
+      console.error("Date parsing error:", error);
+    }
+  }
+  console.log("formattedDate: ", formattedDate);
   return (
     <div
       className={`relative flex items-center gap-x-4 ${className}`}
@@ -50,6 +76,7 @@ const Account = ({
           <p className="text-sm text-slate-600 font-medium">@{userName}</p>
         )}
       </div>
+      <p>· {formattedDate}</p>
     </div>
   );
 };

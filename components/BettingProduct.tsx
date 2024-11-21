@@ -2,13 +2,6 @@
 
 import { BettingProductType } from "@/types/BettingTypes";
 import Account from "./Account";
-import {
-  HeartIcon,
-  ArrowUpTrayIcon,
-  ChatBubbleOvalLeftIcon,
-  ArrowPathIcon,
-  ChartBarSquareIcon,
-} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Image from "next/image";
 import PostStatsNav from "./PostStatsNav";
@@ -25,6 +18,7 @@ const BettingProduct = (props: BettingProductType) => {
     bettingId,
     blindName,
     postStats,
+    createdAt,
   } = props;
 
   return (
@@ -33,11 +27,18 @@ const BettingProduct = (props: BettingProductType) => {
         <Link href={`/betting/` + bettingId}>
           <div className="flex flex-1 items-center gap-x-2 px-4 py-4">
             {blindName === null ? (
+              //    <Userinfo
+              //    name={name}
+              //    username={username}
+              //    date={date}
+              //    tierName="novice"
+              //  />
               <Account
                 userName={userName}
                 avatarUrl={userImg}
                 displayName={displayName}
                 tier={tierName}
+                date={createdAt}
               />
             ) : (
               <Account
@@ -45,6 +46,7 @@ const BettingProduct = (props: BettingProductType) => {
                 avatarUrl={"/images/logo.png"}
                 displayName={blindName}
                 tier={""}
+                date={createdAt}
               />
             )}
           </div>
