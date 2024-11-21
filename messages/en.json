@@ -27,5 +27,15 @@
   "배팅 상세페이지 구매한 포인트": "Purchased Points",
   "배팅 상세페이지 주문 구매": "Buy",
   "배팅 상세페이지 주문 판매": "Sell",
-  "배팅 상세페이지 금액": "Amount"
+  "배팅 상세페이지 금액": "Amount",
+  "공개": "Public",
+  "비공개": "Private",
+  "등록하기": "Register",
+  "주제": "Title",
+  "내용": "Content",
+  "카테고리": "Category",
+  "미리보기 이미지": "Preview Image",
+  "선택지 추가하기": "Add Option (Default: 2)",
+  "마감일자": "Deadline",
+  "취소": "Cancel"
 }
