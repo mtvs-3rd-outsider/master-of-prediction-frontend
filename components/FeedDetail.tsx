@@ -14,9 +14,8 @@ const FeedDetail: React.FC<{ feed: FeedResponseDTO }> = ({ feed }) => {
     setCommentsCount(prev => prev + 1);
   };
 
-  const mediaFiles = feed.mediaFiles.map(file => file.fileUrl);
-  const youtubeUrls = feed.youTubeVideos.map(video => video.youtubeUrl);
-
+  const mediaFiles = feed.mediaFiles?.map(file => file.fileUrl) || [];
+  const youtubeUrls = feed.youTubeVideos?.map(video => video.youtubeUrl) || [];
   return (
     <div className="max-w-2xl mx-auto p-4">
       <BackButton />
