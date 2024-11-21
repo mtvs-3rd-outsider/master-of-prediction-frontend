@@ -29,9 +29,11 @@ import {
   RadioGroup,
   Radio,
 } from "@nextui-org/react";
+import PostStatsNav from "./PostStatsNav";
 
 function BettingProductDetail(props: BettingProductInfo) {
-  const { user, product, productImages, options, optionsRatio } = props;
+  const { user, product, productImages, options, optionsRatio, postStats } =
+    props;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
 
@@ -71,6 +73,8 @@ function BettingProductDetail(props: BettingProductInfo) {
 
     return currentDateTime >= serverDateTime;
   };
+
+  console.log("postStats: ", postStats);
 
   return (
     <>
@@ -189,8 +193,10 @@ function BettingProductDetail(props: BettingProductInfo) {
                   // layout="fill"
                   width={100}
                   height={60}
+                  objectFit="fill"
                   src={url}
-                  className="h-28 w-28  object-scale-down object-center"
+                  // className="h-28 w-28  object-scale-down object-center"
+                  className="rounded-md h-full"
                 />
               </div>
             ))}
@@ -201,23 +207,17 @@ function BettingProductDetail(props: BettingProductInfo) {
             className="mt-4 mb-4 
         flex gap-x-10 xl:gap-x-14 text-xs text-slate-700 [&_li:first-child]:hidden [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3 "
           >
-            <li className="">
-              <ChartBarSquareIcon className="w-5 h-5" />
-              20
-            </li>
-            <li>
-              <ChatBubbleOvalLeftIcon className="w-5 h-5" />2
-            </li>
-            <li>
-              <ArrowPathIcon className="w-5 h-5" />1
-            </li>
-            <li>
-              <HeartIcon className="w-5 h-5" />
-              23
-            </li>
-            <li>
-              <ArrowUpTrayIcon className="w-5 h-5" />
-            </li>
+            {postStats && Object.keys(postStats).length > 0 && (
+              <PostStatsNav
+                viewCount={postStats.viewCount}
+                commentsCount={postStats.commentsCount}
+                feedId={postStats.id.toString()}
+                isShare={postStats.isShare}
+                shareCount={postStats.shareCount}
+                isLike={postStats.isLike}
+                likesCount={postStats.likesCount}
+              />
+            )}
           </ul>
         </div>
       </div>

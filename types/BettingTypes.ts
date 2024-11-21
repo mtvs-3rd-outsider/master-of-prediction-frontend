@@ -32,6 +32,7 @@ export interface BettingProductInfo {
   productImages: string[];
   options: BettingOptions[];
   optionsRatio: OptionsRatio[];
+  postStats: PostStatsNavState;
 }
 
 export interface BettingProductType {
@@ -44,10 +45,22 @@ export interface BettingProductType {
   imgUrls: string[];
   bettingId: number;
   blindName: string | null;
+  postStats: null | PostStatsNavState;
 }
 
 export interface OptionsRatio {
   bettingOptionId: number;
   totalPoints: number;
   percentage: string;
+}
+
+export interface PostStatsNavState {
+  id: number;
+  viewCount: string;
+  commentsCount: number;
+  shareCount: number;
+  feedId: string;
+  isShare: boolean;
+  isLike: boolean;
+  likesCount: number;
 }

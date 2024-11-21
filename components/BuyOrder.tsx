@@ -5,6 +5,7 @@ import { OrderHistoryType } from "@/types/BettingOrderType";
 import { BettingOptions } from "@/types/BettingTypes";
 import apiClient, { sendMultipartForm } from "@handler/fetch/axios";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,6 +31,7 @@ const BuyOrder = ({
   const [amount, setAmount] = useState(0);
   const bettingId = useParams().id;
   const { optionId } = BettingOptionChoiceStore();
+  const t = useTranslations();
 
   const handleAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newAmount = e.target.value;
@@ -98,7 +100,7 @@ const BuyOrder = ({
           className="text-[13px] leading-none mb-2.5 text-violet12 block"
           htmlFor="username"
         >
-          Amount
+          {t("배팅 상세페이지 금액")}
         </label>
         <input
           type="number"
@@ -123,7 +125,7 @@ const BuyOrder = ({
       </div>
       <div className="flex w-full h-[17px] justify-between items-center relative z-[37] mt-[-4px] mr-0 mb-0 ">
         <span className="h-[15px] shrink-0 font-['Inter'] text-[12px] font-medium leading-[15px] text-[#5a6689] relative text-left whitespace-nowrap z-[37]">
-          회원 포인트
+          {t("배팅 상세페이지 회원 포인트")}
         </span>
         <div className="flex w-[73px] h-[17px] justify-between items-center shrink-0 relative z-[35]">
           <span className="flex w-[38px] h-[16px] justify-end items-start shrink-0 font-['Inter'] text-[12px] font-medium leading-[16px] text-[#303648] relative text-right whitespace-nowrap z-[34]">
@@ -136,7 +138,7 @@ const BuyOrder = ({
       </div>
       <div className="flex w-full h-[17px] justify-between items-center relative z-[37] mt-[-4px] mr-0 mb-0 ">
         <span className="h-[15px] shrink-0 font-['Inter'] text-[12px] font-medium leading-[15px] text-[#5a6689] relative text-left whitespace-nowrap z-[37]">
-          구매 포인트
+          {t("배팅 상세페이지 구매한 포인트")}
         </span>
         <div className="flex w-[73px] h-[17px] justify-between items-center shrink-0 relative z-[35]">
           <span className="flex w-[38px] h-[16px] justify-end items-start shrink-0 font-['Inter'] text-[12px] font-medium leading-[16px] text-[#303648] relative text-right whitespace-nowrap z-[34]">
@@ -155,7 +157,7 @@ const BuyOrder = ({
             onClick={handleOpen}
           >
             <span className="flex w-full h-[40.215px] justify-center items-center shrink-0 font-['Inter'] text-[14px] font-medium leading-[20px] text-[#e7fbf0] relative text-center z-40">
-              Buy
+              {t("배팅 상세페이지 주문 구매")}
             </span>
           </button>
         </div>

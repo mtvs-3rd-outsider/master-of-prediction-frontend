@@ -6,6 +6,7 @@ import PanelItemTrends from "@ui/PanelItemTrends";
 import PanelItem from "@ui/PanelItem";
 import Footer from "@ui/Footer";
 import BettingProducts from "@ui/BettingProducts";
+import GuideSection from "@ui/GuideSection";
 
 function BettingPage() {
   return (
@@ -15,8 +16,7 @@ function BettingPage() {
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
         <div className="sticky top-0">
-          <Search />
-          <Footer />
+          <GuideSection />
         </div>
       </aside>
     </>

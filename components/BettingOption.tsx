@@ -177,11 +177,11 @@ const BettingOption = ({
           {imgUrl && (
             <Image
               alt=""
-              layout="responsive"
               width={100}
-              height={60}
+              height={100}
+              objectFit="fill"
               src={`${imgUrl}`}
-              className="h-full w-full object-cover object-center"
+              className="rounded-md h-full"
             />
           )}
         </div>
