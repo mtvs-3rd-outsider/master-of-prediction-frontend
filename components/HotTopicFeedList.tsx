@@ -101,7 +101,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
                 feed.user?.userName?.[0] ||
                 feed.guest?.guestId?.[0] ||
                 "U"
-              ).toUpperCase()}
+              )}
               description={""}
               followers={feed.likesCount.toString()}
               following={feed.commentsCount.toString()}
