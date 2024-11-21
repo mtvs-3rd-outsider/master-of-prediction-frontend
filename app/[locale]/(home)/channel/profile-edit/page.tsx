@@ -65,7 +65,7 @@ const ProfileEditPage: React.FC =  () => {
       toast.success("Profile updated successfully!");
       
       // 데이터를 바로 업데이트
-      const userInfoResponse = await apiClient.get(`/users/${userId}`);
+      const userInfoResponse = await apiClient.get(`/auth/users`);
       const setUserInfo = useUserStore.getState().setUserInfo;
       setUserInfo(userInfoResponse.data);
     
