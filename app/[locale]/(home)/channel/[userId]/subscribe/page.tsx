@@ -78,7 +78,6 @@ const HomePage: React.FC = () => {
     fetchNextFollowers,
     fetchNextFollowings,
   ]);
-
   return (
     <>
       <main className="relative col-span-5 w-full border-x border-slate-200">

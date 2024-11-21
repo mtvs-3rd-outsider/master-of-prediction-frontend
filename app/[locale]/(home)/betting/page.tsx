@@ -26,20 +26,7 @@ function BettingPage() {
           <GuideSection />
         </div>
       </aside>
-      {!userInfo ? null : (
-        <div className="fixed bottom-20 right-4 md:bottom-4">
-          <Link href={"/betting/add"}>
-            <Button
-              isIconOnly
-              color="primary"
-              aria-label="Add"
-              className="rounded-full p-3 shadow-lg"
-            >
-              <PlusIcon className="h-8 w-8" />
-            </Button>
-          </Link>
-        </div>
-      )}
+  
     </>
   );
 }

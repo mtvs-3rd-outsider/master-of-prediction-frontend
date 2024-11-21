@@ -27,6 +27,7 @@ const FAB_LABELS: Record<string, string> = {
   "/channel": "피드",
   "/category-channel/regist": "채널",
   "/hot-topic/create-feed": "토픽",
+  "/betting/add": "베팅 추가", // BettingPage용 추가
 };
 
 export default function RootLayout({ children }: LayoutProps): ReactNode {
@@ -67,6 +68,12 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
             }
           : undefined,
       };
+    } else if (pathname.includes("/betting")) {
+      return {
+        url: "/betting/add",
+        label: FAB_LABELS["/betting/add"],
+        channelInfo: null,
+      };
     }
     return null;
   };
@@ -82,7 +89,8 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
         {/* 
           1. pathname이 정확히 /category-channel으로 끝나고 비회원인 경우 버튼 숨김
           2. pathname이 /category-channel을 포함하지만 정확히 그걸로 끝나지 않는 경우 회원/비회원 모두에게 버튼 표시
-          3. 그 외의 경로에서는 fabConfig가 있을 때 버튼 표시
+          3. /betting 경로 포함 시 /betting/add 버튼 추가
+          4. 그 외의 경로에서는 fabConfig가 있을 때 버튼 표시
         */}
         {pathname.endsWith("/category-channel") && !userInfo
           ? null
