@@ -26,13 +26,14 @@ interface UserStore {
   clearUserInfo: () => void;
   hasHydrated: boolean; // Hydration 완료 여부 상태
   setHasHydrated: (state: boolean) => void; // Hydration 상태 업데이트 함수
+  updateUserInfo: (partialInfo: Partial<UserInfo>) => void
 }
 
 // Zustand 스토어 생성
 const useUserStore = create<UserStore>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         userInfo: null,
         hasHydrated: false, // 초기값 false
         setUserInfo: (info) => {
@@ -43,6 +44,15 @@ const useUserStore = create<UserStore>()(
             return; // Exit early if there's no token
           }
           set({ userInfo: info });
+        },
+        updateUserInfo: (partialInfo: Partial<UserInfo>) => {
+          const currentUserInfo = get().userInfo || {}; // 현재 userInfo 가져오기 (null 체크)
+          const filteredInfo = Object.fromEntries(
+            Object.entries(partialInfo).filter(
+              ([_, value]) => value !== undefined && value !== null
+            )
+          ); // undefined 또는 null 값 제외
+          set({ userInfo: { ...currentUserInfo, ...filteredInfo } });
         },
         clearUserInfo: () => {
           console.log("clearUserInfo called");

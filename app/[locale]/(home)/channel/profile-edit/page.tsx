@@ -57,8 +57,8 @@ const ProfileEditPage: React.FC =  () => {
     onErrorFn: (error: any, context: any) => {
       console.error('Mutation failed:', error);
       if (context?.previousData) {
-        const setUserInfo = useUserStore.getState().setUserInfo;
-        setUserInfo(context.previousData);
+        const updateUserInfo = useUserStore.getState().updateUserInfo;
+        updateUserInfo(context.previousData);
       }
     },
     onSuccessFn:  async (data: any, variables: any, context: any) => {
@@ -66,8 +66,8 @@ const ProfileEditPage: React.FC =  () => {
       
       // 데이터를 바로 업데이트
       const userInfoResponse = await apiClient.get(`/auth/users`);
-      const setUserInfo = useUserStore.getState().setUserInfo;
-      setUserInfo(userInfoResponse.data);
+      const updateUserInfo = useUserStore.getState().updateUserInfo;
+      updateUserInfo(userInfoResponse.data);
     
       // 페이지 이동 처리
       if (typeof window !== 'undefined' && window.history.length > 1) {
