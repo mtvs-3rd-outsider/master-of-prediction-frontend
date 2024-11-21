@@ -11,13 +11,14 @@ import {
 import { FeedsResponseDTO } from "@components/types/feedsResponseDTO";
 
 interface HotTopicFeedListProps {
-  sortBy?: "views" | "latest" | "likes" | "follow";
+  sortBy: "views" | "latest" | "likes" | "follow";
 }
 
 const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
   const [feeds, setFeeds] = useState<FeedsResponseDTO[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
   const router = useRouter();
 
@@ -40,8 +41,9 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
   );
 
   const loadMoreFeeds = useCallback(async () => {
-    if (!hasMore) return;
+    if (!hasMore || isLoading) return;
 
+    setIsLoading(true);
     try {
       const response = await getFeedsBySort(page);
       const newFeeds = response.content;
@@ -49,30 +51,31 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
       if (newFeeds.length === 0) {
         setHasMore(false);
       } else {
-        if (page === 0) {
-          setFeeds(newFeeds);
-        } else {
-          setFeeds((prevFeeds) => [...prevFeeds, ...newFeeds]);
-        }
+        setFeeds((prevFeeds) => [...prevFeeds, ...newFeeds]);
         setPage((prevPage) => prevPage + 1);
         setHasMore(!response.last);
       }
     } catch (error) {
       console.error("Error loading feeds:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [page, hasMore, getFeedsBySort]);
+  }, [page, hasMore, getFeedsBySort, isLoading]);
 
+  // sortBy가 변경될 때 상태 초기화
   useEffect(() => {
     setFeeds([]);
     setPage(0);
     setHasMore(true);
+    setIsLoading(false);
   }, [sortBy]);
 
+  // 페이지가 0이거나 inView일 때 피드 로드
   useEffect(() => {
-    if (inView) {
+    if ((page === 0 || inView) && hasMore && !isLoading) {
       loadMoreFeeds();
     }
-  }, [inView, loadMoreFeeds]);
+  }, [inView, hasMore, loadMoreFeeds, page, isLoading]);
 
   const handlePostClick = useCallback(
     (id: string) => {
@@ -91,7 +94,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
               id={feed.id.toString()}
               content={feed.content}
               name={feed.user?.displayName || feed.guest?.guestId || "Unknown"}
-              username={feed.user?.userName || feed.guest?.guestId || "Unknown"}
+              username={feed.user?.userName || feed.authorType || "Unknown"}
               date={new Date(feed.createdAt).toLocaleString()}
               src={feed.user?.userImg || ""}
               initials={(
@@ -114,16 +117,17 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
               isShare={feed.isShare || false}
               quoteFeed={feed.quoteFeed}
               isQuote={feed.isQuote}
+              guest={feed.guest}
             />
           </div>
         ))
       ) : (
         <div className="flex flex-col justify-center h-screen font-GangwonEduPowerExtraBoldA">
-          <p className="text-center text-2xl">게시글을 작성하지 않았습니다.</p>
-          <p className="text-center text-4xl">게시글을 작성해보세요!</p>
+          <p className="text-center text-2xl">게시글이 없습니다.</p>
+          <p className="text-center text-4xl">첫 게시글을 작성해보세요!</p>
         </div>
       )}
-      <div ref={ref}>{hasMore ? "Loading more..." : ""}</div>
+      <div ref={ref}>{isLoading ? "Loading more..." : ""}</div>
     </div>
   );
 };

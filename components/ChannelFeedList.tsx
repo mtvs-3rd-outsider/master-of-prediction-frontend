@@ -100,6 +100,7 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({
                 isShare={feed.isShare || false}
                 quoteFeed={feed.quoteFeed}
                 isQuote={feed.isQuote}
+                guest={feed.guest}
               />
             </div>
           ))

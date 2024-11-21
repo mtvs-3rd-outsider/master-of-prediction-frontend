@@ -10,55 +10,50 @@ interface PageResponse<T> {
   size: number;
 }
 
-// 조회수 기준 정렬
-export const getHotTopicFeeds = async (
+// 기본 API 호출 함수
+const fetchFeeds = async (
+  endpoint: string,
   page: number = 0,
   size: number = 10,
-  sort: string = 'viewCount,DESC'
+  sort?: string
 ): Promise<PageResponse<FeedsResponseDTO>> => {
   try {
-    const response = await axios.get('/feeds/hot-topic', {
-      params: { page, size, sort }
+    const response = await axios.get(endpoint, {
+      params: { 
+        page, 
+        size, 
+        sort,
+      },
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching hot topic feeds:', error);
+    console.error('Error fetching feeds:', error);
     throw error;
   }
+};
+
+// 조회수 기준 정렬
+export const getHotTopicFeeds = async (
+  page: number = 0,
+  size: number = 10
+): Promise<PageResponse<FeedsResponseDTO>> => {
+  return fetchFeeds('/feeds/hot-topic', page, size, 'viewCount,DESC');
 };
 
 // 최신순 정렬
 export const getHomeTopicFeeds = async (
   page: number = 0,
-  size: number = 10,
-  sort: string = 'shortAt,DESC'
+  size: number = 10
 ): Promise<PageResponse<FeedsResponseDTO>> => {
-  try {
-    const response = await axios.get('/feeds/home', {
-      params: { page, size, sort }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching home topic feeds:', error);
-    throw error;
-  }
+  return fetchFeeds('/feeds/home', page, size, 'shortAt,DESC');
 };
 
 // 좋아요순 정렬
 export const getLikeFeeds = async (
   page: number = 0,
-  size: number = 10,
-  sort: string = 'likesCount,DESC'
+  size: number = 10
 ): Promise<PageResponse<FeedsResponseDTO>> => {
-  try {
-    const response = await axios.get('/feeds/like', {
-      params: { page, size, sort }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching like sorted feeds:', error);
-    throw error;
-  }
+  return fetchFeeds('/feeds/like', page, size, 'likesCount,DESC');
 };
 
 // 팔로우한 채널의 피드 조회
@@ -66,13 +61,5 @@ export const getFollowingFeeds = async (
   page: number = 0,
   size: number = 10
 ): Promise<PageResponse<FeedsResponseDTO>> => {
-  try {
-    const response = await axios.get('/feeds/following', {
-      params: { page, size }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching following feeds:', error);
-    throw error;
-  }
+  return fetchFeeds('/feeds/following', page, size);
 };

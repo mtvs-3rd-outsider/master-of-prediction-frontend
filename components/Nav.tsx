@@ -5,6 +5,7 @@ import AccountNavItem from "@ui/AccountNavItem";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
+  HomeIcon as HomeIconOutline,
   CircleStackIcon as CircleStackIconOutline,
   FireIcon as FireIconOutline,
   BellIcon as BellIconOutline,
@@ -15,6 +16,7 @@ import {
   MagnifyingGlassIcon as MagnifyingGlassIconOutline,
 } from "@heroicons/react/24/outline";
 import {
+  HomeIcon as HomeIconSolid,
   CircleStackIcon as CircleStackIconSolid,
   FireIcon as FireIconSolid,
   BellIcon as BellIconSolid,
@@ -51,7 +53,16 @@ const Nav: React.FC = () => {
     userId: state.userInfo?.id
   }));
   const { unreadCount, setUnreadCount,setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
+  const removeLocale = (path: string) => {
+    const parts = path.split("/");
+    if (parts[1] && parts[1].length === 2) {
+      // Locale이 경로에 있는 경우 (예: /ko/home)
+      return `/${parts.slice(2).join("/")}`;
+    }
+    return path; // Locale이 없는 경우 그대로 반환
+  };
 
+  const currentPath = removeLocale(pathname);
   useEffect(() => {
     if (userInfo) {
       RSocketClientSetup.init({
@@ -80,69 +91,72 @@ const Nav: React.FC = () => {
       console.log("Total Unread Count Updated in Zustand:", unreadCount);
     }
   }, [userInfo, userId, clientRef, token, setMessageMap, setUnreadCount]);
-  const items: NavLinkItem[] = [
-    {
-      href: "/betting",
-      text: t('배팅'),
-      icon: <CircleStackIconOutline className="w-6 h-6" />,
-      activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
-    },
-    {
-      href: "/hot-topic",
-      text: t('핫토픽'),
-      icon: <FireIconOutline className="w-6 h-6" />,
-      activeIcon: <FireIconSolid className="w-6 h-6" />,
-    },
-
-    {
-      href: "/category-channel",
-      text: t('카테고리 채널'),
-      icon: <RectangleStackIconOutline className="w-6 h-6" />,
-      activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
-    },
-    {
-      href: "/ranking",
-      text: t('랭킹'),
-      icon: <StarIconOutline className="w-6 h-6" />,
-      activeIcon: <StarIconSolid className="w-6 h-6" />,
-    },
-   
-    ...(userInfo?.id
-      ? [
-          {
-            href: `/channel/${userInfo?.id}`,
-            text: t('내 채널'),
-            icon: <UserIconOutline className="w-6 h-6" />,
-            activeIcon: <UserIconSolid className="w-6 h-6" />,
-          },
-          {
-            href: "/messages",
-            text: t('메시지'),
-            icon: (
-              <div className="relative">
-                <EnvelopeIconOutline className="w-6 h-6" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
-            ),
-            activeIcon: (
-              <div className="relative">
-                <EnvelopeIconSolid className="w-6 h-6" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
-            ),
-          },
-        ]
-      : []),
-  ];
-
+const items: NavLinkItem[] = [
+  {
+    href: "/",
+    text: t("홈"), // 홈 버튼 추가
+    icon: <HomeIconOutline className="w-6 h-6" />,
+    activeIcon: <HomeIconSolid className="w-6 h-6" />,
+  },
+  {
+    href: "/betting",
+    text: t("배팅"),
+    icon: <CircleStackIconOutline className="w-6 h-6" />,
+    activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
+  },
+  {
+    href: "/hot-topic",
+    text: t("핫토픽"),
+    icon: <FireIconOutline className="w-6 h-6" />,
+    activeIcon: <FireIconSolid className="w-6 h-6" />,
+  },
+  {
+    href: "/category-channel",
+    text: t("카테고리 채널"),
+    icon: <RectangleStackIconOutline className="w-6 h-6" />,
+    activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
+  },
+  {
+    href: "/ranking",
+    text: t("랭킹"),
+    icon: <StarIconOutline className="w-6 h-6" />,
+    activeIcon: <StarIconSolid className="w-6 h-6" />,
+  },
+  ...(userInfo?.id
+    ? [
+        {
+          href: `/channel/${userInfo?.id}`,
+          text: t("내 채널"),
+          icon: <UserIconOutline className="w-6 h-6" />,
+          activeIcon: <UserIconSolid className="w-6 h-6" />,
+        },
+        {
+          href: "/messages",
+          text: t("메시지"),
+          icon: (
+            <div className="relative">
+              <EnvelopeIconOutline className="w-6 h-6" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+          ),
+          activeIcon: (
+            <div className="relative">
+              <EnvelopeIconSolid className="w-6 h-6" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+          ),
+        },
+      ]
+    : []),
+];
   const router = useRouter();
   const handleClick = () => {
     router.push("/login");
@@ -174,7 +188,7 @@ const Nav: React.FC = () => {
                 className="rounded-lg focus:outline-none overflow-hidden"
               >
                 <NavItem href={href} width="inline" size="default">
-                  {pathname === href ? activeIcon : icon}
+                  {currentPath === href ? activeIcon : icon}
                   <div className="hidden xl:inline-flex flex-none text-lg font-medium">
                     {text}
                   </div>
@@ -212,7 +226,7 @@ const Nav: React.FC = () => {
             width="inline"
             size="default"
           >
-            {pathname === href ? activeIcon : icon}
+            {currentPath === href ? activeIcon : icon}
           </NavItem>
         ))}
         {!userInfo && (

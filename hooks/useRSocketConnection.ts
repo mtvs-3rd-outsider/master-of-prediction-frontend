@@ -2,41 +2,56 @@ import { RSocketClient, BufferEncoders, MESSAGE_RSOCKET_COMPOSITE_METADATA } fro
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import { Flowable } from "rsocket-flowable";
 import { createMetadata, createSetupMetadata } from "@util/metadataUtils";
-import { Message } from "@ui/ChatUI";
+
 interface StreamConfig {
     endpoint: string;
     onNext: (data: any) => void;
-  }
+}
   
-  interface ChannelConfig {
+interface ChannelConfig {
     sourceRef: React.MutableRefObject<any>; // Retained sourceRef for sending messages
     onNext: (data: any) => void;
-  }
-  interface RSocketClientSetupConfig {
+}
+interface RSocketClientSetupConfig {
     clientRef: React.MutableRefObject<any>;
-    token: string | undefined;
-    channels?: ChannelConfig[]; // 선택적인 channels
-    streams?: StreamConfig[]; // 선택적인 streams
-  }
+    token?: string; // token을 선택적으로 처리
+    channels?: ChannelConfig[];
+    streams?: StreamConfig[];
+}
+
 export const RSocketClientSetup = {
+   async init2({ token, channels, streams }: Omit<RSocketClientSetupConfig, "clientRef">) {
+    const client = createRSocketClient(token);
+
+    // RSocket 연결 후 채널 및 스트림 설정
+    const rsocket = await client.connect();
+
+    // 채널 설정
+    channels?.forEach(({ sourceRef, onNext }) => {
+      setupRequestChannel(rsocket, sourceRef, onNext);
+    });
+
+    // 스트림 설정
+    streams?.forEach(({ endpoint, onNext }) => {
+      setupRequestStream(rsocket, endpoint, token, onNext);
+    });
+
+    return rsocket; // rsocket 객체 반환
+  },
+
     init(
        { clientRef,
         token,
         channels,
-        streams} // Array of streams
-      : RSocketClientSetupConfig) {
+        streams} : RSocketClientSetupConfig) {
         const client = createRSocketClient(token);
-    
-        // Establish the RSocket connection
         client.connect().then((rsocket) => {
           clientRef.current = rsocket;
     
-          // Set up channels
           channels?.forEach(({ sourceRef, onNext }) => {
             setupRequestChannel(rsocket, sourceRef, onNext);
           });
     
-          // Set up streams
           streams?.forEach(({ endpoint, onNext }) => {
             setupRequestStream(rsocket, endpoint, token, onNext);
           });
@@ -45,19 +60,31 @@ export const RSocketClientSetup = {
    
       sendMessage(
         sourceRef: React.MutableRefObject<any>,
-        message: any, // Message 타입을 인자로 받음
+        message: any,
         metadata: any
       ) {
-        const payload = createPayload(message); // Message DTO로 payload 생성
+        const payload = createPayload(message);
         sourceRef?.current.onNext({
           data: payload,
           metadata,
         });
-      },
+  },
+      
+ sendEvent(rsocket: any, endpoint: string, data: any) {
+  if (rsocket) {
+    rsocket.fireAndForget({
+      data: Buffer.from(JSON.stringify(data)),
+      metadata: createMetadata(endpoint),
+    });
+  }
+}
+
+
+      
 };
 
 // Helper function to create an RSocketClient instance
-function createRSocketClient(token: string | undefined) {
+function createRSocketClient(token?: string) {
   return new RSocketClient({
     transport: new RSocketWebSocketClient(
       {
@@ -72,7 +99,7 @@ function createRSocketClient(token: string | undefined) {
       lifetime: 60000,
       payload: {
         data: Buffer.alloc(0),
-        metadata: createSetupMetadata( token!),
+        metadata: token ? createSetupMetadata(token) : createSetupMetadata(),
       },
     },
   });
@@ -83,7 +110,7 @@ function setupRequestChannel(rsocket: any, sourceRef: React.MutableRefObject<any
     rsocket
       .requestChannel(
         new Flowable((source) => {
-          sourceRef.current = source; // Store reference for sending messages
+          sourceRef.current = source; 
           source.onSubscribe({
             cancel: () => {},
             request: (n) => {},
@@ -103,7 +130,7 @@ function setupRequestChannel(rsocket: any, sourceRef: React.MutableRefObject<any
         },
       });
   }
-  // Helper function to parse data payload
+  
 function parseData(payload: any): any {
     try {
       return JSON.parse(payload.data);
@@ -112,16 +139,16 @@ function parseData(payload: any): any {
       return null;
     }
   }
-// Helper function to set up a request stream
+
 function setupRequestStream(
     rsocket: any,
-    endpoint: string,  // setupRequestStream에서만 endpoint를 받음
-    token: string | undefined,
+    endpoint: string,
+    token?: string,
     onNextMessage?: (message: any) => void
   ) {
     rsocket
       .requestStream({
-        metadata: createMetadata(endpoint, token!), // 전달된 endpoint 사용
+        metadata: createMetadata(endpoint, token || ""), // token이 없을 경우 빈 문자열로 처리
       })
       .subscribe({
         onComplete: () => console.log("requestStream onComplete"),
@@ -145,7 +172,6 @@ function setupRequestStream(
       });
   }
 
-// Helper function to create a payload for sending messages
 function createPayload(message: any): Buffer {
   return Buffer.from(JSON.stringify(message));
 }
