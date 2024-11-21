@@ -18,7 +18,7 @@ import ReuploadMenu from "./ReuploadMenu";
 import QuotePost from "./QuotePost";
 import { UserDTO, GuestDTO } from "@components/types/feedResponseDTO";
 import GuestAuthModal from "@components/GuestAuthModal";
-
+import Avatar from "@rd/Avatar";
 export interface PostItem {
   id: string;
   content: string;
@@ -210,18 +210,12 @@ const Post: React.FC<PostItem> = ({
         onClick={onClick}
       >
         <div className="flex-shrink-0">
-          <HoverCard
-            src={src}
-            alt={name}
-            initials={initials}
-            name={name}
-            username={username}
-            following={following}
-            followers={followers}
-            description={description}
+          <Avatar
+            src={src || undefined} // 사용자 이미지가 없으면 기본 이미지를 사용하지 않음
+            alt={username || "사용자"}
+            initials={username ? username[0] : "U"} // 이름의 첫 글자 표시
           />
-          <div>
-          </div>
+          <div></div>
         </div>
         <div className="flex flex-col flex-1">
           <div className="flex flex-1">
