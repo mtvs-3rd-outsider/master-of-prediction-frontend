@@ -37,7 +37,7 @@ export default function RootLayout({
         channels: [],
         streams: selectedStreams,
       });
-    } else (!userInfo) {
+    } else if(!userInfo) {
       // userInfo가 없을 때 token 없이 초기화
       RSocketClientSetup.init({
         clientRef,
