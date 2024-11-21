@@ -48,6 +48,7 @@
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "firebase": "^10.14.1",
     "framer-motion": "^11.3.21",
     "image-extensions": "^1.1.0",

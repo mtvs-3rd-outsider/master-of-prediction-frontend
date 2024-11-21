@@ -19,7 +19,7 @@ const TierBadge: React.FC<TierBadgeProps> = ({ name = "" }) => {
 
   return (
     <span className="text-xs bg-slate-200 rounded-full py-0 px-2 cursor-pointer inline-flex items-center justify-center hover:bg-slate-300">
-      <TierIcon name={tier.label} size={15} className="mr-1 px-2" />
+      <TierIcon name={tier.label} size={15}  />
       {tier.name}
     </span>
   );
