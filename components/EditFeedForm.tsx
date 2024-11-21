@@ -26,7 +26,9 @@ const YouTubeIcon = () => (
 const EditFeedForm: React.FC<EditFeedFormProps> = ({ onSubmit, initialData, isSubmitting }) => {
   const [content, setContent] = useState(initialData.content);
   const [media, setMedia] = useState<File[]>([]);
-  const [youtubeUrls, setYoutubeUrls] = useState<string[]>(initialData.youTubeVideos.map(video => video.youtubeUrl));
+  const [youtubeUrls, setYoutubeUrls] = useState<string[]>(
+    initialData.youTubeVideos?.map(video => video.youtubeUrl) || []
+  );
   const [currentYoutubeUrl, setCurrentYoutubeUrl] = useState('');
   const [isYoutubeInputOpen, setIsYoutubeInputOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
