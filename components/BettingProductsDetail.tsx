@@ -11,6 +11,7 @@ import {
   ChatBubbleOvalLeftIcon,
   ArrowPathIcon,
   ChartBarSquareIcon,
+  ClockIcon
 } from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
 import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
 import { BettingOptions, BettingProductInfo } from "@/types/BettingTypes";
@@ -30,8 +31,11 @@ import {
   Radio,
 } from "@nextui-org/react";
 import PostStatsNav from "./PostStatsNav";
+import BettingAccount from "./BettingAccount";
 
 function BettingProductDetail(props: BettingProductInfo) {
+
+  
   const { user, product, productImages, options, optionsRatio, postStats } =
     props;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -75,7 +79,21 @@ function BettingProductDetail(props: BettingProductInfo) {
   };
 
   console.log("postStats: ", postStats);
+  const [showTooltip, setShowTooltip] = useState(false);
 
+  // 날짜와 시간 포맷 변경
+  const deadlineDateTime = new Date(
+    `${product.deadlineDate}T${product.deadlineTime}`
+  );
+  const formattedDate = deadlineDateTime.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  const tooltipTime = deadlineDateTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   return (
     <>
       <div className="px-6 pt-6">
@@ -83,22 +101,39 @@ function BettingProductDetail(props: BettingProductInfo) {
           {user && (
             <>
               {product.isBlind == false ? (
-                <Account
+                <BettingAccount
                   userName={user.userName}
                   displayName={user.displayName}
                   tier={user.tierName}
                   avatarUrl={user.userImg}
                 />
               ) : (
-                <Account
+                <BettingAccount
                   userName={""}
                   displayName={product.blindName}
                   tier={""}
                   avatarUrl={"/images/logo.png"}
                 />
               )}
-              <p className="flex flex-1">
-                ~{product.deadlineDate} {product.deadlineTime}
+              <p className="flex flex-1 mt-0">
+                <div className="flex items-center space-x-2">
+                  {/* 시간 아이콘 */}
+                  <ClockIcon className="w-4 h-4" />
+
+                  {/* 날짜와 툴팁 */}
+                  <p
+                    className="flex flex-1 relative cursor-pointer"
+                    onMouseEnter={() => setShowTooltip(true)}
+                    onMouseLeave={() => setShowTooltip(false)}
+                  >
+                    {formattedDate}
+                    {showTooltip && (
+                      <span className="absolute top-full left-0 mt-1 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-lg">
+                        {tooltipTime}
+                      </span>
+                    )}
+                  </p>
+                </div>
               </p>
               {user.userID == product.userId &&
                 product.winningOption == null &&
@@ -171,8 +206,18 @@ function BettingProductDetail(props: BettingProductInfo) {
           )}
         </div>
         <div>
-          <div>{product.title}</div>
-          <div>{product.content}</div>
+          <div className="product-container p-4 ">
+            {/* Title */}
+            <div className="product-title text-lg font-bold text-gray-800 mb-2">
+              {product.title}
+            </div>
+
+            {/* Content */}
+            <div className="product-content text-gray-600">
+              {product.content}
+            </div>
+          </div>
+
           <div
             className="
               w-full  h-auto flex

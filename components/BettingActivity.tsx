@@ -5,12 +5,16 @@ import apiClient from "@handler/fetch/axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import BettingAccount from "./BettingAccount";
+import { useTranslations } from "next-intl";
+import { useTranslationStore } from "@store/useTranslationStore";
 
 interface Props {
   activity: BettingActivityType[];
 }
 
 const getTimeDifference = (orderDate: string, orderTime: string): string => {
+  const messages = useTranslationStore.getState().messages;
+
   // 현재 날짜와 시간을 가져옴
   const currentDate = new Date();
 
@@ -26,19 +30,22 @@ const getTimeDifference = (orderDate: string, orderTime: string): string => {
   const diffInHours = Math.floor(diffInMinutes / 60);
   const diffInDays = Math.floor(diffInHours / 24);
 
-  // 차이를 초, 분, 시간, 날짜 단위로 반환
+  // 차이를 초, 분, 시간, 날짜 단위로 반환 (다국어 처리)
   if (diffInSeconds < 60) {
-    return `${diffInSeconds}s`;
+    return `${diffInSeconds}${messages["초"]}`;
   } else if (diffInMinutes < 60) {
-    return `${diffInMinutes}m`;
+    return `${diffInMinutes}${messages["분"]}`;
   } else if (diffInHours < 24) {
-    return `${diffInHours}h`;
+    return `${diffInHours}${messages["시간"]}`;
   } else {
-    return `${diffInDays}d`;
+    return `${diffInDays}${messages["일"]}`;
   }
 };
 
+
 const BettingActivity = ({ activity }: Props) => {
+ const messages = useTranslationStore.getState().messages;
+
   return (
     <>
       {/* 유저 프로필, 어떤 옵션을, 얼만큼, 구매 or 판매 */}
@@ -60,7 +67,9 @@ const BettingActivity = ({ activity }: Props) => {
                 </div>
               ) : (
                 <div className="flex justify-center items-center gap-4">
-                  <span className="font-bold text-green-600 ">bought </span>
+                  <span className="font-bold text-green-600 ">
+                    {messages["구매"]}{" "}
+                  </span>
                   <span className="font-bold">{node.content}</span>
                   <span> {node.point}p</span>
                 </div>

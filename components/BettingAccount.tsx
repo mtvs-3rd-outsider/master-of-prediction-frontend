@@ -1,5 +1,5 @@
 import Avatar from "@rd/Avatar";
-import TierIcon from "@components/TierIcon";
+import TierBadge from "@ui/TierBadge";
 
 interface AccountProps {
   userName?: string;
@@ -17,27 +17,31 @@ const BettingAccount = ({
   className,
 }: AccountProps) => {
   return (
-    <div className={`flex items-center gap-x-2 ${className}`}>
-      <div className="flex items-center gap-x-3 flex-1">
-        <div className="flexflex-none justify-start">
-          <Avatar
-            src={avatarUrl || undefined} // 사용자 이미지가 없으면 기본 이미지를 사용하지 않음
-            alt={userName || "사용자"}
-            initials={userName ? userName[0].toUpperCase() : "U"} // 이름의 첫 글자 표시
-          />
-        </div>
+    <div className={`relative flex items-center gap-x-2 ${className}`}>
+      {/* 아바타 및 TierBadge 컨테이너 */}
+      <div className="relative flex flex-none">
+        <Avatar
+          src={avatarUrl || undefined}
+          alt={userName || "사용자"}
+          initials={userName ? userName[0] : "U"}
+          size={30}
+        />
 
-        <div className="flex flex-col">
-          <div className="flex flex-1 gap-x-1 text-sm items-center">
-            <span className="text-xs bg-slate-200 rounded-full py-0 px-2 cursor-pointer inline-flex items-center justify-center hover:bg-slate-300">
-              <TierIcon name={tier} size={15} className="mr-1 px-2" />
-              {tier}
-            </span>
+        {/* TierBadge - 호버 시 머리 위에 표시 */}
+        {tier && (
+          <div className="absolute top-[-18px] left-1/2 transform -translate-x-1/2 opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <TierBadge name={tier}/>
           </div>
+        )}
+      </div>
 
-          <p className="text-base font-semibold">{displayName || userName}</p>
-          <p className="text-sm text-slate-600 font-medium">@{userName}</p>
-        </div>
+      {/* 텍스트 섹션 */}
+      <div className="flex flex-col text-xs">
+        {/* Display Name */}
+        <p className="font-semibold">{displayName || userName}</p>
+
+        {/* UserName */}
+        {userName && <p className="text-slate-600 font-medium">@{userName}</p>}
       </div>
     </div>
   );

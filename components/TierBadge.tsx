@@ -1,7 +1,7 @@
 import React from "react";
 import TierIcon from "@ui/TierIcon";
 
-const tierLabels: { [key: string]: { name: string; label: string } } = {
+export const tierLabels: { [key: string]: { name: string; label: string } } = {
   nostradamus: { name: "노스트라다무스", label: "노스트라다무스" },
   novice: { name: "견습생", label: "견습생" },
   oracle: { name: "오라클", label: "오라클" },

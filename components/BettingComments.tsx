@@ -5,8 +5,11 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import BettingAccount from "./BettingAccount";
 import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/react";
-
+import { Button } from "@nextui-org/button";
+import { useTranslationStore } from "@store/useTranslationStore";
+import {
+  PaperAirplaneIcon
+} from "@heroicons/react/24/outline";
 interface BettingUserType {
   userID: number;
   userName: string;
@@ -45,7 +48,6 @@ const BettingComments = () => {
   const { id: bettingId } = useParams();
   const [comments, setComments] = useState<BettingCommentsType[]>();
   const [inputState, setInputState] = useState<string>("");
-
   const loadComments = useCallback(async () => {
     apiClient
       .get(`/betting-products/comments?bettingId=${bettingId}`)
@@ -80,9 +82,14 @@ const BettingComments = () => {
         value={inputState}
         onChange={handleChange}
         endContent={
-          <p onClick={handleClick} className="text-blue-700">
-            Post
-          </p>
+          <Button
+            isIconOnly
+            variant="light"
+            onClick={handleClick}
+            className="text-blue-700 "
+          >
+            <PaperAirplaneIcon className="w-5 h-5" />
+          </Button>
         }
       />
       {/* <Button type="submit">Button</Button> */}
