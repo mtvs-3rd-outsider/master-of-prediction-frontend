@@ -68,53 +68,51 @@ const BuyOrder = ({
   };
 
   const handleBuy = () => {
- if (onCloseModal) {
-   onCloseModal(); // 모달 닫기 함수 호출
- }
-        const confirmHandler = () => {
-         if (amount > userPoint) {
-           alert("포인트가 부족합니다");
-           return;
-         }
-         apiClient
-           .post(`/betting-orders/buy/${bettingId}`, {
-             bettingId: bettingId,
-             point: amount,
-             bettingOptionId: optionId,
-           })
-           .then((res) => {
-             if (res.status <= 299) {
-               setUserPoint(userPoint - amount);
-               setAmount(0);
-               // optionId를 찾고 point를 찾아 더한다, 없으면 추가
-               setOrderHistory((prev) => {
-                 const findOrder = prev.find(
-                   (order) =>
-                     order.bettingOptionId === res.data?.bettingOptionId
-                 );
+    if (onCloseModal) {
+      onCloseModal(); // 모달 닫기 함수 호출
+    }
+    const confirmHandler = () => {
+      if (amount > userPoint) {
+        alert("포인트가 부족합니다");
+        return;
+      }
+      apiClient
+        .post(`/betting-orders/buy/${bettingId}`, {
+          bettingId: bettingId,
+          point: amount,
+          bettingOptionId: optionId,
+        })
+        .then((res) => {
+          if (res.status <= 299) {
+            setUserPoint(userPoint - amount);
+            setAmount(0);
+            // optionId를 찾고 point를 찾아 더한다, 없으면 추가
+            setOrderHistory((prev) => {
+              const findOrder = prev.find(
+                (order) => order.bettingOptionId === res.data?.bettingOptionId
+              );
 
-                 if (findOrder) {
-                   return prev.map((order) =>
-                     order.bettingOptionId === res.data?.bettingOptionId
-                       ? { ...order, point: order.point + res.data?.point }
-                       : order
-                   );
-                 } else {
-                   return [
-                     ...prev,
-                     {
-                       bettingOptionId: res.data?.bettingOptionId,
-                       point: res.data?.point,
-                     },
-                   ];
-                 }
-               });
-             }
-           });
-
-        };
-     onOpenAlert("구매 확인", "정말로 구매하시겠습니까?", confirmHandler);
-    
+              if (findOrder) {
+                return prev.map((order) =>
+                  order.bettingOptionId === res.data?.bettingOptionId
+                    ? { ...order, point: order.point + res.data?.point }
+                    : order
+                );
+              } else {
+                return [
+                  ...prev,
+                  {
+                    bettingOptionId: res.data?.bettingOptionId,
+                    point: res.data?.point,
+                  },
+                ];
+              }
+            });
+          }
+          window.location.reload();
+        });
+    };
+    onOpenAlert("구매 확인", "정말로 구매하시겠습니까?", confirmHandler);
   };
 
   return (
