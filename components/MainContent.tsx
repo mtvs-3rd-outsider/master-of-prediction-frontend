@@ -76,6 +76,7 @@ const MainContent: React.FC = () => {
           fetchNextPageSearch={fetchNextPageSearch}
           hasNextPageSearch={hasNextPageSearch}
           isFetchingNextPageSearch={isFetchingNextPageSearch}
+          
         />
       )}
     </main>

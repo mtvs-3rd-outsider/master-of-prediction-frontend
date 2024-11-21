@@ -16,7 +16,9 @@ interface CategoryChannelCardProps {
 
 export default function CategoryChannelCard({ href, categoryChannelName, badge, avatars }: CategoryChannelCardProps) {
   return (
-    <Link href={href}> {/* 외부에서 받은 경로로 이동 */}
+    <Link href={href}>
+      {" "}
+      {/* 외부에서 받은 경로로 이동 */}
       <Card
         isBlurred
         className="border-none bg-transparent w-auto shadow-none cursor-pointer" // 카드를 클릭 가능하게 설정
@@ -25,21 +27,25 @@ export default function CategoryChannelCard({ href, categoryChannelName, badge, 
         <CardBody>
           <div className="flex items-center gap-4">
             {/* Left: Community Image */}
-            <div className="shrink-0">
-              <Image
-                alt={`${categoryChannelName} cover`}
-                className="object-cover"
-                height={80} // 높이를 더 작게 설정
-                shadow="md"
-                src={avatars[0]} // 첫 번째 아바타 이미지를 커버로 사용
-                width={80} // 너비도 고정
-              />
-            </div>
+            {avatars[0] && ( // 첫 번째 이미지가 있을 때만 렌더링
+              <div className="shrink-0">
+                <Image
+                  alt={`${categoryChannelName} cover`}
+                  className="object-cover"
+                  height={80} // 높이를 더 작게 설정
+                  shadow="md"
+                  src={avatars[0]} // 첫 번째 아바타 이미지를 커버로 사용
+                  width={80} // 너비도 고정
+                />
+              </div>
+            )}
 
             {/* Right: Community Details */}
             <div className="flex flex-col justify-center">
               {/* Community Name */}
-              <h5 className="font-semibold text-foreground/90 text-medium">{categoryChannelName}</h5>
+              <h5 className="font-semibold text-foreground/90 text-medium">
+                {categoryChannelName}
+              </h5>
 
               {/* Category Badge */}
               <CustomBadge>{badge}</CustomBadge>
@@ -53,12 +59,19 @@ export default function CategoryChannelCard({ href, categoryChannelName, badge, 
                 max={3}
                 total={avatars.length - 3} // 추가 아바타 수
                 renderCount={(count) => (
-                  <p className="text-xs text-foreground font-medium ms-2">+{count} others</p>
+                  <p className="text-xs text-foreground font-medium ms-2">
+                    +{count} others
+                  </p>
                 )}
               >
-                {avatars.slice(1, 4).map((avatar, index) => ( // 두 번째 아바타부터 최대 3개 표시
-                  <Avatar key={index} src={avatar} size="sm" />
-                ))}
+                {avatars.slice(1, 4).map(
+                  (
+                    avatar,
+                    index // 두 번째 아바타부터 최대 3개 표시
+                  ) => (
+                    <Avatar key={index} src={avatar} size="sm" />
+                  )
+                )}
               </AvatarGroup>
             </div>
           </div>

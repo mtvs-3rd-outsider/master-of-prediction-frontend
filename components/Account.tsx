@@ -28,8 +28,8 @@ const Account = ({
       <div className="relative flex flex-none">
         <Avatar
           src={avatarUrl || undefined} // 사용자 이미지가 없으면 기본 이미지를 사용하지 않음
-          alt={userName || "사용자"}
-          initials={userName ? userName[0] : "U"} // 이름의 첫 글자 표시
+          alt={displayName || "사용자"}
+          initials={displayName ? displayName[0] : "U"} // 이름의 첫 글자 표시
         />
 
         {/* TierBadge - 유저 머리 위에 표시 */}

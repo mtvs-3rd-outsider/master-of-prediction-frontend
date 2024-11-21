@@ -7,9 +7,9 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '@api/axios';
 import MyCategories from '@ui/MyCategories';
 import Categories from '@ui/Categories';
-import SearchResults from '@ui/SearchResults';
 import SearchInputSection from '@ui/SearchInputSection';
 import useUserStore from '@store/useUserStore'; // 유저 정보 스토어
+import SearchResults from '@ui/SearchResultsCategory';
 
 const fetchSearchResults = async (pageParam: number, queryKey: string[]) => {
   const response = await apiClient.get(`/search/category/displayName`, {
@@ -58,7 +58,13 @@ export default function Page() {
 
   return (
     <main className="col-span-5 w-full border-x border-slate-200">
-      <SearchInputSection title="카테고리 채널" guide="카테고리 채널을 검색하세요" isHeaderVisible={isHeaderVisible} onSearchToggle={handleSearchToggle} onInput={handleSearchInput} />
+      <SearchInputSection
+        title="카테고리 채널"
+        guide="카테고리 채널을 검색하세요"
+        isHeaderVisible={isHeaderVisible}
+        onSearchToggle={handleSearchToggle}
+        onInput={handleSearchInput}
+      />
 
       {!isSearching && (
         <>
