@@ -16,10 +16,6 @@ type LayoutProps = {
 };
 
 export default function RootLayout({ children }: LayoutProps): ReactNode {
-  const { userInfo } = useUserStore((state) => ({
-    userInfo: state.userInfo,
-  }));
-
   return (
     <>
       <NextUIProvider>
@@ -27,20 +23,6 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
           {/* Nav 컴포넌트가 로드되기 전에 공간을 확보하여 레이아웃 이동 방지 */}
           <Nav />
           {children}
-          {!userInfo ? null : (
-            <div className="fixed bottom-20 right-4 md:bottom-4">
-              <Link href={"/betting/add"}>
-                <Button
-                  isIconOnly
-                  color="primary"
-                  aria-label="Add"
-                  className="rounded-full p-3 shadow-lg"
-                >
-                  <PlusIcon className="h-8 w-8" />
-                </Button>
-              </Link>
-            </div>
-          )}
         </div>
       </NextUIProvider>
     </>

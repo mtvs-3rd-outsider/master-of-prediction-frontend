@@ -10,6 +10,7 @@ import { sendMultipartForm } from "@handler/fetch/axios";
 import { usePathname, useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 interface BettingOptions {
   imgUrl: string;
   image?: File;
@@ -18,6 +19,7 @@ interface BettingOptions {
 }
 
 const BettingAddPage = () => {
+  const t = useTranslations();
   const fileRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<File[]>([]);
   const [mainPreviewUrls, setMainPreviewUrls] = useState<string[]>([]);
@@ -67,7 +69,11 @@ const BettingAddPage = () => {
     const newUrls = targetFilesArray.map((file) => URL.createObjectURL(file));
 
     setImages((prev) => [...prev, ...targetFilesArray]);
-    setMainPreviewUrls((prev) => [...prev, ...newUrls]);
+    setMainPreviewUrls((prev) => {
+      console.log("prev: ", prev);
+      console.log("newUrls: ", newUrls);
+      return [...prev, ...newUrls];
+    });
   };
 
   const handleOptionImageChange = (
@@ -153,7 +159,7 @@ const BettingAddPage = () => {
 
   return (
     <>
-      <main className="col-span-5 w-full h-auto border-x border-slate-200 p-4 pl-20 pr-20 pb-32">
+      <main className="col-span-5 w-full h-auto border-x border-slate-200 p-4 md:px-20 pb-32 sm:pl-8 sm:pr-8">
         <form className="w-full" onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
             <button
@@ -165,7 +171,7 @@ const BettingAddPage = () => {
               } text-white font-bold py-2 px-4 rounded-full`}
               onClick={() => setIsBlind(true)}
             >
-              비공개
+              {t("비공개")}
             </button>
             <button
               type="button"
@@ -176,16 +182,16 @@ const BettingAddPage = () => {
               } text-white font-bold py-2 px-4 rounded-full`}
               onClick={() => setIsBlind(false)}
             >
-              공개
+              {t("공개")}
             </button>
           </div>
-          <h1 className="text-4xl pt-4 pb-4">등록하기</h1>
+          <h1 className="text-4xl pt-4 pb-4"> {t("등록하기")}</h1>
           <div className="w-full mb-6 md:mb-0">
             <label
               className="block mb-2 text-sm font-bold text-gray-600 w-full"
               htmlFor="title"
             >
-              주제
+              {t("주제")}
             </label>
             <input
               className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -199,7 +205,7 @@ const BettingAddPage = () => {
               className="block mb-2 font-bold text-gray-600 w-full"
               htmlFor="content"
             >
-              내용
+              {t("내용")}
             </label>
             <input
               className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -214,7 +220,7 @@ const BettingAddPage = () => {
               htmlFor="countries"
               className="block mb-2 font-bold text-gray-600 w-full"
             >
-              카테고리
+              {t("카테고리")}
             </label>
             <select
               id="countries"
@@ -232,10 +238,9 @@ const BettingAddPage = () => {
             <div>
               <label
                 htmlFor="file"
-                className="cursor-pointer h-[24px] self-stretch shrink-0 basis-auto font-['ABeeZee'] text-[20px] font-normal leading-[23.64px] text-[#000] tracking-[-0.3px] relative text-left whitespace-nowrap"
-                onClick={handleClick}
+                className="cursor-pointer h-[24px] self-stretch shrink-0 basis-auto font-['ABeeZee'] text-[19px] font-normal leading-[23.64px] text-[#000] tracking-[-0.3px] relative text-left whitespace-nowrap"
               >
-                상품 이미지 선택
+                {t("미리보기 이미지")}
               </label>
               <input
                 ref={fileRef}
@@ -249,27 +254,35 @@ const BettingAddPage = () => {
               <div></div>
             </div>
             <div
+              onClick={handleClick}
               className="
 						w-full h-48
 				flex pt-[10px] pr-[10px] pb-[10px] pl-[10px] gap-[10px] items-start self-stretch shrink-0 flex-nowrap bg-[#cfcfcf]  relative overflow-hidden z-[3]
 				overflow-x-scroll overflow-y-hidden whitespace-nowrap scrolling-touch ms-overflow-none "
             >
               {mainPreviewUrls.map((url, i) => (
-                <div
-                  key={i}
-                  // className="w-full"
-                >
-                  <div className="shrink-0 bg-[#efe8e8] rounded-[10px] relative overflow-hidden w-36 h-36">
+                <div key={i}>
+                  <div
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="shrink-0 bg-[#efe8e8] rounded-[10px] relative overflow-hidden w-36 h-36"
+                  >
                     <Image
                       src={url}
                       alt={`image${i}`}
-                      className="object-contain w-full h-full"
+                      objectFit="fill"
+                      className="w-full h-full"
+                      // className="object-contain w-full h-full"
                       width="10"
                       height="10"
                     />
                     <span
                       className="absolute bg-red-700 text-green-100 px-2 py-1 text-xs font-bold rounded-full top-1 right-2 cursor-pointer"
-                      onClick={() => handleDelete(i)}
+                      onClick={() => {
+                        handleDelete(i);
+                      }}
                     >
                       X
                     </span>
@@ -283,23 +296,28 @@ const BettingAddPage = () => {
               className="block mb-2 text-sm font-bold text-gray-600 w-full"
               htmlFor="optionId"
             >
-              선택지 추가하기 (기본 2개)
+              {t("선택지 추가하기")}
+
               <span className="text-large cursor-pointer"> + </span>
             </label>
             <div>
               {options.map(({ imgUrl, content, fileInputRef }, i) => (
                 <div key={i} className="w-full grid  grid-cols-4 gap-4 py-4 ">
                   <div
-                    className="border rounded-md border-gray-400 w-28 h-28 overflow-hidden"
+                    className="border rounded-md border-gray-400 sm:w-28 sm:h-28 w-18 h-18 overflow-hidden "
                     onClick={() => handleOptionImageClick(i)}
                   >
-                    <Image
-                      src={imgUrl}
-                      alt=""
-                      className="object-cover w-full h-full"
-                      width="10"
-                      height="10"
-                    />
+                    {imgUrl && (
+                      <Image
+                        src={imgUrl}
+                        alt=""
+                        objectFit="fill"
+                        // className="object-cover w-full h-full"
+                        className="w-full h-full"
+                        width="10"
+                        height="10"
+                      />
+                    )}
                     <input
                       ref={fileInputRef}
                       accept="image/*"
@@ -326,7 +344,7 @@ const BettingAddPage = () => {
               className="block mb-2 text-sm font-bold text-gray-600 w-full"
               htmlFor="deadLineDateTime"
             >
-              마감 일자
+              {t("마감일자")}
             </label>
             <input
               className="appearance-none block w-full  text-gray-700 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -360,7 +378,7 @@ const BettingAddPage = () => {
               type="submit"
               className="w-24 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             >
-              등록
+              {t("등록하기")}
             </button>
             {/* <button */}
             {/* > */}
@@ -369,7 +387,7 @@ const BettingAddPage = () => {
               // type="reset"
               className="text-center w-24 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
             >
-              취소
+              {t("취소")}
             </Link>
             {/* </button> */}
           </div>
