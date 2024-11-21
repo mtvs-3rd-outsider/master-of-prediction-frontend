@@ -137,20 +137,7 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
 
         {isOwnerLoading || isSubscriptionLoading ? (
           <p>Loading...</p>
-        ) : isOwner ? (
-          <>
-            <Link href="category-edit">
-              <Button
-                radius="full"
-                variant="solid"
-                className="font-bold px-3 py-2"
-                color="primary"
-              >
-                카테고리 수정
-              </Button>
-            </Link>
-          </>
-        ) : (
+        ) :  (
           isLoggedIn && (
             <Button
               radius="full"
