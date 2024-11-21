@@ -22,12 +22,11 @@ const TierIcon: React.FC<TierIconProps> = ({ name , size = 24, className }) => {
 
   return (
     <Image
-      src={`/images/tier/${name}.svg`}
+      src={`/images/tier/${name}.webp`}
       alt={`${name} icon`}
       width={size}
       height={size}
       className={className}
-      onError={handleError} // 이미지 로드 실패 시 실행
     />
   );
 };
