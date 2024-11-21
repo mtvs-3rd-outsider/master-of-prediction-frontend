@@ -167,7 +167,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Error creating feed:', error);
-      alert(error instanceof Error ? error.message : '피드 생성에 실패했습니다.');
+      // alert(error instanceof Error ? error.message : '피드 생성에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }
