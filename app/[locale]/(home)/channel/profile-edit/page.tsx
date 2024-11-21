@@ -159,12 +159,26 @@ const ProfileEditPage: React.FC =  () => {
     try {
       const formData = new FormData();
 
-      // FormData에 데이터 추가
-      formData.append("displayName", displayName);
-      formData.append("userName", username);
-      formData.append("location", location);
-      formData.append("website", website);
-      formData.append("bio", bio);
+     if (displayName.trim() !== "") {
+       formData.append("displayName", displayName);
+     }
+
+     if (username.trim() !== "") {
+       formData.append("userName", username);
+     }
+
+     if (location.trim() !== "") {
+       formData.append("location", location);
+     }
+
+     if (website.trim() !== "") {
+       formData.append("website", website);
+     }
+
+     if (bio.trim() !== "") {
+       formData.append("bio", bio);
+     }
+
       if (birthday) {
         formData.append("birthday", birthday.toString());
       }
