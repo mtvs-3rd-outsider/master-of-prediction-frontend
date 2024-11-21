@@ -11,6 +11,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { CameraIcon } from "@heroicons/react/24/solid";
 interface BettingOptions {
   imgUrl: string;
   image?: File;
@@ -242,6 +243,7 @@ const BettingAddPage = () => {
               >
                 {t("미리보기 이미지")}
               </label>
+
               <input
                 ref={fileRef}
                 name="mainImgUrl"
@@ -260,6 +262,9 @@ const BettingAddPage = () => {
 				flex pt-[10px] pr-[10px] pb-[10px] pl-[10px] gap-[10px] items-start self-stretch shrink-0 flex-nowrap bg-[#cfcfcf]  relative overflow-hidden z-[3]
 				overflow-x-scroll overflow-y-hidden whitespace-nowrap scrolling-touch ms-overflow-none "
             >
+              {fileRef.current?.files?.length == 0 && (
+                <CameraIcon className="w-full h-full" />
+              )}
               {mainPreviewUrls.map((url, i) => (
                 <div key={i}>
                   <div
@@ -318,6 +323,7 @@ const BettingAddPage = () => {
                         height="10"
                       />
                     )}
+                    {!imgUrl && <CameraIcon className="w-full h-full" />}
                     <input
                       ref={fileInputRef}
                       accept="image/*"
