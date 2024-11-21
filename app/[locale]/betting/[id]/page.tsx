@@ -14,6 +14,7 @@ import {
   BettingProduct,
   BettingProductInfo,
   OptionsRatio,
+  PostStatsNavState,
 } from "@/types/BettingTypes";
 import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 import NotFound from "@/app/not-found";
@@ -31,8 +32,24 @@ function BettingDetailPage() {
   useEffect(() => {
     apiClient(`betting-products/${params.id}`)
       .then((res) => {
-        setBettingInfo(res.data);
-        setOptionId(res.data?.options[0]?.optionId);
+        const bettingInfo = res.data;
+        const bettingId = [Number(params.id) * -1];
+        console.log("bettingId: ", bettingId);
+        apiClient
+          .get(`/feeds/betting?ids=${bettingId}`)
+          .then((response_feeds) => {
+            bettingInfo.postStats = response_feeds.data[0];
+            console.log("bettingInfo: ", bettingInfo);
+            setBettingInfo(bettingInfo);
+            setOptionId(res.data?.options[0]?.optionId);
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              setIsNotFound(true);
+            }
+          });
+        // setBettingInfo(res.data);
+        // setOptionId(res.data?.options[0]?.optionId);
       })
       .catch((error) => {
         if (error.response && error.response.status === 404) {
@@ -59,6 +76,7 @@ function BettingDetailPage() {
               options={bettingInfo?.options || []}
               productImages={bettingInfo?.productImages || []}
               optionsRatio={optionsRatio}
+              postStats={bettingInfo?.postStats || ({} as PostStatsNavState)}
             />
             <OrderForm
               options={bettingInfo?.options || []}
@@ -69,10 +87,10 @@ function BettingDetailPage() {
           </main>
           <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">
             <div className="sticky top-0">
-              <Search />
+              {/* <Search /> */}
               <OrderForm options={bettingInfo?.options || []} />
               <BettingProductsChatRoom id={params.id as string} />
-              <Footer />
+              {/* <Footer /> */}
             </div>
           </aside>
         </>

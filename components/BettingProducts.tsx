@@ -21,8 +21,27 @@ const BettingProducts = () => {
       const response = await apiClient.get("/betting-products", {
         params: { page, size: 10 },
       });
+      // 배팅 아이디에 맞춰서 feed에 재요청
+
+      const bettingIds = response.data.content.map(
+        (item: BettingProductType) => item.bettingId * -1
+      );
+
+      const response_feeds = await apiClient.get("/feeds/betting", {
+        params: { ids: bettingIds.join(",") },
+      });
 
       const { content, last } = response.data;
+      content.forEach((item: BettingProductType) => {
+        const feed = response_feeds.data.find(
+          (feedItem: any) => feedItem.id === item.bettingId * -1
+        );
+        if (feed) {
+          item.postStats = feed;
+        }
+      });
+
+      console.log("content: ", content);
 
       // 중복 제거 후 상태 업데이트
       setBettings((prev) => {
@@ -79,6 +98,7 @@ const BettingProducts = () => {
                   imgUrls={node.imgUrls}
                   bettingId={node.bettingId}
                   blindName={node.blindName}
+                  postStats={node.postStats}
                 />
               </li>
             ))}

@@ -7,6 +7,7 @@ import { BettingOrderStatisticsDTO } from "@/types/BettingOrderHistoryData";
 import apiClient from "@handler/fetch/axios";
 import { useParams } from "next/navigation";
 import BettingGraphFilterConstants from "@/constant/BettingGraphFilterConstants";
+import { useTranslations } from "next-intl";
 
 interface Props {
   options: BettingOptions[] | [];
@@ -33,6 +34,7 @@ const removeDuplicateOrderDates = (
   });
 };
 const BettingOptionList = ({ options, optionsRatio, winningOption }: Props) => {
+  const t = useTranslations();
   const [optionDatas, setOptionDatas] =
     useState<BettingOrderHistoryDataProps | null>(null);
   const bettingId = useParams().id;
@@ -49,11 +51,25 @@ const BettingOptionList = ({ options, optionsRatio, winningOption }: Props) => {
 
   return (
     <>
-      <div className="flex py-4 shadow justify-around px-8">
-        <span className="text-lg font-bold">content</span>
-        <span className="text-lg font-bold">totalPoints</span>
-        <span className="text-lg font-bold">Ratio</span>
+      {/* TODO: 다국어 처리 */}
+      {/* <div className="flex py-4 shadow justify-around px-8"> */}
+      <div
+        className="flex gap-4 py-6
+			 p-6 transform transition-transform duration-300 ease-in-out"
+      >
+        <div className="h-4 w-20 "></div>
+        <div className="flex-1 m-auto">
+          <p>{t("배팅 상세페이지 옵션내용 설명")}</p>
+        </div>
+        <div className="flex-1 flex items-center">
+          <p>{t("배팅 상세페이지 옵션내용 포인트")}</p>
+        </div>
+        <div className="flex-1 flex items-center">
+          <p>{t("배팅 상세페이지 옵션내용 비율")}</p>
+        </div>
       </div>
+      {/* </div> */}
+      {/* </div> */}
       <ul role="list" className=" divide-y divide-gray-200">
         {options.map((option) => {
           // optionsRatio에서 option.optionId와 일치하는 항목 찾기

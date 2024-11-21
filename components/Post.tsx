@@ -1,23 +1,22 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import DropdownMenuDemo from '@rd/DropdownMenu';
-import HoverCard from '@rd/HoverCard';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import DropdownMenuDemo from "@rd/DropdownMenu";
+import HoverCard from "@rd/HoverCard";
 import {
   HeartIcon,
   ChatBubbleOvalLeftIcon,
   ChartBarSquareIcon,
-} from '@heroicons/react/24/outline';
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
-import Userinfo from '@components/UserInfo';
-import MediaGrid from '@components/MediaGrid';
-import useUserStore from '@store/useUserStore';
-import axios from '@handler/fetch/axios';
-import DropdownMenuMyDemo from './radix/DropdownMyMenu';
-import ReuploadMenu from './ReuploadMenu';
-import QuotePost from './QuotePost';
-import { UserDTO, GuestDTO } from '@components/types/feedResponseDTO';
-
+} from "@heroicons/react/24/outline";
+import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
+import Userinfo from "@components/UserInfo";
+import MediaGrid from "@components/MediaGrid";
+import useUserStore from "@store/useUserStore";
+import axios from "@handler/fetch/axios";
+import DropdownMenuMyDemo from "./radix/DropdownMyMenu";
+import ReuploadMenu from "./ReuploadMenu";
+import QuotePost from "./QuotePost";
+import { UserDTO, GuestDTO } from "@components/types/feedResponseDTO";
 
 export interface PostItem {
   id: string;
@@ -76,13 +75,13 @@ const Post: React.FC<PostItem> = ({
   isShare = false,
   userId,
   quoteFeed,
-  isQuote = false
+  isQuote = false,
 }) => {
   const [isLiked, setIsLiked] = useState(isLike);
   const [likesCount, setLikesCount] = useState(initialLikesCount);
   const [isShared, setIsShared] = useState(isShare);
   const [currentShareCount, setCurrentShareCount] = useState(shareCount);
-  const userInfo = useUserStore(state => state?.userInfo);
+  const userInfo = useUserStore((state) => state?.userInfo);
   const router = useRouter();
 
   useEffect(() => {
@@ -95,72 +94,72 @@ const Post: React.FC<PostItem> = ({
   const toggleReupload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!userInfo?.id) {
-      alert('로그인이 필요합니다.');
+      alert("로그인이 필요합니다.");
       return;
     }
 
     try {
       if (!isShared) {
         setIsShared(true);
-        setCurrentShareCount(prev => prev + 1);
+        setCurrentShareCount((prev) => prev + 1);
         const response = await axios.post(`feeds/${id}/reupload`);
         if (response.status !== 200) {
           setIsShared(false);
-          setCurrentShareCount(prev => prev - 1);
+          setCurrentShareCount((prev) => prev - 1);
         }
       } else {
         setIsShared(false);
-        setCurrentShareCount(prev => prev - 1);
+        setCurrentShareCount((prev) => prev - 1);
         const response = await axios.delete(`feeds/${id}/reupload`);
         if (response.status !== 200) {
           setIsShared(true);
-          setCurrentShareCount(prev => prev + 1);
+          setCurrentShareCount((prev) => prev + 1);
         }
       }
     } catch (error) {
       setIsShared(!isShared);
-      setCurrentShareCount(prev => isShared ? prev + 1 : prev - 1);
-      console.error('Error toggling reupload:', error);
-      alert('재업로드 처리 중 오류가 발생했습니다.');
+      setCurrentShareCount((prev) => (isShared ? prev + 1 : prev - 1));
+      console.error("Error toggling reupload:", error);
+      alert("재업로드 처리 중 오류가 발생했습니다.");
     }
   };
   const handleQuote = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!userInfo?.id) {
-      alert('로그인이 필요합니다.');
+      alert("로그인이 필요합니다.");
       return;
     }
-  
+
     router.push(`/hot-topic/create-feed?quoteId=${id}`);
   };
 
   const toggleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!userInfo?.id) {
-      alert('로그인이 필요합니다.');
+      alert("로그인이 필요합니다.");
       return;
     }
 
     try {
       const likeDTO = {
-        likeType: 'FEED',
-        viewType: 'HOTTOPICCHANNEL',
+        likeType: "FEED",
+        viewType: "HOTTOPICCHANNEL",
         userId: userInfo.id,
-        targetId: id
+        targetId: id,
       };
 
-      const response = await axios.post('/like', likeDTO);
+      const response = await axios.post("/like", likeDTO);
 
       if (response.data.message === "좋아요") {
         setIsLiked(true);
-        setLikesCount(prev => prev + 1);
+        setLikesCount((prev) => prev + 1);
       } else if (response.data.message === "좋아요 취소") {
         setIsLiked(false);
-        setLikesCount(prev => prev - 1);
+        setLikesCount((prev) => prev - 1);
       }
     } catch (error) {
-      console.error('Error toggling like:', error);
-      alert('좋아요 처리 중 오류가 발생했습니다.');
+      console.error("Error toggling like:", error);
+      alert("좋아요 처리 중 오류가 발생했습니다.");
     }
   };
 

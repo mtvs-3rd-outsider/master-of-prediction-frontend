@@ -12,6 +12,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import BettingAccount from "./BettingAccount";
 import BettingTopHolers from "./BettingTopHolers";
 import BettingComments from "./BettingComments";
+import { useTranslations } from "next-intl";
 
 interface Props {
   options: BettingOptions[] | [];
@@ -26,6 +27,7 @@ const BettingCommentActivityTabs = ({ options, isBlind }: Props) => {
     {} as BettingTopHolders
   );
   const { id: bettingId } = useParams();
+  const t = useTranslations();
 
   useEffect(() => {
     apiClient
@@ -50,7 +52,7 @@ const BettingCommentActivityTabs = ({ options, isBlind }: Props) => {
           className=" px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] leading-none text-mauve11 select-none first:rounded-tl-md last:rounded-tr-md hover:text-violet11 data-[state=active]:text-violet11 data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-current data-[state=active]:focus:relative  outline-none cursor-default"
           value="commants"
         >
-          Comments
+          {t("배팅 상세페이지 댓글")}
         </Tabs.Trigger>
         {!isBlind && (
           <>
@@ -58,13 +60,13 @@ const BettingCommentActivityTabs = ({ options, isBlind }: Props) => {
               className=" px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] leading-none text-mauve11 select-none first:rounded-tl-md last:rounded-tr-md hover:text-violet11 data-[state=active]:text-violet11 data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-current data-[state=active]:focus:relative  outline-none cursor-default"
               value="activity"
             >
-              Activity
+              {t("배팅 상세페이지 활동내역")}
             </Tabs.Trigger>
             <Tabs.Trigger
               className=" px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] leading-none text-mauve11 select-none first:rounded-tl-md last:rounded-tr-md hover:text-violet11 data-[state=active]:text-violet11 data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-current data-[state=active]:focus:relative  outline-none cursor-default"
               value="top-holders"
             >
-              Top Holders
+              {t("배팅 상세페이지 구매 순위")}
             </Tabs.Trigger>
           </>
         )}

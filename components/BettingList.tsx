@@ -78,6 +78,7 @@ const BettingList: React.FC = () => {
                     imgUrls={node.imgUrls}
                     bettingId={node.bettingId}
                     blindName={node.blindName}
+                    postStats={node.postStats}
                   />
                 </li>
               ))}

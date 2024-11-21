@@ -20,8 +20,6 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
     userInfo: state.userInfo,
   }));
 
-  console.log("userInfo: ", userInfo);
-
   return (
     <>
       <NextUIProvider>

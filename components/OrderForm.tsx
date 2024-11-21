@@ -12,6 +12,7 @@ import { BettingOptionChoiceStore } from "@/hooks/GlobalBettingOption";
 import { useParams } from "next/navigation";
 import { OrderHistoryType } from "@/types/BettingOrderType";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface OrderFormProps {
   className?: string;
@@ -30,6 +31,7 @@ export default function OrderForm({ className, options }: OrderFormProps) {
   );
   const [choiceOptionhistory, setChoiceOptionHistory] =
     useState<OrderHistoryType>({} as OrderHistoryType);
+  const t = useTranslations();
 
   useEffect(() => {
     options.map((option) => {
@@ -68,11 +70,11 @@ export default function OrderForm({ className, options }: OrderFormProps) {
           {optionsByOptionId?.imgUrl && (
             <Image
               alt=""
-              layout="responsive"
               width={100}
               height={60}
+              objectFit="fill"
               src={`${optionsByOptionId?.imgUrl}`}
-              className="h-full w-full object-cover object-center"
+              className="rounded-md h-full"
             />
           )}
         </div>
@@ -89,13 +91,13 @@ export default function OrderForm({ className, options }: OrderFormProps) {
             className="bg-white px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] leading-none text-mauve11 select-none first:rounded-tl-md last:rounded-tr-md hover:text-violet11 data-[state=active]:text-violet11  data-[state=active]:shadow-current data-[state=active]:focus:relative   outline-none cursor-default data-[state=active]:bg-[#00632b] data-[state=inactive]:text-green-600  data-[state=active]:text-white"
             value="tab1"
           >
-            Buy
+            {t("배팅 상세페이지 주문 구매")}
           </Tabs.Trigger>
           <Tabs.Trigger
             className="bg-white px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] leading-none text-mauve11 select-none first:rounded-tl-md last:rounded-tr-md hover:text-violet11 data-[state=active]:text-violet11  data-[state=active]:shadow-current data-[state=active]:focus:relative  outline-none cursor-default data-[state=active]:bg-[#b9554d] data-[state=inactive]:text-red-500 data-[state=active]:text-white"
             value="tab2"
           >
-            Sell
+            {t("배팅 상세페이지 주문 판매")}
           </Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content
