@@ -2,16 +2,14 @@ import { Message } from "@ui/ChatUI";
 import moment from "moment";
 
 export const formatDate = (isoString: string) => {
-    const date = new Date(isoString);
-    return `${date.getFullYear()}/${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date
-      .getHours()
-      .toString()
-      .padStart(2, '0')}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, '0')}`;
+  const date = moment(isoString);
+
+  if (!date.isValid()) {
+    console.error("Invalid date string:", isoString);
+    return "Invalid Date";
+  }
+
+  return date.format("MM/DD");
 };
   
  export const isDifferentDay = (
