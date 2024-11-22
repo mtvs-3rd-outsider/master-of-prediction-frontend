@@ -12,6 +12,7 @@ import { useParams } from "next/navigation";
 import { OrderHistoryType } from "@/types/BettingOrderType";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import useUserStore from "@store/useUserStore";
 
 interface OrderFormProps {
   className?: string;
@@ -30,7 +31,8 @@ export default function OrderForm({
   onCloseModal,
   onOpenAlert,
 }: OrderFormProps) {
-  const userId = 1;
+  const { userInfo } = useUserStore.getState();
+  const userId = userInfo?.id;
   const [userPoint, setUserPoint] = useState<number>(0);
   const { optionId, setOptionId } = BettingOptionChoiceStore();
   const [orderHistory, setOrderHistory] = useState<OrderHistoryType[]>([]);
