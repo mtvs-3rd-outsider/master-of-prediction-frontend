@@ -14,20 +14,19 @@ type LayoutProps = {
 
 interface FabConfig {
   url: string;
-  label?: string; // 추가: 경로에 따른 버튼 텍스트
+  label?: string;
   channelInfo?: {
     id?: string;
     type?: string;
   } | null;
 }
 
-// 경로에 따른 용어 맵
 const FAB_LABELS: Record<string, string> = {
   "/category-channel": "카테고리",
   "/channel": "피드",
   "/category-channel/regist": "채널",
   "/hot-topic/create-feed": "토픽",
-  "/betting/add": "베팅 추가", // BettingPage용 추가
+  "/betting/add": "베팅 추가",
 };
 
 export default function RootLayout({ children }: LayoutProps): ReactNode {
@@ -83,23 +82,26 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
   return (
     <NextUIProvider>
       <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
+        {/* Header Section */}
         <Nav />
+
+        {/* Main Content */}
         <TanstackQueryProvider>{children}</TanstackQueryProvider>
 
-        {/* 
-          1. pathname이 정확히 /category-channel으로 끝나고 비회원인 경우 버튼 숨김
-          2. pathname이 /category-channel을 포함하지만 정확히 그걸로 끝나지 않는 경우 회원/비회원 모두에게 버튼 표시
-          3. /betting 경로 포함 시 /betting/add 버튼 추가
-          4. 그 외의 경로에서는 fabConfig가 있을 때 버튼 표시
-        */}
+        {/* Floating Action Button */}
         {pathname.endsWith("/category-channel") && !userInfo
           ? null
           : fabConfig && (
               <FloatingActionButton
                 href={fabConfig.url}
-                label={fabConfig.label} // 경로에 따른 텍스트 추가
+                label={fabConfig.label}
               />
             )}
+
+        {/* Footer for Mobile */}
+        <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200">
+          <Nav mobileOnly />
+        </footer>
       </div>
     </NextUIProvider>
   );

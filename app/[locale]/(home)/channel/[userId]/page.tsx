@@ -12,8 +12,6 @@ async function fetchUserData(userId: string): Promise<MyChannelProps> {
   } catch (error) {
     console.error("Error fetching user data:", error);
     // Zustand의 clearUserInfo 메서드 호출
-    const clearUserInfo = useUserStore.getState().clearUserInfo;
-    clearUserInfo(); // 상태 초기화
     redirect("/login"); // 로그인 페이지로 리디렉션
     throw error; // 오류를 다시 던져서 이후 동작 방지
   }

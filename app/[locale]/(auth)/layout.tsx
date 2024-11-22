@@ -1,6 +1,5 @@
 import '@styles/styles.css';
 import { ReactNode } from 'react';
-import Nav from '@ui/Nav';
 import type { Metadata, Viewport } from "next";
 import Head from 'next/head';
 import { NextUIProvider } from "@nextui-org/system";

@@ -38,21 +38,23 @@ interface NavLinkItem {
   icon: ReactNode;
   activeIcon: ReactNode;
 }
+interface NavProps {
+  mobileOnly?: boolean;
+}
 
-const Nav: React.FC = () => {
-  
+const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
   const t = useTranslations();
- 
+
   const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
   const clientRef = useRef<any>(null);
-  const { hasHydrated, userInfo ,token,userId} = useUserStore((state) => ({
+  const { hasHydrated, userInfo, token, userId } = useUserStore((state) => ({
     hasHydrated: state.hasHydrated,
     userInfo: state.userInfo,
     token: state.userInfo?.token,
-    userId: state.userInfo?.id
+    userId: state.userInfo?.id,
   }));
-  const { unreadCount, setUnreadCount,setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
+  const { unreadCount, setUnreadCount, setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
   const removeLocale = (path: string) => {
     const parts = path.split("/");
     if (parts[1] && parts[1].length === 2) {
@@ -74,89 +76,89 @@ const Nav: React.FC = () => {
             onNext: (newMessageMap: Record<string, RoomInfo>) => {
               // messageMap을 부분 업데이트
               setMessageMap(newMessageMap);
-  
+
               // 총 읽지 않은 메시지 수 계산
               const totalUnreadCount = Object.values(newMessageMap).reduce(
                 (acc, roomInfo) => acc + roomInfo.unreadMessageCount,
                 0
               );
-  
+
               // Zustand에 총 읽지 않은 메시지 수 업데이트
               setUnreadCount(totalUnreadCount);
             },
           },
         ],
       });
-  
+
       console.log("Total Unread Count Updated in Zustand:", unreadCount);
     }
   }, [userInfo, userId, clientRef, token, setMessageMap, setUnreadCount]);
-const items: NavLinkItem[] = [
-  {
-    href: "/",
-    text: t("홈"), // 홈 버튼 추가
-    icon: <HomeIconOutline className="w-6 h-6" />,
-    activeIcon: <HomeIconSolid className="w-6 h-6" />,
-  },
-  {
-    href: "/betting",
-    text: t("배팅"),
-    icon: <CircleStackIconOutline className="w-6 h-6" />,
-    activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
-  },
-  {
-    href: "/hot-topic",
-    text: t("핫토픽"),
-    icon: <FireIconOutline className="w-6 h-6" />,
-    activeIcon: <FireIconSolid className="w-6 h-6" />,
-  },
-  {
-    href: "/category-channel",
-    text: t("카테고리 채널"),
-    icon: <RectangleStackIconOutline className="w-6 h-6" />,
-    activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
-  },
-  {
-    href: "/ranking",
-    text: t("랭킹"),
-    icon: <StarIconOutline className="w-6 h-6" />,
-    activeIcon: <StarIconSolid className="w-6 h-6" />,
-  },
-  ...(userInfo?.id
-    ? [
-        {
-          href: `/channel/${userInfo?.id}`,
-          text: t("내 채널"),
-          icon: <UserIconOutline className="w-6 h-6" />,
-          activeIcon: <UserIconSolid className="w-6 h-6" />,
-        },
-        {
-          href: "/messages",
-          text: t("메시지"),
-          icon: (
-            <div className="relative">
-              <EnvelopeIconOutline className="w-6 h-6" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
-          ),
-          activeIcon: (
-            <div className="relative">
-              <EnvelopeIconSolid className="w-6 h-6" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
-          ),
-        },
-      ]
-    : []),
-];
+  const items: NavLinkItem[] = [
+    {
+      href: "/",
+      text: t("홈"), // 홈 버튼 추가
+      icon: <HomeIconOutline className="w-6 h-6" />,
+      activeIcon: <HomeIconSolid className="w-6 h-6" />,
+    },
+    {
+      href: "/betting",
+      text: t("배팅"),
+      icon: <CircleStackIconOutline className="w-6 h-6" />,
+      activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
+    },
+    {
+      href: "/hot-topic",
+      text: t("핫토픽"),
+      icon: <FireIconOutline className="w-6 h-6" />,
+      activeIcon: <FireIconSolid className="w-6 h-6" />,
+    },
+    {
+      href: "/category-channel",
+      text: t("카테고리 채널"),
+      icon: <RectangleStackIconOutline className="w-6 h-6" />,
+      activeIcon: <RectangleStackIconSolid className="w-6 h-6" />,
+    },
+    {
+      href: "/ranking",
+      text: t("랭킹"),
+      icon: <StarIconOutline className="w-6 h-6" />,
+      activeIcon: <StarIconSolid className="w-6 h-6" />,
+    },
+    ...(userInfo?.id
+      ? [
+          {
+            href: `/channel/${userInfo?.id}`,
+            text: t("내 채널"),
+            icon: <UserIconOutline className="w-6 h-6" />,
+            activeIcon: <UserIconSolid className="w-6 h-6" />,
+          },
+          {
+            href: "/messages",
+            text: t("메시지"),
+            icon: (
+              <div className="relative">
+                <EnvelopeIconOutline className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+            ),
+            activeIcon: (
+              <div className="relative">
+                <EnvelopeIconSolid className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
+  ];
   const router = useRouter();
   const handleClick = () => {
     router.push("/login");
@@ -167,6 +169,27 @@ const items: NavLinkItem[] = [
       setIsReady(true);
     }
   }, [hasHydrated, userInfo]);
+  if (mobileOnly) {
+    return (
+      <nav className="sm:hidden flex justify-around bg-white border-t border-gray-200">
+        {items.map(({ href, icon, activeIcon }, i) => (
+          <NavItem
+            key={`mobile-nav-${i}`}
+            href={href}
+            width="inline"
+            size="default"
+          >
+            {currentPath === href ? activeIcon : icon}
+          </NavItem>
+        ))}
+        {!userInfo && (
+          <NavItem href="/login" width="inline" size="default">
+            <UserIconOutline className="w-6 h-6" />
+          </NavItem>
+        )}
+      </nav>
+    );
+  }
 
   return (
     <>
@@ -217,24 +240,6 @@ const items: NavLinkItem[] = [
           </div>
         </div>
       </header>
-
-      <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around">
-        {items.map(({ href, icon, activeIcon }, i) => (
-          <NavItem
-            key={`footer-${i}`}
-            href={href}
-            width="inline"
-            size="default"
-          >
-            {currentPath === href ? activeIcon : icon}
-          </NavItem>
-        ))}
-        {!userInfo && (
-          <NavItem href="/login" width="inline" size="default">
-            <UserIconOutline className="w-6 h-6" />
-          </NavItem>
-        )}
-      </footer>
     </>
   );
 };

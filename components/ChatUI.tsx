@@ -903,7 +903,7 @@ export default function ChatUI({ roomId }: ChatUIProps) {
       <div
         className="p-4 border-t space-y-2 flex flex-col 
              sm:relative sm:p-4 
-             fixed bottom-0 left-0 w-full bg-white z-10"
+             fixed bottom-0 left-0 w-full bg-white z-20"
       >
         {/* 답장 영역 */}
         {replyTo && (
