@@ -118,7 +118,7 @@ function BettingDetailPage() {
               />
             </div>
 
-            <ChatUI roomId={params.id} />
+           <ChatUI id={params.id}/>
           </aside>
 
           {/* 모바일 환경에서 주문하기 아이콘 */}

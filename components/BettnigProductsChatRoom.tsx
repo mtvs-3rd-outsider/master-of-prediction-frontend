@@ -26,7 +26,8 @@ import Link from "next/link";
 
 
 
-export default function ChatUI({id}:any ) {
+export default function ChatUI({ id }: any) {
+  console.log(id);
   const messageInputRef = useRef<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -59,27 +60,64 @@ export default function ChatUI({id}:any ) {
     }
   }, [hasHydrated, userInfo]);
   // RSocket 초기화
-  useEffect(() => {
-    if (userInfo) {
-      RSocketClientSetup.init({
-        clientRef,
-        token: token, // 토큰이 유저 정보에 포함된 경우
-        channels: [{ sourceRef: sourceRef, onNext: (x) => x }],
-        streams: [
-          {
-            endpoint: `api.v1.messages.stream/${roomId}`,
-            onNext: (message: Message) => {
-              setMessages((prev) => [...prev, message]);
-              if (!isAtBottom) setShowNewMessageAlert(() => true); // 새 메시지 알림
-            },
-          },
-        ],
-      });
-    }
-    return () => {
-      clientRef.current?.close();
-    };
-  }, [roomId, userInfo]);
+   useEffect(() => {
+     if (!userInfo) {
+       console.warn("UserInfo is not available. Skipping RSocket setup.");
+       return;
+     }
+
+     const setupRSocket = async () => {
+       try {
+         console.log("Initializing RSocket connection...");
+
+         // RSocket 클라이언트 초기화
+         const rsocket = await RSocketClientSetup.init({
+           token,
+           channels: [
+             {
+               sourceRef: sourceRef,
+               onNext: (x) => console.log("Channel data:", x),
+             },
+           ],
+           streams: [
+             {
+               endpoint: `api.v1.messages.stream/${roomId}`,
+               onNext: (message: Message) => {
+                 console.log("Received message:", message);
+                 setMessages((prev) => [...prev, message]);
+                 if (!isAtBottom) setShowNewMessageAlert(() => true);
+               },
+             },
+           ],
+         });
+
+         clientRef.current = rsocket; // RSocket 객체 저장
+         console.log("RSocket connection established");
+       } catch (error) {
+         console.error("Failed to establish RSocket connection:", error);
+       }
+     };
+
+     // RSocket 설정
+     if (clientRef.current == null) {
+       setupRSocket();
+     }
+
+     // Cleanup: RSocket 연결 종료
+     return () => {
+       console.log("Unmounting component. Closing RSocket connection...");
+       if (clientRef.current) {
+         clientRef.current.close(); // 연결 종료
+         clientRef.current = null; // 초기화
+       }
+     };
+   }, [
+     userInfo,
+     roomId,
+     token,
+     sourceRef,
+   ]);
+
 
   const handleScroll = () => {
     if (chatContainerRef.current) {
@@ -169,7 +207,7 @@ export default function ChatUI({id}:any ) {
     // 메시지를 RSocket으로 전송
     if (content && sourceRef.current) {
       const channelMetadata = createMetadata(
-        `api.v1.messages.stream/${roomId}`,
+        `api.v1.messages.stream.betting/${roomId}`,
         token!
       );
       RSocketClientSetup.sendMessage(sourceRef, userMessage, channelMetadata);

@@ -25,25 +25,39 @@ export default function RootLayout({
   const sourceRef = useRef<any>(null);
  const pathname = usePathname();
   useEffect(() => {
-    // RSocket 초기화
     const initializeRSocket = async () => {
-      const client = await RSocketClientSetup.init2({
-        token,
-      });
+      if (!clientRef.current) {
+        console.log("Initializing RSocket connection...");
+        const client = await RSocketClientSetup.init({
+          token,
+        });
 
-      clientRef.current = client; // rsocket 인스턴스를 상태에 저장
+        clientRef.current = client; // RSocket 클라이언트 저장
 
-      RSocketClientSetup.sendEvent(client,"api.v1.status.connect", {
-        pagePath: pathname,
-      });
+        // 초기 연결 이벤트 전송
+        RSocketClientSetup.sendEvent(client, "api.v1.status.connect", {
+          pagePath: pathname,
+        });
+      } else {
+        console.log("Reusing existing RSocket connection...");
+        // 기존 클라이언트를 사용해 이벤트 전송
+        RSocketClientSetup.sendEvent(
+          clientRef.current,
+          "api.v1.status.connect",
+          {
+            pagePath: pathname,
+          }
+        );
+      }
     };
 
     initializeRSocket();
 
     return () => {
-      // 컴포넌트 언마운트 시 연결 해제
       if (clientRef.current) {
+        console.log("Closing RSocket connection...");
         clientRef.current.close();
+        clientRef.current = null; // 클라이언트 초기화
       }
     };
   }, [token, pathname]);

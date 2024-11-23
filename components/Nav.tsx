@@ -65,10 +65,18 @@ const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
   };
 
   const currentPath = removeLocale(pathname);
-  useEffect(() => {
-    if (userInfo) {
-      RSocketClientSetup.init({
-        clientRef,
+useEffect(() => {
+  if (!userInfo) {
+    console.warn("UserInfo is not available. Skipping RSocket setup.");
+    return;
+  }
+
+  const setupRSocket = async () => {
+    try {
+      console.log("Initializing RSocket connection...");
+
+      // `init2`로 RSocket 클라이언트 초기화
+      const rsocket = await RSocketClientSetup.init({
         token,
         streams: [
           {
@@ -90,9 +98,27 @@ const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
         ],
       });
 
-      console.log("Total Unread Count Updated in Zustand:", unreadCount);
+      clientRef.current = rsocket; // RSocket 객체 저장
+      console.log("RSocket connection established");
+    } catch (error) {
+      console.error("Failed to establish RSocket connection:", error);
     }
-  }, [userInfo, userId, clientRef, token, setMessageMap, setUnreadCount]);
+  };
+
+  // RSocket 연결 설정
+  if (clientRef.current == null) {
+    setupRSocket();
+  }
+
+  // Cleanup: RSocket 연결 종료
+  return () => {
+    console.log("Unmounting component. Closing RSocket connection...");
+    if (clientRef.current) {
+      clientRef.current.close();
+      clientRef.current = null; // 상태 초기화
+    }
+  };
+}, [userInfo, userId, token, setMessageMap, setUnreadCount]);
   const items: NavLinkItem[] = [
     {
       href: "/",

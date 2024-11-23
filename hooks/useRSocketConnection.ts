@@ -20,7 +20,7 @@ interface RSocketClientSetupConfig {
 }
 
 export const RSocketClientSetup = {
-   async init2({ token, channels, streams }: Omit<RSocketClientSetupConfig, "clientRef">) {
+   async init({ token, channels, streams }: Omit<RSocketClientSetupConfig, "clientRef">) {
     const client = createRSocketClient(token);
 
     // RSocket 연결 후 채널 및 스트림 설정
@@ -39,24 +39,6 @@ export const RSocketClientSetup = {
     return rsocket; // rsocket 객체 반환
   },
 
-    init(
-       { clientRef,
-        token,
-        channels,
-        streams} : RSocketClientSetupConfig) {
-        const client = createRSocketClient(token);
-        client.connect().then((rsocket) => {
-          clientRef.current = rsocket;
-    
-          channels?.forEach(({ sourceRef, onNext }) => {
-            setupRequestChannel(rsocket, sourceRef, onNext);
-          });
-    
-          streams?.forEach(({ endpoint, onNext }) => {
-            setupRequestStream(rsocket, endpoint, token, onNext);
-          });
-        });
-      },
    
       sendMessage(
         sourceRef: React.MutableRefObject<any>,
