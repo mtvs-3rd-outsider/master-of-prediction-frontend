@@ -74,16 +74,16 @@ const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
           {
             endpoint: `api.v1.messages.threadInfos/${userId}`,
             onNext: (newMessageMap: Record<string, RoomInfo>) => {
-              // messageMap을 부분 업데이트
-              setMessageMap(newMessageMap);
+              console.log("Received newMessageMap:", newMessageMap);
 
-              // 총 읽지 않은 메시지 수 계산
               const totalUnreadCount = Object.values(newMessageMap).reduce(
                 (acc, roomInfo) => acc + roomInfo.unreadMessageCount,
                 0
               );
 
-              // Zustand에 총 읽지 않은 메시지 수 업데이트
+              console.log("Calculated Total Unread Count:", totalUnreadCount);
+
+              setMessageMap(newMessageMap);
               setUnreadCount(totalUnreadCount);
             },
           },
