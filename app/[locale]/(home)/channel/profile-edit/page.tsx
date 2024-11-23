@@ -28,8 +28,7 @@ import toast from "react-hot-toast";
 
   
 const ProfileEditPage: React.FC =  () => {
-
-  const fetchUserProfile = async (userId: string | undefined ) => {
+  const fetchUserProfile = async (userId: string | undefined) => {
     const response = await apiClient.get(`/my-channel/${userId}`);
     if (!response.data) {
       throw new Error("Failed to fetch profile data");
@@ -39,45 +38,51 @@ const ProfileEditPage: React.FC =  () => {
 
   const router = useRouter();
   const userInfo = useUserStore((state) => state.userInfo);
-  
+
   // Fetch user profile data using useQuery
   console.log("userInfo:", userInfo);
-  const userId= userInfo?.id;
-  const { isPending, error, data: userProfile } = useQuery({
-    queryKey: ['my-channel'],
+  const userId = userInfo?.id;
+  const {
+    isPending,
+    error,
+    data: userProfile,
+  } = useQuery({
+    queryKey: ["my-channel"],
     queryFn: () => fetchUserProfile(userId),
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5,  // 5분 동안 데이터가 fresh 상태로 유지
+    staleTime: 1000 * 60 * 5, // 5분 동안 데이터가 fresh 상태로 유지
   });
   console.log("userProfile:", userProfile);
 
   const mutation = useOptimisticMutation({
-    queryKey: ['my-channel'], // 쿼리 키를 명확하게 설정
-    mutationFn: (formData: FormData) => sendMultipartForm(`/users/${userId}`, formData, 'put'),
+    queryKey: ["my-channel"], // 쿼리 키를 명확하게 설정
+    mutationFn: (formData: FormData) =>
+      sendMultipartForm(`/users/${userId}`, formData, "put"),
     onErrorFn: (error: any, context: any) => {
-      console.error('Mutation failed:', error);
+      console.error("Mutation failed:", error);
       if (context?.previousData) {
         const updateUserInfo = useUserStore.getState().updateUserInfo;
         updateUserInfo(context.previousData);
       }
     },
-    onSuccessFn:  async (data: any, variables: any, context: any) => {
+    onSuccessFn: async (data: any, variables: any, context: any) => {
       toast.success("Profile updated successfully!");
-      
+
       // 데이터를 바로 업데이트
       const userInfoResponse = await apiClient.get(`/auth/users`);
       const updateUserInfo = useUserStore.getState().updateUserInfo;
       updateUserInfo(userInfoResponse.data);
-    
+
       // 페이지 이동 처리
-      if (typeof window !== 'undefined' && window.history.length > 1) {
+      if (typeof window !== "undefined" && window.history.length > 1) {
         router.back();
       } else {
-        router.push('/'); // 기본 페이지로 이동
+        router.push("/"); // 기본 페이지로 이동
       }
-    }
+    },
   });
-  let formatter = useDateFormatter({dateStyle: "full"});
+  let formatter = useDateFormatter({ dateStyle: "full" });
+  const [isSaving, setIsSaving] = useState(false); // 저장 중 상태 추가
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
@@ -86,7 +91,7 @@ const ProfileEditPage: React.FC =  () => {
   const [birthday, setBirthday] = useState<CalendarDate | null>(null); // Date 타입에서 string으로 변경
   const [gender, setGender] = useState("male");
   const [bannerImage, setBannerImage] = useState<File | null>(null); // 이미지 파일 저장
-  const [avatarImage, setAvatarImage] = useState<File | null>(null);  // 이미지 파일 저장
+  const [avatarImage, setAvatarImage] = useState<File | null>(null); // 이미지 파일 저장
 
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
@@ -98,26 +103,32 @@ const ProfileEditPage: React.FC =  () => {
       setLocation(userProfile.user_location || "");
       setWebsite(userProfile.website || "");
       setBio(userProfile.bio || "");
-      setBirthday(userProfile.birthday ? parseDate(userProfile.birthday) : null);
+      setBirthday(
+        userProfile.birthday ? parseDate(userProfile.birthday) : null
+      );
       setGender(userProfile.user_gender?.toLowerCase() || "male");
-  
+
       // user_img 처리
       if (userProfile.user_img) {
-     urlToFile(userProfile.user_img) // URL을 File로 변환
+        urlToFile(userProfile.user_img) // URL을 File로 변환
           .then((file) => {
-            console.log(file);  // File 객체로 출력
+            console.log(file); // File 객체로 출력
             setAvatarImage(file); // File 상태로 설정
           })
           .catch((error) => {
             console.error("Error:", error);
           });
       }
-  
+
       // banner_img 처리
       if (userProfile.banner_img) {
-       urlToFile(userProfile.banner_img) // URL을 File로 변환
+        console.log("userProfile.banner_img"); // File 객체로 출력
+
+        console.log(userProfile.banner_img); // File 객체로 출력
+
+        urlToFile(userProfile.banner_img) // URL을 File로 변환
           .then((file) => {
-            console.log(file);  // File 객체로 출력
+            console.log(file); // File 객체로 출력
             setBannerImage(file); // File 상태로 설정
           })
           .catch((error) => {
@@ -151,56 +162,81 @@ const ProfileEditPage: React.FC =  () => {
       setAvatarImage(file); // 선택된 파일을 상태로 저장
     }
   };
-  const handleSelectionChange = (e : React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLocation(e.target.value);
   };
   // 프로필 저장 핸들러
   const handleSave = async () => {
     try {
+      if (!userProfile) return; // 프로필 데이터가 없으면 실행 중단
+      setIsSaving(true); // 저장 중 상태 설정
       const formData = new FormData();
+      let isChanged = false;
 
-     if (displayName.trim() !== "") {
-       formData.append("displayName", displayName);
-     }
-
-     if (username.trim() !== "") {
-       formData.append("userName", username);
-     }
-
-     if (location.trim() !== "") {
-       formData.append("location", location);
-     }
-
-     if (website.trim() !== "") {
-       formData.append("website", website);
-     }
-
-     if (bio.trim() !== "") {
-       formData.append("bio", bio);
-     }
-
-      if (birthday) {
-        formData.append("birthday", birthday.toString());
+      // 각 필드를 비교하여 달라진 항목만 추가
+      if (displayName.trim() !== userProfile.display_name) {
+        formData.append("displayName", displayName);
+        isChanged = true;
       }
-      formData.append("gender", gender);
 
-      // 이미지 파일이 있는 경우 추가
+      if (username.trim() !== userProfile.user_name) {
+        formData.append("userName", username);
+        isChanged = true;
+      }
+
+      if (location.trim() !== userProfile.user_location) {
+        formData.append("location", location);
+        isChanged = true;
+      }
+
+      if (website.trim() !== userProfile.website) {
+        formData.append("website", website);
+        isChanged = true;
+      }
+
+      if (bio.trim() !== userProfile.bio) {
+        formData.append("bio", bio);
+        isChanged = true;
+      }
+
+      if (
+        (birthday && birthday.toString() !== userProfile.birthday) ||
+        (!birthday && userProfile.birthday)
+      ) {
+        formData.append("birthday", birthday ? birthday.toString() : "");
+        isChanged = true;
+      }
+
+      if (gender !== userProfile.user_gender?.toLowerCase()) {
+        formData.append("gender", gender);
+        isChanged = true;
+      }
+
+      // 파일 비교: bannerImage
       if (bannerImage) {
         formData.append("bannerImage", bannerImage);
+        isChanged = true;
       }
+
+      // 파일 비교: avatarImage
       if (avatarImage) {
         formData.append("avatarImage", avatarImage);
+        isChanged = true;
       }
 
-      mutation.mutate(formData);
+      // 변경된 데이터가 없는 경우 실행 중단
+      if (!isChanged) {
+        toast("변경 사항이 없습니다.");
+        return;
+      }
 
-   
+      // 변경된 데이터가 있는 경우에만 요청 전송
+      mutation.mutate(formData);
     } catch (error) {
       console.error("Failed to update profile:", error);
       alert("Error updating profile.");
     }
   };
-
   if (isPending) {
     return <div>Loading...</div>;
   }
@@ -216,20 +252,29 @@ const ProfileEditPage: React.FC =  () => {
           <h1 className="font-bold mb-4 ">프로필 수정</h1>
         </div>
         <div>
-        <div className="absolute  top-0 right-0 mb-4 p-4 flex justify-end w-auto">
-          <Button variant="light" className="font-bold text-sm mb-4 " onClick={handleSave}>
-            저장
-          </Button>
-        </div>
-        <div className="absolute    top-0 left-0 mb-4 p-4 flex justify-start w-auto">
-          <BackButton />
-        </div>
-        <div className="sticky overflow-hidden ">
-          <div onClick={handleBannerClick} className="cursor-pointer">
-            <UserBanner imageUrl={bannerImage ? URL.createObjectURL(bannerImage) : undefined}>
-              <CameraIcon className="w-12 h-12" color="white" />
-            </UserBanner>
+          <div className="absolute  top-0 right-0 mb-4 p-4 flex justify-end w-auto">
+            <Button
+              variant="light"
+              className="font-bold text-sm mb-4 "
+              onClick={handleSave}
+              isDisabled={isSaving} // NextUI에서 비활성화 처리
+            >
+              {isSaving ? "저장 중..." : "저장"}
+            </Button>
           </div>
+          <div className="absolute    top-0 left-0 mb-4 p-4 flex justify-start w-auto">
+            <BackButton />
+          </div>
+          <div className="sticky overflow-hidden ">
+            <div onClick={handleBannerClick} className="cursor-pointer">
+              <UserBanner
+                imageUrl={
+                  bannerImage ? URL.createObjectURL(bannerImage) : undefined
+                }
+              >
+                <CameraIcon className="w-12 h-12" color="white" />
+              </UserBanner>
+            </div>
           </div>
           <input
             ref={bannerInputRef}
@@ -246,7 +291,12 @@ const ProfileEditPage: React.FC =  () => {
           }}
         >
           <div className="relative cursor-pointer" onClick={handleAvatarClick}>
-            <Avatar alt="User Avatar" initials="RQ" size={80} src={avatarImage ? URL.createObjectURL(avatarImage) : undefined}>
+            <Avatar
+              alt="User Avatar"
+              initials="RQ"
+              size={80}
+              src={avatarImage ? URL.createObjectURL(avatarImage) : undefined}
+            >
               <CameraIcon className="w-12 h-12" color="white" />
             </Avatar>
           </div>
@@ -274,7 +324,7 @@ const ProfileEditPage: React.FC =  () => {
             variant="underlined"
             onChange={(e) => setUsername(e.target.value)}
           />
-           <Textarea
+          <Textarea
             label="Bio"
             fullWidth={false}
             value={bio}
@@ -288,23 +338,35 @@ const ProfileEditPage: React.FC =  () => {
             variant="underlined"
             onChange={(e) => setWebsite(e.target.value)}
           />
-          <Select label="Select an location" variant="underlined"
-               selectedKeys={[location]}// 선택된 값을 표시
-               onChange={handleSelectionChange}
+          <Select
+            label="Select an location"
+            variant="underlined"
+            selectedKeys={[location]} // 선택된 값을 표시
+            onChange={handleSelectionChange}
           >
             {locations.map((location) => (
               <SelectItem key={location.key}>{location.label}</SelectItem>
             ))}
           </Select>
-          <DatePicker label="Birth date" variant="underlined" className="max-w-[284px]"   value={birthday} onChange={setBirthday}/>
+          <DatePicker
+            label="Birth date"
+            variant="underlined"
+            className="max-w-[284px]"
+            value={birthday}
+            onChange={setBirthday}
+          />
           <div className="inline-flex gap-2">
             <RadioGroup
               orientation="horizontal"
               value={gender}
               onValueChange={setGender}
             >
-              <Radio value="male" size="sm">Male</Radio>
-              <Radio value="female" size="sm">Female</Radio>
+              <Radio value="male" size="sm">
+                Male
+              </Radio>
+              <Radio value="female" size="sm">
+                Female
+              </Radio>
             </RadioGroup>
           </div>
         </form>
