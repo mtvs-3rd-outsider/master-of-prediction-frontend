@@ -230,120 +230,96 @@ export default function ChatUI({ roomId }: ChatUIProps) {
     });
   };
 
-  const rsocketRef = useRef<any>(null); // RSocket 객체를 저장
-  const [connected, setConnected] = useState(false); // 연결 상태
-
   useEffect(() => {
-    if (!userInfo) {
-      console.warn("UserInfo is not available. Skipping RSocket setup.");
-      return;
-    }
-
-    const setupRSocket = async () => {
-      try {
-        console.log("Initializing RSocket connection...");
-
-        // `init2`로 RSocket 클라이언트 생성
-        const rsocket = await RSocketClientSetup.init2({
-          token,
-          channels: [
-            { sourceRef, onNext: (x) => console.log("Channel data:", x) },
-            {
-              sourceRef: sourceRefForReaction,
-              onNext: (x) => console.log("Reaction data:", x),
+    if (userInfo) {
+      RSocketClientSetup.init({
+        clientRef,
+        token,
+        channels: [
+          { sourceRef: sourceRef, onNext: (x) => x },
+          { sourceRef: sourceRefForReaction, onNext: (x) => x },
+        ],
+        streams: [
+          {
+            endpoint: `api.v1.messages.stream/${roomId}`,
+            onNext: (message: Message) => {
+              setMessages((prev) => [...prev, message]);
+              if (!!isAtBottom) setShowNewMessageAlert(() => true);
             },
-          ],
-          streams: [
-            {
-              endpoint: `api.v1.messages.stream/${roomId}`,
-              onNext: (message: Message) => {
-                setMessages((prev) => [...prev, message]);
-                if (isAtBottom) setShowNewMessageAlert(() => true);
-              },
-            },
-            {
-              endpoint: `api.v1.messages.lastReadTimes/${roomId}`,
-              onNext: handleNewData,
-            },
-            {
-              endpoint: `api.v1.messages.connect/${roomId}`,
-              onNext: (data) => console.log("Connected message:", data),
-            },
-            {
-              endpoint: `api.v1.reactions.stream/${roomId}`,
-              onNext: (reaction: MessageReactionVM) => {
-                setReactions((prevReactions) => {
-                  const messageReactions =
-                    prevReactions[reaction.messageId] || [];
+          },
+          {
+            endpoint: `api.v1.messages.lastReadTimes/${roomId}`,
+            onNext: handleNewData,
+          },
+          {
+            endpoint: `api.v1.messages.connect/${roomId}`,
+            onNext: (data) => data,
+          },
+          {
+            endpoint: `api.v1.reactions.stream/${roomId}`,
+            onNext: (reaction: MessageReactionVM) => {
+              setReactions((prevReactions) => {
+                const messageReactions =
+                  prevReactions[reaction.messageId] || [];
 
-                  const existingReactionIndex = messageReactions.findIndex(
-                    (r) =>
-                      r.reactionType === reaction.reactionType &&
-                      r.userId === reaction.userId
-                  );
+                // 현재 반응이 이미 존재하는지 확인
+                const existingReactionIndex = messageReactions.findIndex(
+                  (r) =>
+                    r.reactionType === reaction.reactionType &&
+                    r.userId === reaction.userId
+                );
 
-                  let updatedReactions;
+                let updatedReactions;
 
-                  if (reaction.actionType === "plus") {
-                    if (existingReactionIndex === -1) {
-                      updatedReactions = [
-                        ...messageReactions,
-                        {
-                          reactionId: reaction.id || Date.now(),
-                          reactionType: reaction.reactionType,
-                          userId: reaction.userId,
-                          displayName: reaction.displayName,
-                          userName: reaction.userName,
-                          userImg: reaction.userImg,
-                        },
-                      ];
-                    } else {
-                      updatedReactions = [...messageReactions];
-                    }
-                  } else if (
-                    reaction.actionType === "minus" &&
-                    existingReactionIndex !== -1
-                  ) {
-                    updatedReactions = messageReactions.filter(
-                      (r, idx) => idx !== existingReactionIndex
-                    );
+                if (reaction.actionType === "plus") {
+                  // 반응이 없으면 추가
+                  if (existingReactionIndex === -1) {
+                    updatedReactions = [
+                      ...messageReactions,
+                      {
+                        reactionId: reaction.id || Date.now(), // ID 생성
+                        reactionType: reaction.reactionType,
+                        userId: reaction.userId,
+                        displayName: reaction.displayName,
+                        userName: reaction.userName,
+                        userImg: reaction.userImg,
+                      },
+                    ];
                   } else {
                     updatedReactions = [...messageReactions];
                   }
+                } else if (
+                  reaction.actionType === "minus" &&
+                  existingReactionIndex !== -1
+                ) {
+                  // 반응이 있으면 제거
+                  updatedReactions = messageReactions.filter(
+                    (r, idx) => idx !== existingReactionIndex
+                  );
+                } else {
+                  updatedReactions = [...messageReactions];
+                }
 
-                  return {
-                    ...prevReactions,
-                    [reaction.messageId]: updatedReactions as ReactionVM[],
-                  };
-                });
-              },
+                return {
+                  ...prevReactions,
+                  [reaction.messageId]: updatedReactions as ReactionVM[], // ReactionVM[] 타입으로 지정
+                };
+              });
             },
-          ],
-        });
-
-        rsocketRef.current = rsocket; // RSocket 객체 저장
-        setConnected(true); // 연결 상태 업데이트
-        console.log("RSocket connection established");
-      } catch (error) {
-        console.error("Failed to establish RSocket connection:", error);
-      }
-    };
-
-    setupRSocket();
-
-    // Cleanup: RSocket 연결 종료
+          },
+        ],
+      });
+    }
     return () => {
       console.log("Unmounting component. Closing RSocket connection...");
-      if (rsocketRef.current) {
-        rsocketRef.current.close(); // 연결 종료
-        rsocketRef.current = null; // 명시적으로 초기화
-        setConnected(false); // 연결 상태 업데이트
+      if (clientRef.current) {
+        clientRef.current.close(); // 연결 종료
+        clientRef.current = null; // 초기화
       } else {
         console.warn("RSocket client was not initialized or already closed.");
       }
     };
-  }, [token, roomId, userInfo, sourceRef, sourceRefForReaction, handleNewData]);
-
+  }, [roomId, token, userInfo, clientRef]);
 
   const handleScroll = () => {
     if (chatContainerRef.current) {
