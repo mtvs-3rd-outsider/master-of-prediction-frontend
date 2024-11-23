@@ -12,6 +12,8 @@ import { AxiosError } from "axios";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { CameraIcon } from "@heroicons/react/24/solid";
+import { Toaster, toast } from "react-hot-toast";
+
 interface BettingOptions {
   imgUrl: string;
   image?: File;
@@ -32,6 +34,7 @@ const BettingAddPage = () => {
   const [currentDateTime, setCurrentDateTime] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
    * 마감 날짜 내일로 자동 설정
@@ -71,8 +74,6 @@ const BettingAddPage = () => {
 
     setImages((prev) => [...prev, ...targetFilesArray]);
     setMainPreviewUrls((prev) => {
-      console.log("prev: ", prev);
-      console.log("newUrls: ", newUrls);
       return [...prev, ...newUrls];
     });
   };
@@ -118,6 +119,10 @@ const BettingAddPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log("isSubmitting: ", isSubmitting);
+    if (isSubmitting) return; // Prevent multiple submissions
+    setIsSubmitting(true);
+
     const formElement = e.target as HTMLFormElement; // e.target을 HTMLFormElement로 명시
     const formData = new FormData(formElement);
     formData.append("isBlind", isBlind.toString());
@@ -139,24 +144,39 @@ const BettingAddPage = () => {
     });
 
     console.log("formData: ", Object.fromEntries(formData));
+    let loadingToast;
     try {
+      // 로딩 상태 알림 표시
+      loadingToast = toast.loading(t("등록 로딩"));
+
+      // 요청 처리
       const response = await sendMultipartForm(
         "/betting-products",
         formData,
         "post"
       );
+
+      // 성공 시 알림 및 페이지 이동
+      toast.success(t("등록 성공"), { id: loadingToast });
       router.push(`/betting/${response.data}`);
     } catch (error) {
+      // 에러 처리
       if (error instanceof AxiosError) {
-        // AxiosError 타입으로 캐스팅하여 안전하게 접근
+        // 서버에서 제공된 에러 메시지
         console.log("Error response data: ", error.response?.data.errors);
+
+        // 서버 에러 메시지 기반으로 알림 표시
+        toast.error(error.response?.data?.message || t("등록 실패"), {
+          id: loadingToast,
+        });
+        setIsSubmitting(false);
       } else {
-        // 다른 에러 타입 처리
+        // 예상치 못한 에러
         console.log("An unexpected error occurred: ", error);
+        toast.error("An unexpected error occurred.", { id: loadingToast });
       }
     }
   };
-  // router.push("/");
 
   return (
     <>
