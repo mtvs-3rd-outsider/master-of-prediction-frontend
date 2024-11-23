@@ -45,6 +45,7 @@
   "시간": "h",
   "일": "d",
   "확인": "Yes",
+  "등록 로딩": "Processing your request. Please wait a moment.",
   "등록 실패": "Registration failed. Please try again later.",
   "등록 성공": "Registration completed successfully."
 }

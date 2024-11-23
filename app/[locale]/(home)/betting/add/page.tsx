@@ -147,7 +147,7 @@ const BettingAddPage = () => {
     let loadingToast;
     try {
       // 로딩 상태 알림 표시
-      loadingToast = toast.loading("Submitting betting product...");
+      loadingToast = toast.loading(t("등록 로딩"));
 
       // 요청 처리
       const response = await sendMultipartForm(
@@ -157,7 +157,7 @@ const BettingAddPage = () => {
       );
 
       // 성공 시 알림 및 페이지 이동
-      toast.success("Product submitted successfully!", { id: loadingToast });
+      toast.success(t("등록 성공"), { id: loadingToast });
       router.push(`/betting/${response.data}`);
     } catch (error) {
       // 에러 처리
@@ -166,10 +166,9 @@ const BettingAddPage = () => {
         console.log("Error response data: ", error.response?.data.errors);
 
         // 서버 에러 메시지 기반으로 알림 표시
-        toast.error(
-          error.response?.data?.message || "Failed to submit betting product.",
-          { id: loadingToast }
-        );
+        toast.error(error.response?.data?.message || t("등록 실패"), {
+          id: loadingToast,
+        });
         setIsSubmitting(false);
       } else {
         // 예상치 못한 에러
