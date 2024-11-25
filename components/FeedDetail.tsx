@@ -44,6 +44,7 @@ const FeedDetail: React.FC<{ feed: FeedResponseDTO }> = ({ feed }) => {
           quoteFeed={feed.quoteFeed}
           isQuote={feed.isQuote}
           guest={feed.guest}
+          channel={feed.channel}
         />
       </div>
       <div className="mt-8 border-t pt-4">

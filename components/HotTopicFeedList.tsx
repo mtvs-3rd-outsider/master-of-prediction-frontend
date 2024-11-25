@@ -84,6 +84,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
     [router]
   );
 
+  console.log(feeds);
   return (
     <div>
       {feeds.length > 0 ? (
@@ -118,6 +119,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
               quoteFeed={feed.quoteFeed}
               isQuote={feed.isQuote}
               guest={feed.guest}
+              channel={feed.channel}
             />
           </div>
         ))
