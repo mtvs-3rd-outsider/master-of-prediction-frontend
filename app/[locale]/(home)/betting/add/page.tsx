@@ -1,12 +1,19 @@
 "use client";
 
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  RefObject,
+  UIEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Search from "@ui/Search";
 import Panel from "@ui/Panel";
 import PanelItemTrends from "@ui/PanelItemTrends";
 import Footer from "@ui/Footer";
 import Link from "next/link";
-import { sendMultipartForm } from "@handler/fetch/axios";
+import apiClient, { sendMultipartForm } from "@handler/fetch/axios";
 import { usePathname, useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import Image from "next/image";
@@ -19,6 +26,22 @@ interface BettingOptions {
   image?: File;
   content: string;
   fileInputRef: RefObject<HTMLInputElement>;
+}
+
+interface CategoryDTO {
+  channelId: number;
+  displayName: string;
+}
+
+interface PageableResponse<T> {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+  };
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
 }
 
 const BettingAddPage = () => {
@@ -35,6 +58,33 @@ const BettingAddPage = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categoryList, setCategoryList] = useState<CategoryDTO[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [page, setPage] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (isLoading || !hasMore) return;
+
+      setIsLoading(true);
+      try {
+        const response = await apiClient.get<PageableResponse<CategoryDTO>>(
+          `/category-channels?page=${page}&size=10`
+        );
+
+        setCategoryList((prev) => [...prev, ...response.data.content]); // 기존 데이터에 새 데이터 추가
+        setHasMore(!response.data.last); // 마지막 페이지인지 여부 설정
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, [page]); // 페이지 번호가 변경될 때마다 실행
 
   /**
    * 마감 날짜 내일로 자동 설정
@@ -124,6 +174,7 @@ const BettingAddPage = () => {
     setIsSubmitting(true);
 
     const formElement = e.target as HTMLFormElement; // e.target을 HTMLFormElement로 명시
+    console.log("formElement: ", formElement);
     const formData = new FormData(formElement);
     formData.append("isBlind", isBlind.toString());
     const mainImgUrl = formData.get("mainImgUrl");
@@ -143,7 +194,7 @@ const BettingAddPage = () => {
       }
     });
 
-    console.log("formData: ", Object.fromEntries(formData));
+    formData.append("categoryCode", "1");
     let loadingToast;
     try {
       // 로딩 상태 알림 표시
@@ -175,6 +226,17 @@ const BettingAddPage = () => {
         console.log("An unexpected error occurred: ", error);
         toast.error("An unexpected error occurred.", { id: loadingToast });
       }
+    }
+  };
+
+  const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value); // 선택된 카테고리를 상태에 저장
+  };
+
+  const handleScroll = (e: UIEvent<HTMLSelectElement>) => {
+    const target = e.currentTarget;
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight - 10) {
+      setPage((prev) => prev + 1); // 스크롤이 바닥에 닿으면 다음 페이지 로드
     }
   };
 
@@ -243,16 +305,40 @@ const BettingAddPage = () => {
             >
               {t("카테고리")}
             </label>
-            <select
-              id="countries"
+            {/* <select
+              id="categories"
               className="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none"
-              defaultValue="politics"
-              name="categoryCode"
+              value={selectedCategory}
+              onChange={handleCategoryChange} // 선택 값 변경 핸들러
             >
-              <option value="1">정치</option>
-              <option value="2">경제</option>
-              <option value="3">스포츠</option>
-              <option value="4">일상</option>
+              <option value="" disabled>
+                카테고리를 선택하세요
+              </option>
+              {categoryList.map((category) => (
+                <option key={category.channelId} value={category.channelId}>
+                  {category.displayName}
+                </option>
+              ))}
+            </select> */}
+            <select
+              id="categories"
+              className="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-non overflow-y-auto"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              onScroll={handleScroll} // 스크롤 이벤트 핸들러
+            >
+              <option value="" disabled>
+                카테고리를 선택하세요
+              </option>
+              {categoryList.map((category) => (
+                <option
+                  key={category.channelId}
+                  value={category.channelId.toString()}
+                >
+                  {category.displayName}
+                </option>
+              ))}
+              {isLoading && <option disabled>로딩 중...</option>}
             </select>
           </div>
           <div className="block w-full mb-6">
