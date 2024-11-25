@@ -7,6 +7,7 @@ import { NextUIProvider } from "@nextui-org/system";
 import FloatingActionButton from "@components/FloatingActionButton";
 import useUserStore from "@store/useUserStore";
 import TanstackQueryProvider from "@ui/TanstackQueryProvider";
+import FloatingPreActionButton from "@components/FloatingPreActionButton";
 
 type LayoutProps = {
   children: ReactNode;
@@ -77,32 +78,82 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
     return null;
   };
 
+
+  const getBettingFabConfig = (): FabConfig | null => {
+    if (pathname.endsWith("/category-channel")) {
+      return {
+        url: "/category-channel/regist",
+        label: FAB_LABELS["/category-channel"],
+        channelInfo: null,
+      };
+    } else if (pathname.includes("/channel")) {
+      const channelId = searchParams?.get("channelId");
+      return {
+        url: "/hot-topic/create-feed",
+        label: FAB_LABELS["/channel"],
+        channelInfo: channelId
+          ? {
+              id: channelId,
+              type: "MYCHANNEL",
+            }
+          : undefined,
+      };
+    } else if (pathname.includes("/category-channel")) {
+      const channelId = searchParams?.get("channelId");
+      return {
+        url: "/hot-topic/create-feed",
+        label: FAB_LABELS["/hot-topic/create-feed"],
+        channelInfo: channelId
+          ? {
+              id: channelId,
+              type: "CATEGORYCHANNEL",
+            }
+          : undefined,
+      };
+    } else if (pathname.endsWith("/betting")) {
+      return {
+        url: "/betting/add",
+        label: FAB_LABELS["/betting/add"],
+        channelInfo: null,
+      };
+    }
+    return null;
+  };
+
+
   const fabConfig = getFabConfig();
+  const fabBettingConfig = getBettingFabConfig();
+// layout.tsx
 
-  return (
-    <NextUIProvider>
-      <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
-        {/* Header Section */}
-        <Nav />
+return (
+  <NextUIProvider>
+    <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
+      <Nav />
+      <TanstackQueryProvider>{children}</TanstackQueryProvider>
+      
+      {pathname.endsWith("/category-channel") && !userInfo ? null : (
+        pathname.endsWith("/category-channel") ? (
+          <FloatingActionButton 
+            href={fabConfig?.url || ''} 
+            label={fabConfig?.label} 
+          />
+        ) : pathname.includes("/category-channel") || pathname.includes("/channel") ? (
+          <FloatingPreActionButton 
+            href={fabConfig?.url || ''} 
+            label={fabConfig?.label}
+          />
+        ) : fabConfig && (
+          <FloatingActionButton 
+            href={fabConfig.url} 
+            label={fabConfig.label} 
+          />
+        )
+      )}
 
-        {/* Main Content */}
-        <TanstackQueryProvider>{children}</TanstackQueryProvider>
-
-        {/* Floating Action Button */}
-        {pathname.endsWith("/category-channel") && !userInfo
-          ? null
-          : fabConfig && (
-              <FloatingActionButton
-                href={fabConfig.url}
-                label={fabConfig.label}
-              />
-            )}
-
-        {/* Footer for Mobile */}
-        <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200">
-          <Nav mobileOnly />
-        </footer>
-      </div>
-    </NextUIProvider>
-  );
+      <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200">
+        <Nav mobileOnly />
+      </footer>
+    </div>
+  </NextUIProvider>
+);
 }
