@@ -126,18 +126,7 @@ useEffect(() => {
       icon: <HomeIconOutline className="w-6 h-6" />,
       activeIcon: <HomeIconSolid className="w-6 h-6" />,
     },
-    {
-      href: "/betting",
-      text: t("배팅"),
-      icon: <CircleStackIconOutline className="w-6 h-6" />,
-      activeIcon: <CircleStackIconSolid className="w-6 h-6" />,
-    },
-    {
-      href: "/hot-topic",
-      text: t("핫토픽"),
-      icon: <FireIconOutline className="w-6 h-6" />,
-      activeIcon: <FireIconSolid className="w-6 h-6" />,
-    },
+
     {
       href: "/category-channel",
       text: t("카테고리 채널"),

@@ -127,7 +127,7 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
 
 return (
   <NextUIProvider>
-    <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5">
+    <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5 pb-[70px] lg:pb-0">
       <Nav />
       <TanstackQueryProvider>{children}</TanstackQueryProvider>
       
