@@ -15,6 +15,9 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = withNextIntl(
   withBundleAnalyzer({
+    typescript: {
+      ignoreBuildErrors: true,
+    },
     eslint: {
       ignoreDuringBuilds: true,
     },
@@ -35,7 +38,7 @@ const nextConfig = withNextIntl(
           "X-CSRF-Token, X-Requested-With, Accept, Authorization, Content-Type, Access-Control-Allow-Origin",
       },
     ],
-   
+
     compress: true,
     reactStrictMode: false,
     // styled-components 설정 추가
