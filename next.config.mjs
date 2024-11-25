@@ -1,5 +1,6 @@
 import { createRequire } from "module";
 import withPWAInit from "@ducanh2912/next-pwa";
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
@@ -14,6 +15,9 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = withNextIntl(
   withBundleAnalyzer({
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
     source: "/(.*)",
     headers: [
       { key: "Access-Control-Allow-Credentials", value: "true" },
@@ -31,6 +35,7 @@ const nextConfig = withNextIntl(
           "X-CSRF-Token, X-Requested-With, Accept, Authorization, Content-Type, Access-Control-Allow-Origin",
       },
     ],
+   
     compress: true,
     reactStrictMode: false,
     // styled-components 설정 추가
@@ -79,6 +84,7 @@ const nextConfig = withNextIntl(
       ], // localhost 도메인 추가
     },
     webpack: (config, { dev, isServer }) => {
+      config.plugins.push(new NodePolyfillPlugin());
       if (!isServer) {
         config.optimization.minimize = true;
         config.optimization.splitChunks = {

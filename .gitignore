@@ -34,7 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
+.yarn
 *storybook.log
 certificates
 
@@ -42,3 +42,5 @@ certificates
 /public/sw.js.map
 /public/workbox-*.js
 /public/worker-development.js
+# Turborepo
+.turbo

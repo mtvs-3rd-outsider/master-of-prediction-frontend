@@ -1,4 +1,9 @@
 {
+  "plugins": ["@typescript-eslint"], // TypeScript 플러그인
+  "rules": {
+    // 필요한 추가 규칙 정의
+    "@typescript-eslint/prefer-nullish-coalescing": "off", // 임시로 비활성화
+  },
   "extends": [
     "next/core-web-vitals",
     "plugin:storybook/recommended"

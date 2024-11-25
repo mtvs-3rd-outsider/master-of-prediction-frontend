@@ -1,10 +1,9 @@
-"use client"
 import useDMThreadStatus from '@/hooks/useDMThreadStatus';
 import ChatUI from '@ui/ChatUI';
 import React from 'react';
 
-export default function Page({ params }: { params: { roomId: string} }) {
-  const { roomId} = params;
+export default async function Page({ params }: { params: { roomId: string} }) {
+  const { roomId} = await params;
 
 
   return (

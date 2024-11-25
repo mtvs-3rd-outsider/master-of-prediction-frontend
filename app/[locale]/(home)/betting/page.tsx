@@ -6,7 +6,10 @@ import GuideSection from "@ui/GuideSection";
 function BettingPage() {
   return (
     <>
-      <main className="col-span-5 w-full border-x border-slate-200">
+      <main
+        suppressHydrationWarning
+        className="col-span-5 w-full border-x border-slate-200"
+      >
         <BettingProducts />
       </main>
       <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">

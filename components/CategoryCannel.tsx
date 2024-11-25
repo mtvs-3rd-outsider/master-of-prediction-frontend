@@ -48,6 +48,13 @@ const fetchIsOwner = async (channelId: string, userId: string) => {
   return data;
 };
 
+const fetchIsManager = async (channelId: string, userId: string) => {
+  // const { data } = await apiClient.get(
+  //   `/category-channels/${channelId}/management?userId=${userId}`
+  // );
+  return null;
+};
+
 const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
   const subscribeToChannel = async (channelId: string, actionType: string) => {
     await apiClient.post("/channel/subscription", {
@@ -84,7 +91,13 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
     refetchOnMount: "always",
     staleTime: 0,
   });
-
+const { data: isManager, isLoading: isManagerLoading } = useQuery({
+  queryKey: ["isManager", channel?.channelId, userId],
+  queryFn: () => fetchIsManager(channel?.channelId!, userId!),
+  enabled: !!channel?.channelId && !!userId,
+  refetchOnMount: "always",
+  staleTime: 0,
+});
   const { isLoading: isSubscriptionLoading } = useQuery({
     queryKey: ["subscriptionStatus-channel", channel?.channelId],
     queryFn: () => fetchSubscriptionStatus(channel?.channelId?.toString()),
@@ -135,19 +148,42 @@ const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
           <EnvelopeIcon className="h-6 w-6" />
         </Button> */}
 
-        {isOwnerLoading || isSubscriptionLoading ? (
+        {isOwnerLoading || isManagerLoading || isSubscriptionLoading ? (
           <p>Loading...</p>
-        ) :  (
+        ) : (
           isLoggedIn && (
-            <Button
-              radius="full"
-              variant={isSubscribed ? "bordered" : "solid"}
-              className="font-bold px-3 py-2 z-20"
-              color="primary"
-              onClick={handleSubscribeClick}
-            >
-              {isSubscribed ? "구독 중" : "구독"}
-            </Button>
+            <>
+              <Button
+                radius="full"
+                variant={isSubscribed ? "bordered" : "solid"}
+                className="font-bold px-3 py-2 z-20"
+                color="primary"
+                onClick={handleSubscribeClick}
+              >
+                {isSubscribed ? "구독 중" : "구독"}
+              </Button>
+              {(isOwner || isManager) && (
+                <Button
+                  radius="full"
+                  variant="solid"
+                  className="font-bold px-3 py-2 z-20"
+                  color="secondary"
+                  onClick={() => {
+                    if (isOwner) {
+                      router.push(
+                        `/category-channel/${channel?.channelId}/admin`
+                      );
+                    } else if (isManager) {
+                      router.push(
+                        `/category-channel/${channel?.channelId}/manager`
+                      );
+                    }
+                  }}
+                >
+                  {isOwner ? "관리자 설정" : "게시물 관리"}
+                </Button>
+              )}
+            </>
           )
         )}
       </div>

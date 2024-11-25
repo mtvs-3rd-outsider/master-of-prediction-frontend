@@ -48,12 +48,11 @@ const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
   const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
   const clientRef = useRef<any>(null);
-  const { hasHydrated, userInfo, token, userId } = useUserStore((state) => ({
-    hasHydrated: state.hasHydrated,
-    userInfo: state.userInfo,
-    token: state.userInfo?.token,
-    userId: state.userInfo?.id,
-  }));
+const hasHydrated = useUserStore((state) => state.hasHydrated);
+const userInfo = useUserStore((state) => state.userInfo);
+const token = useUserStore((state) => state.userInfo?.token);
+const userId = useUserStore((state) => state.userInfo?.id);
+
   const { unreadCount, setUnreadCount, setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
   const removeLocale = (path: string) => {
     const parts = path.split("/");

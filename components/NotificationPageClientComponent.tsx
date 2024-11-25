@@ -39,10 +39,8 @@ interface UserChannelPageProps {
 const NotificationPageClientComponent: React.FC<UserChannelPageProps> = ({
   tabNames,
 }) => {
-  const { userInfo, hasHydrated } = useUserStore((state) => ({
-    userInfo: state.userInfo,
-    hasHydrated: state.hasHydrated,
-  }));
+  const userInfo = useUserStore((state) => state.userInfo);
+  const hasHydrated = useUserStore((state) => state.hasHydrated);
   const router = useRouter();
 
   useEffect(() => {

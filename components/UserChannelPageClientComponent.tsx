@@ -22,11 +22,8 @@ interface UserChannelPageProps {
 
 const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user }) => {
     const t = useTranslations();
-    const { userInfo } = useUserStore((state) => ({
-      userInfo: state.userInfo,
-    }));
-    const router = useRouter();
-  const tabNames = [t("게시글"), t("베팅")];
+  
+  const tabNames = [t("게시글"), t("배팅")];
 
   const [activeTab, setActiveTab] = useState(0);
 

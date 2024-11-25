@@ -33,9 +33,7 @@ const FAB_LABELS: Record<string, string> = {
 export default function RootLayout({ children }: LayoutProps): ReactNode {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { userInfo } = useUserStore((state) => ({
-    userInfo: state.userInfo,
-  }));
+ const userInfo = useUserStore((state) => state.userInfo);
 
   const getFabConfig = (): FabConfig | null => {
     if (pathname.endsWith("/category-channel")) {

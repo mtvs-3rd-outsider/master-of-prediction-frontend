@@ -122,13 +122,13 @@ function BettingProductDetail(props: BettingProductInfo) {
                   avatarUrl={"/images/logo.png"}
                 />
               )}
-              <p className="flex flex-1 mt-0">
+              <div className="flex flex-1 mt-0">
                 <div className="flex items-center space-x-2">
                   {/* 시간 아이콘 */}
                   <ClockIcon className="w-4 h-4" />
 
                   {/* 날짜와 툴팁 */}
-                  <p
+                  <span 
                     className="flex flex-1 relative cursor-pointer"
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
@@ -139,9 +139,9 @@ function BettingProductDetail(props: BettingProductInfo) {
                         {tooltipTime}
                       </span>
                     )}
-                  </p>
+                  </span>
                 </div>
-              </p>
+              </div>
               {user.userID == product.userId &&
                 product.winningOption == null &&
                 handleSettlementButton() && (

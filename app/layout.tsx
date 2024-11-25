@@ -1,10 +1,11 @@
 
 
 import type { Metadata, Viewport } from "next";
-import Head from 'next/head';
+import Head from "next/head";
 import {NextIntlClientProvider} from 'next-intl';
 import { getMessages, unstable_setRequestLocale } from "next-intl/server";
 import { Toaster } from "react-hot-toast";
+import {  ToastProvider } from "@/components/ui/toast";
 import Script from "next/script";
 import GoogleAdsense from "@ui/GoogleAdsense";
 const APP_NAME = "예측의 달인";
@@ -59,29 +60,29 @@ export const viewport: Viewport = {
   
 export default async  function RootLayout({
   children,
-  params: {locale}
+  params
 }: {
   children: React.ReactNode;
   params: {locale: string};
-}) {
-  const messages = await getMessages();
-
+  }) {
+ const { locale } = await params;
+  
+  const messages = await getMessages({locale});
   return (
     <>
-<html lang={locale} suppressHydrationWarning={true}>
-<head>
-<Script
-  type="text/javascript"
-  src="/service-worker-register.js"
-/>
-        <GoogleAdsense pId="2358632947348636" />
-      </head>
-      <body  suppressHydrationWarning={true}>
-      <NextIntlClientProvider messages={messages}>
+      <html suppressContentEditableWarning>
+        <body suppressHydrationWarning
+        >
+          <Head>
+            <Script type="text/javascript" src="/service-worker-register.js" />
+            <GoogleAdsense pId="2358632947348636" />
+          </Head>
+          <NextIntlClientProvider messages={messages}>
+            <ToastProvider />
 
-          {children}
-        </NextIntlClientProvider>
-      </body>
+            {children}
+          </NextIntlClientProvider>
+        </body>
       </html>
     </>
   );

@@ -35,11 +35,9 @@ export default function ChatUI({ id }: any) {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [roomId, setRoom] = useState<any>("bet-" + id);
   const [endpoint, setEndpoint] = useState<any>(null);
-  const { userInfo, token, hasHydrated } = useUserStore((state) => ({
-    userInfo: state.userInfo,
-    token: state.userInfo?.token,
-    hasHydrated: state.hasHydrated,
-  }));
+    const userInfo = useUserStore((state) => state.userInfo);
+    const token = useUserStore((state) => state.userInfo?.token);
+    const hasHydrated = useUserStore((state) => state.hasHydrated);
   const { ref: loadMoreRef, inView: isInView } = useInView({
     rootMargin: "100px",
     threshold: 0.5,

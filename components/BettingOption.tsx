@@ -167,6 +167,7 @@ const BettingOption = ({
   return (
     <>
       <li
+        key={optionId}
         className={`flex gap-4 py-6
 			rounded-lg shadow-lg p-6 transform transition-transform duration-300 ease-in-out hover:bg-gray-200 hover:shadow-xl
           ${winningOption == currentOptionId && "bg-green-400"}

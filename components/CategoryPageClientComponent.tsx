@@ -19,7 +19,7 @@ const CategoryPageClientComponent: React.FC<CategoryPageProps> = ({ category }) 
     setActiveTab(index); // 선택된 탭의 인덱스를 업데이트
   };
  const t = useTranslations();
-const tabNames = [t("게시글"), t("베팅")];
+const tabNames = [t("게시글"), t("배팅")];
   return (
     <div>
       {/* CategoryChannel 컴포넌트에 서버에서 전달받은 카테고리 데이터를 전달 */}

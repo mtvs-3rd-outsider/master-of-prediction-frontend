@@ -43,10 +43,11 @@ export type MyChannelProps = {
 
 export default async function Page({ params }: { params: { userId: string } }) {
   // 서버에서 데이터 페칭
-  const userData = await fetchUserData(params.userId);
+  const {userId} = await params;
+  const userData = await fetchUserData(userId);
   const updatedData = {
     ...userData,
-    userId: params.userId, // userId를 추가
+    userId: userId, // userId를 추가
   };
 
   return (

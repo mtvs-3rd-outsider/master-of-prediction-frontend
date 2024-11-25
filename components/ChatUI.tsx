@@ -72,14 +72,15 @@ const ChatUI = React.memo(
   ({ roomId }: ChatUIProps) => {
     const clientRef = useRef<any>(null);
     const isSettingUp = useRef(false); // 설정 중인지 추적
-    const { userInfo, token, hasHydrated } = useUserStore((state) => ({
-      userInfo: state.userInfo,
-      token: state.userInfo?.token,
-      hasHydrated: state.hasHydrated,
-    }));
+    // 상태 값 개별적으로 직접 가져오기
+    const userInfo = useUserStore((state) => state.userInfo);
+    const token = useUserStore((state) => state.userInfo?.token);
+    const hasHydrated = useUserStore((state) => state.hasHydrated);
 
     const { dmlist } = useDMListStore();
-    const [reactions, setReactions] = useState<Record<number, ReactionVM[]>>({}); // 각 메시지에 대한 반응 상태
+    const [reactions, setReactions] = useState<Record<number, ReactionVM[]>>(
+      {}
+    ); // 각 메시지에 대한 반응 상태
     const [messages, setMessages] = useState<Message[]>([]);
     const [isAtBottom, setIsAtBottom] = useState(true);
     const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
@@ -152,7 +153,9 @@ const ChatUI = React.memo(
     console.log(messages);
 
     // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
-    const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
+    const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>(
+      {}
+    );
     const filteredParticipants = currentRoom.participants.filter(
       (participant) => participant.userId.toString() != userInfo?.id
     );
@@ -217,7 +220,8 @@ const ChatUI = React.memo(
       console.log("data: ", data);
 
       // data가 객체일 경우 Map으로 변환
-      const dataMap = data instanceof Map ? data : new Map(Object.entries(data));
+      const dataMap =
+        data instanceof Map ? data : new Map(Object.entries(data));
       setUserLastReadTimes((prevTimes) => {
         const updatedTimes = new Map(prevTimes);
         dataMap.forEach((value: UserLastReadTimeVM, key: string) => {
@@ -345,14 +349,7 @@ const ChatUI = React.memo(
           console.warn("RSocket client was not initialized or already closed.");
         }
       };
-    }, [
-      userInfo,
-      token,
-      roomId,
-      sourceRef,
-      sourceRefForReaction,
-      clientRef,
-    ]);
+    }, [userInfo, token, roomId, sourceRef, sourceRefForReaction, clientRef]);
 
     const handleScroll = () => {
       if (chatContainerRef.current) {
@@ -472,7 +469,11 @@ const ChatUI = React.memo(
             `api.v1.messages.stream/${roomId}`,
             token!
           );
-          RSocketClientSetup.sendMessage(sourceRef, userMessage, channelMetadata);
+          RSocketClientSetup.sendMessage(
+            sourceRef,
+            userMessage,
+            channelMetadata
+          );
         }
 
         // UI 업데이트 후 파일 초기화 및 상태 초기화
@@ -658,8 +659,9 @@ const ChatUI = React.memo(
           <div className="ml-2 text-sm font-medium text-gray-800">
             {filteredParticipants.length == 1
               ? filteredParticipants[0]?.displayName
-              : `${filteredParticipants[0]?.displayName} 외 ${filteredParticipants.length - 1
-              }명`}
+              : `${filteredParticipants[0]?.displayName} 외 ${
+                  filteredParticipants.length - 1
+                }명`}
           </div>
         </div>
         <ScrollShadow
@@ -677,7 +679,10 @@ const ChatUI = React.memo(
             </div>
 
             {messages.map((message, index) => {
-              const showDateHeader = isDifferentDay(message, messages[index - 1]);
+              const showDateHeader = isDifferentDay(
+                message,
+                messages[index - 1]
+              );
 
               return (
                 <div key={index} className="space-y-2">
@@ -693,8 +698,9 @@ const ChatUI = React.memo(
                         messageRefs.current.set(message.id!, el);
                       }
                     }}
-                    className={`flex items-start space-x-2 ${message.user.id == user.id ? "justify-end" : ""
-                      }`}
+                    className={`flex items-start space-x-2 ${
+                      message.user.id == user.id ? "justify-end" : ""
+                    }`}
                   >
                     {message.user.id != user.id && (
                       <Link
@@ -712,10 +718,11 @@ const ChatUI = React.memo(
                     )}
                     <div className="relative max-w-xs p-2 rounded-lg">
                       <div
-                        className={`${message.user.id == user.id
-                          ? "bg-sky-100 text-black shadow-md"
-                          : "bg-white text-black shadow-md"
-                          }`}
+                        className={`${
+                          message.user.id == user.id
+                            ? "bg-sky-100 text-black shadow-md"
+                            : "bg-white text-black shadow-md"
+                        }`}
                         style={{
                           borderRadius: "15px",
                           padding: "8px 12px",
@@ -725,10 +732,11 @@ const ChatUI = React.memo(
                       >
                         {/* 더보기 및 반응 선택 버튼 */}
                         <div
-                          className={`absolute top-1/2 flex items-center -translate-y-1/2 ${message.user.id == user.id
-                            ? "left-1  -translate-x-[90px]"
-                            : "right-1 flex-row-reverse  translate-x-[90px]"
-                            }`}
+                          className={`absolute top-1/2 flex items-center -translate-y-1/2 ${
+                            message.user.id == user.id
+                              ? "left-1  -translate-x-[90px]"
+                              : "right-1 flex-row-reverse  translate-x-[90px]"
+                          }`}
                           style={{ top: "50%" }} // 중앙 정렬을 위한 위치 설정
                         >
                           {/* 더보기 메뉴 */}
@@ -809,7 +817,9 @@ const ChatUI = React.memo(
                           <p
                             className="text-xs text-gray-500 cursor-pointer break-words whitespace-pre-line"
                             onClick={() =>
-                              scrollToMessage(parseInt(message.replyToMessageId!))
+                              scrollToMessage(
+                                parseInt(message.replyToMessageId!)
+                              )
                             }
                           >
                             Replying to: {message.replyContent}
@@ -872,12 +882,14 @@ const ChatUI = React.memo(
                               </DropdownTrigger>
                               <DropdownMenu aria-label="Reaction List">
                                 {reactions[message.id!]
-                                  .filter((r) => r.reactionType === reactionType)
+                                  .filter(
+                                    (r) => r.reactionType === reactionType
+                                  )
                                   .map((r) => (
                                     <DropdownItem
                                       key={r.reactionId}
                                       variant="light"
-                                    // className="pointer-events-none"
+                                      // className="pointer-events-none"
                                     >
                                       <div className="flex items-center justify-between w-full">
                                         {/* <span>
