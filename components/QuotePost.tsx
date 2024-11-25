@@ -63,7 +63,7 @@ quoteId,
                 name={quoteUser.displayName}
                 username={quoteUser.userName}
                 date={new Date(quoteCreateAt).toLocaleString()}
-                tierName={quoteUser.tier}
+                tierName={quoteUser.tier.name}
               />
             )}
             {quoteGuest && (
