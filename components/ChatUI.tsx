@@ -666,7 +666,7 @@ const ChatUI = React.memo(
           ref={chatContainerRef}
           onScroll={handleScroll}
           offset={100}
-          className="flex-1 overflow-y-auto overflow-x-hidden pb-[70px] lg:pb-0 "
+          className="flex-1 overflow-y-auto overflow-x-hidden "
         >
           <div className="p-4 space-y-4">
             <div ref={loadMoreRef}>
