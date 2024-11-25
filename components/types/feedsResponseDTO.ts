@@ -20,6 +20,7 @@ export interface FeedsResponseDTO {
     isShare: boolean | null;
     isQuote: boolean;
     quoteFeed?: QuoteFeed;
+    channel: ChannelDTO;
   }
   export interface QuoteFeed {
     quoteId: number;
@@ -47,6 +48,7 @@ export interface GuestDTO {
 
 export interface ChannelDTO {
     channelId: number;
+    channelName: string;
     channelType: ChannelType;
 }
 

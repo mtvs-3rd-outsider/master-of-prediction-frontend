@@ -1,6 +1,7 @@
 // @components/types/feedResponseDTO.ts
 // @components/types/feedResponseDTO.ts
 
+
 export type AuthorType = 'USER' | 'GUEST';
 export type ChannelType = 'MYCHANNEL' | 'CATEGORYCHANNEL';
 
@@ -18,6 +19,12 @@ export interface UserDTO {
 export interface GuestDTO {
   guestId: string;
   guestPassword: string;
+}
+
+export interface ChannelDTO{
+  channelId: number;
+  channelName: string;
+  channelType: ChannelType;
 }
 
 // 상세 피드 조회용 DTO
@@ -48,6 +55,7 @@ export interface FeedResponseDTO {
   isShare: boolean;
   quoteFeed?: QuoteFeed;
   isQuote: boolean;
+  channel: ChannelDTO;
 }
 
 export interface QuoteFeed {
