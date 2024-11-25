@@ -1,5 +1,5 @@
 {
-    "name": "Spring Boot Thymeleaf PWA",
+    "name": "예측의 달인",
     "short_name": "PWA",
     "start_url": "/",
     "display": "standalone",
