@@ -1,6 +1,8 @@
 // @components/types/feedResponseDTO.ts
 // @components/types/feedResponseDTO.ts
 
+import { TierDTO } from "./feedsResponseDTO";
+
 
 export type AuthorType = 'USER' | 'GUEST';
 export type ChannelType = 'MYCHANNEL' | 'CATEGORYCHANNEL';
@@ -12,7 +14,7 @@ export interface UserDTO {
   displayName: string;
   points: string;
   authority: string;
-  tier: string;
+  tier: TierDTO;
   userImg: string;
 }
 

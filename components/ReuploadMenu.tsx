@@ -52,17 +52,19 @@ const ReuploadMenu: React.FC<ReuploadMenuProps> = ({
 
       {isOpen && (
         <div className="absolute left-0 mt-2 py-2 w-32 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
-          {/* <button
-            onClick={(e) => {
-              e.preventDefault(); // 기본 동작 방지
-              e.stopPropagation();
-              onToggleReupload(e);
-              setIsOpen(false);
-            }}
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors duration-200"
-          >
-            {isShare ? "재업로드 취소" : "재업로드"}
-          </button> */}
+         {Number(feedId) > 0 && (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation(); 
+        onToggleReupload(e);
+        setIsOpen(false);
+      }}
+      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors duration-200"
+    >
+      {isShare ? "재업로드 취소" : "재업로드"}
+    </button>
+  )}
           <button
             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors duration-200"
             onClick={(e) => {

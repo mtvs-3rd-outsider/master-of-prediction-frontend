@@ -37,7 +37,7 @@ export interface UserDTO {
     displayName: string;
     points: string; // BigDecimal을 string으로 표현
     authority: Authority;
-    tier: Tier;
+    tier: TierDTO;
     userImg: string;
 }
 
@@ -52,7 +52,11 @@ export interface ChannelDTO {
     channelType: ChannelType;
 }
 
+export interface TierDTO{
+    name: string;
+    level: number;
+}
+
 // Enum 타입들
 export type Authority = string; // 실제 Authority enum 값들로 대체 가능
-export type Tier = string; // 실제 Tier enum 값들로 대체 가능
 export type ChannelType = 'MYCHANNEL' | 'CATEGORYCHANNEL'; // 예시, 실제 값들로 대체 필요

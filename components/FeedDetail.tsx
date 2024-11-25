@@ -45,6 +45,7 @@ const FeedDetail: React.FC<{ feed: FeedResponseDTO }> = ({ feed }) => {
           isQuote={feed.isQuote}
           guest={feed.guest}
           channel={feed.channel}
+          tier={feed.user?.tier}
         />
       </div>
       <div className="mt-8 border-t pt-4">

@@ -20,6 +20,7 @@ import { UserDTO, GuestDTO, ChannelDTO } from "@components/types/feedResponseDTO
 import GuestAuthModal from "@components/GuestAuthModal";
 import Avatar from "@rd/Avatar";
 import { Button } from "@nextui-org/button";
+import { TierDTO } from "./types/feedsResponseDTO";
 
 export interface PostItem {
   id: string;
@@ -55,6 +56,7 @@ export interface PostItem {
   isQuote?: boolean;
   guest?: GuestDTO | null;
   channel?: ChannelDTO | null;
+  tier?: TierDTO | null;
 }
 
 const Post: React.FC<PostItem> = ({
@@ -83,6 +85,7 @@ const Post: React.FC<PostItem> = ({
   isQuote = false,
   guest,
   channel,
+  tier,
 }) => {
   const [isLiked, setIsLiked] = useState(isLike);
   const [likesCount, setLikesCount] = useState(initialLikesCount);
@@ -251,7 +254,7 @@ const Post: React.FC<PostItem> = ({
             name={name}
             username={username}
             date={date}
-            tierName="novice"
+            tierName={tier?.name}
           />
             <div>
               {userInfo?.id === userId || guest ? (
