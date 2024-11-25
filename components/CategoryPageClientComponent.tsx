@@ -5,19 +5,21 @@ import CategoryChannel from '@components/CategoryCannel'; // CategoryChannel 컴
 import Tabs from '@components/StickyTabs'; // Tabs 컴포넌트 임포트
 import ChannelFeedList from './ChannelFeedList';
 import BettingList from './BettingList';
+import { useTranslations } from 'next-intl';
 interface CategoryPageProps {
   category: any; // 서버에서 전달받은 카테고리 데이터
-  tabNames: string[];
+
 }
 
-const CategoryPageClientComponent: React.FC<CategoryPageProps> = ({ category, tabNames }) => {
+const CategoryPageClientComponent: React.FC<CategoryPageProps> = ({ category }) => {
   const [activeTab, setActiveTab] = useState(0); // 현재 활성화된 탭의 인덱스 상태
 
   const handleTabChange = (index: number) => {
     console.log(`Active tab: ${index}`);
     setActiveTab(index); // 선택된 탭의 인덱스를 업데이트
   };
-
+ const t = useTranslations();
+const tabNames = [t("게시글"), t("베팅")];
   return (
     <div>
       {/* CategoryChannel 컴포넌트에 서버에서 전달받은 카테고리 데이터를 전달 */}

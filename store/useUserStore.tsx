@@ -1,4 +1,6 @@
 "use client";
+import apiClient from "@handler/fetch/axios";
+import FCM from "@ui/FCM";
 import toast from "react-hot-toast";
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
@@ -26,7 +28,9 @@ interface UserStore {
   clearUserInfo: () => void;
   hasHydrated: boolean; // Hydration 완료 여부 상태
   setHasHydrated: (state: boolean) => void; // Hydration 상태 업데이트 함수
-  updateUserInfo: (partialInfo: Partial<UserInfo>) => void
+  updateUserInfo: (partialInfo: Partial<UserInfo>) => void;
+  currentToken: string | null; // FCM 토큰 상태 추가
+  setCurrentToken: (token: string | null) => void; // FCM 토큰 업데이트 함수 추가
 }
 
 // Zustand 스토어 생성
@@ -36,6 +40,10 @@ const useUserStore = create<UserStore>()(
       (set, get) => ({
         userInfo: null,
         hasHydrated: false, // 초기값 false
+        currentToken: null, // 초기값 null
+        setCurrentToken: (token) => {
+          set({ currentToken: token });
+        },
         setUserInfo: (info) => {
           if (!info.token) {
             toast.error(
@@ -56,7 +64,21 @@ const useUserStore = create<UserStore>()(
         },
         clearUserInfo: () => {
           console.log("clearUserInfo called");
-          set({ userInfo: null });
+          const currentToken = get().currentToken;
+          if (currentToken) {
+            apiClient(`/fcm`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              data: JSON.stringify({ token: currentToken }),
+            })
+              .then(() => console.log("FCM token removed from server."))
+              .catch((error) =>
+                console.error("Error removing FCM token from server: ", error)
+              );
+          }
+          set({ userInfo: null, currentToken: null }); // currentToken 초기화
           localStorage.removeItem("user-storage");
 
           // accessToken 쿠키 제거
