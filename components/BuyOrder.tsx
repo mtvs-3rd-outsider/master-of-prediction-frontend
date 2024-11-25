@@ -109,7 +109,6 @@ const BuyOrder = ({
               }
             });
           }
-          window.location.reload();
         });
     };
     onOpenAlert("구매 확인", "정말로 구매하시겠습니까?", confirmHandler);

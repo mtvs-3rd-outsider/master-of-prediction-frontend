@@ -28,15 +28,10 @@ const Account = ({
   if (date) {
     try {
       // Moment를 사용하여 문자열을 Date 객체로 변환
-      console.log("date2", date);
       const parsedDate = moment(
         new Date(date),
         "YYYY. MM. DD. A hh:mm:ss"
       ).toDate();
-
-      console.log("parsedDate: ", parsedDate);
-
-      // console.log (new Date);
 
       // 현재 시간과 비교
       formattedDate = formatDistanceToNow(parsedDate, {

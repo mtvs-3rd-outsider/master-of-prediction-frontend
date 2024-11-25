@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Account from "./Account";
 import AccountNavItem from "./AccountNavItem";
 import Avatar from "./AvatarWithIcon";
@@ -11,7 +11,7 @@ import {
   ChatBubbleOvalLeftIcon,
   ArrowPathIcon,
   ChartBarSquareIcon,
-  ClockIcon
+  ClockIcon,
 } from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
 import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
 import { BettingOptions, BettingProductInfo } from "@/types/BettingTypes";
@@ -32,14 +32,30 @@ import {
 } from "@nextui-org/react";
 import PostStatsNav from "./PostStatsNav";
 import BettingAccount from "./BettingAccount";
+import { useSseStore } from "@/hooks/useSseStore";
 
 function BettingProductDetail(props: BettingProductInfo) {
-
-  
   const { user, product, productImages, options, optionsRatio, postStats } =
     props;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
+  const connect = useSseStore((state) => state.connect);
+  const close = useSseStore((state) => state.close);
+  const { id: bettingId } = useParams();
+
+  useEffect(() => {
+    const eventSource = connect(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/betting-products/connect/${bettingId}`
+    );
+
+    eventSource.onmessage = (event) => {
+      console.log("SSE event received: ", event.data);
+    };
+
+    return () => {
+      close(); // 컴포넌트가 언마운트될 때 SSE 연결 종료
+    };
+  }, [connect, close, bettingId]);
 
   useEffect(() => {
     if (
@@ -86,20 +102,20 @@ function BettingProductDetail(props: BettingProductInfo) {
     `${product.deadlineDate}T${product.deadlineTime}`
   );
   const isValidDate = !isNaN(deadlineDateTime.getTime());
- const formattedDate = isValidDate
-   ? deadlineDateTime.toLocaleDateString("en-US", {
-       year: "numeric",
-       month: "short",
-       day: "numeric",
-     })
-   : "";
+  const formattedDate = isValidDate
+    ? deadlineDateTime.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "";
 
- const tooltipTime = isValidDate
-   ? deadlineDateTime.toLocaleTimeString("en-US", {
-       hour: "2-digit",
-       minute: "2-digit",
-     })
-   : "";
+  const tooltipTime = isValidDate
+    ? deadlineDateTime.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
 
   return (
     <>
