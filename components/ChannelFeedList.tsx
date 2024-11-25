@@ -102,6 +102,7 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({
                 isQuote={feed.isQuote}
                 guest={feed.guest}
                 channel={feed.channel}
+                tier={feed.user?.tier}
               />
             </div>
           ))

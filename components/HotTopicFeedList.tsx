@@ -120,6 +120,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
               isQuote={feed.isQuote}
               guest={feed.guest}
               channel={feed.channel}
+              tier={feed.user?.tier}
             />
           </div>
         ))
