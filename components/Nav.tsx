@@ -197,7 +197,7 @@ useEffect(() => {
   }, [hasHydrated, userInfo]);
   if (mobileOnly) {
     return (
-      <nav className="sm:hidden flex justify-around bg-white border-t border-gray-200">
+      <nav className="sm:hidden flex justify-between bg-white border-t border-gray-200 max-w-full overflow-hidden px-4">
         {items.map(({ href, icon, activeIcon }, i) => (
           <NavItem
             key={`mobile-nav-${i}`}

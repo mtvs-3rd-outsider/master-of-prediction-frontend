@@ -15,6 +15,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: "480px", // 추가적인 모바일 브레이크포인트
+      },
       fontFamily: {
         default: ["var(--font-mona-sans)", ...fontFamily.sans],
         sans: ["var(--font-mona-sans)", ...fontFamily.sans],

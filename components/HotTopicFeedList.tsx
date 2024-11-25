@@ -85,7 +85,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
   );
 
   return (
-    <div className="pb-[70px] lg:pb-0" >
+    <div className="pb-[170px] lg:pb-0" >
       {feeds.length > 0 ? (
         feeds.map((feed) => (
           <div key={`feed-container-${feed.id}`}>
