@@ -1,4 +1,5 @@
 "use client";
+import { Button } from '@nextui-org/button';
 import { cva } from 'class-variance-authority';
 import Link from 'next/link';
 
@@ -35,19 +36,13 @@ const NavItemStyles = cva(
 	},
 );
 
-const NavItem = ({ href, children, width, size, onClick }: Props) => {
-	if (onClick) {
-		return (
-			<button className={NavItemStyles({ width, size })} onClick={onClick}>
-				{children}
-			</button>
-		);
-	}
-	return (
-		<Link className={NavItemStyles({ width, size })} href={href || '#'} prefetch={true} scroll={true}>
-			{children}
-		</Link>
-	);
+
+const NavItem = ({ href, children, width, size }: Props) => {
+  return (
+    <Button variant='light' as="a" href={href} className={NavItemStyles({ width, size })}>
+      {children}
+    </Button>
+  );
 };
 
 export default NavItem;

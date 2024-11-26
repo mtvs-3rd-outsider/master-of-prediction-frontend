@@ -27,7 +27,7 @@ export interface ChatThreadDTO {
 
 const DMList: React.FC = () => {
   const router = useRouter();
-  const { messageMap, setMessageMap } = useMessageStore();
+  const { messageMap } = useMessageStore();
   const { dmlist, setDMLIst } = useDMListStore();
   const userInfo = useUserStore((state) => state.userInfo);
   const { ref: loadMoreRef, inView: isInView } = useInView({
@@ -63,9 +63,12 @@ const DMList: React.FC = () => {
       return undefined;
     },
     enabled: !!userInfo,
+    refetchOnMount: "always",
     staleTime: 0,
   });
-
+useEffect(() => {
+  refetch(); // 페이지 이동 시 데이터를 다시 가져오기
+}, [router, refetch]);
   useEffect(() => {
     if (data) {
       const updatedMessageMap = data.pages.reduce<Record<string, RoomInfo>>(

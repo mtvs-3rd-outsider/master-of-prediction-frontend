@@ -81,14 +81,11 @@ useEffect(() => {
           {
             endpoint: `api.v1.messages.threadInfos/${userId}`,
             onNext: (newMessageMap: Record<string, RoomInfo>) => {
-              console.log("Received newMessageMap:", newMessageMap);
-
               const totalUnreadCount = Object.values(newMessageMap).reduce(
                 (acc, roomInfo) => acc + roomInfo.unreadMessageCount,
                 0
               );
 
-              console.log("Calculated Total Unread Count:", totalUnreadCount);
 
               setMessageMap(newMessageMap);
               setUnreadCount(totalUnreadCount);

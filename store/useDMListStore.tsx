@@ -1,6 +1,5 @@
-// src/store/useDMListStore.ts
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { RoomInfo } from "@store/useMessageStore";
 
 interface DMListState {
@@ -24,7 +23,7 @@ export const useDMListStore = create<DMListState>()(
     }),
     {
       name: "dm-list-storage", // 로컬 스토리지 키 이름
-      getStorage: () => localStorage, // 기본 저장소 설정
+      storage: createJSONStorage(() => localStorage), // 클라이언트 환경에서 JSON 스토리지로 사용
     }
   )
 );

@@ -72,6 +72,7 @@ export default async  function RootLayout({
     <>
       <html suppressContentEditableWarning>
         <body suppressHydrationWarning
+        
         >
           <Head>
             <Script type="text/javascript" src="/service-worker-register.js" />

@@ -208,16 +208,27 @@ const ChatUI = React.memo(
       getNextPageParam: (lastPage) =>
         !lastPage.last ? lastPage.number + 1 : undefined,
       enabled: !!userInfo,
+      staleTime: 0
     });
 
-    useEffect(() => {
-      if (data) {
-        const fetchedMessages = data.pages.flatMap((page) => page.content);
-        setMessages((prev) => [...fetchedMessages.reverse(), ...prev]);
-      }
-    }, [data]);
+useEffect(() => {
+  if (data) {
+    const fetchedMessages = data.pages.flatMap((page) => page.content);
+
+    setMessages((prevMessages) => {
+      const mergedMessages = [...fetchedMessages, ...prevMessages];
+      const uniqueMessages = Array.from(
+        new Map(mergedMessages.map((msg) => [msg.id, msg])).values()
+      );
+      return uniqueMessages.sort((a, b) => moment(a.sent).diff(moment(b.sent)));
+    });
+  }
+}, [data]);
+
+
+
     const handleNewData = (data: any) => {
-      console.log("data: ", data);
+      console.log("handleNewData: ", data);
 
       // data가 객체일 경우 Map으로 변환
       const dataMap =
@@ -251,11 +262,11 @@ const ChatUI = React.memo(
             channels: [
               {
                 sourceRef: sourceRef,
-                onNext: (x) => console.log("Channel data:", x),
+                onNext: (x) => x,
               },
               {
                 sourceRef: sourceRefForReaction,
-                onNext: (x) => console.log("Reaction data:", x),
+                onNext: (x) => x,
               },
             ],
             streams: [
@@ -272,7 +283,7 @@ const ChatUI = React.memo(
               },
               {
                 endpoint: `api.v1.messages.connect/${roomId}`,
-                onNext: (data) => console.log("Connected message:", data),
+                onNext: (data) => data,
               },
               {
                 endpoint: `api.v1.reactions.stream/${roomId}`,
@@ -349,7 +360,7 @@ const ChatUI = React.memo(
           console.warn("RSocket client was not initialized or already closed.");
         }
       };
-    }, [userInfo, token, roomId, sourceRef, sourceRefForReaction, clientRef]);
+    }, [userInfo, token, roomId]);
 
     const handleScroll = () => {
       if (chatContainerRef.current) {
@@ -634,7 +645,7 @@ const ChatUI = React.memo(
     return (
       <div className="flex flex-col h-screen mx-auto bg-white">
         {/* 그룹 아이콘 및 참여자 드롭다운 */}
-        <div className=" flex  items-center p-4 border-b border-gray-300 bg-gray-100">
+        <header className="fixed flex flex-row w-full justify-around items-center px-4 border-b border-gray-300 bg-gray-100 z-10">
           <div className="top-0 left-0 p-4 flex justify-start w-full">
             <BackButton />
           </div>
@@ -656,14 +667,14 @@ const ChatUI = React.memo(
               ))}
             </DropdownMenu>
           </Dropdown>
-          <div className="ml-2 text-sm font-medium text-gray-800">
+          <div className="text-sm font-medium text-nowrap text-gray-800">
             {filteredParticipants.length == 1
               ? filteredParticipants[0]?.displayName
               : `${filteredParticipants[0]?.displayName} 외 ${
                   filteredParticipants.length - 1
                 }명`}
           </div>
-        </div>
+        </header>
         <ScrollShadow
           ref={chatContainerRef}
           onScroll={handleScroll}
@@ -728,6 +739,9 @@ const ChatUI = React.memo(
                           padding: "8px 12px",
                           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                           wordBreak: "break-word", // 긴 단어를 줄바꿈
+                          overflowWrap: "break-word", // 긴 단어 줄바꿈 추가
+                          maxWidth: "50vw", // 메시지 박스가 화면의 50%를 초과하지 않게 제한
+                          overflow: "hidden", // 넘치는 내용을 숨김
                         }}
                       >
                         {/* 더보기 및 반응 선택 버튼 */}
