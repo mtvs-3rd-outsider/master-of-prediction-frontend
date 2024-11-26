@@ -20,7 +20,11 @@ export default function ClientWrapper({
 
   const clientRef = useRef<any>(null);
   const pathname = usePathname();
-
+useEffect(() => {
+  if (!hasHydrated) {
+    useUserStore.getState().setHasHydrated(true); // 강제로 상태 복구
+  }
+}, []);
   useEffect(() => {
     const initializeRSocket = async () => {
       if (hasHydrated && !clientRef.current) {
