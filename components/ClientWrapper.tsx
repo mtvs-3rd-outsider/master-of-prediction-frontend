@@ -29,16 +29,11 @@ export default function ClientWrapper({
         });
 
         clientRef.current = client; // RSocket 클라이언트 저장
-      } else {
-        console.log("Reusing existing RSocket connection...");
-        // 기존 클라이언트를 사용해 이벤트 전송
-        RSocketClientSetup.sendEvent(
-          clientRef.current,
-          "api.v1.status.connect",
-          {
-            pagePath: pathname,
-          }
-        );
+
+        // 초기 연결 이벤트 전송
+        RSocketClientSetup.sendEvent(client, "api.v1.status.connect", {
+          pagePath: pathname,
+        });
       }
     };
 
