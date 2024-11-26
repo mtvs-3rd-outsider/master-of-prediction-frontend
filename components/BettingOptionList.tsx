@@ -49,6 +49,8 @@ const BettingOptionList = ({ options, optionsRatio, winningOption }: Props) => {
       });
   }, [bettingId]);
 
+  // 이벤트 등록 후 재 계산 필요, 만약 1분이 넘는다면 다시 요청
+
   return (
     <>
       {/* TODO: 다국어 처리 */}

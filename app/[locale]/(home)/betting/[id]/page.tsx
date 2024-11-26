@@ -1,5 +1,5 @@
 // app/[locale]/(home)/betting/[id]/BettingDetailPage.tsx
-'use client'; // Ensure this is a client-side component
+"use client"; // Ensure this is a client-side component
 // components/MyComponent.tsx
 import dynamic from "next/dynamic";
 
