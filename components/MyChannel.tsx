@@ -134,43 +134,14 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
   }
 
   return (
-    <div className="p-4">
-      <div className="sticky overflow-hidden">
+    <div className="px-4 pt-4">
+      <div className="relative overflow-auto">
         <UserBanner imageUrl={user.banner_img} />
       </div>
-      <div className="relative pt-2 flex justify-end gap-2 z-10">
-        {isMyChannel ? (
-          <>
-            <DropdownNext />
-            <Link href="profile-edit">
-              <Button
-                radius="full"
-                variant="solid"
-                className="font-bold px-3 py-2"
-                color="primary"
-              >
-                프로필 수정
-              </Button>
-            </Link>
-          </>
-        ) : (
-          isLoggedIn &&
-          !isLoading && ( // 로그인한 상태에서만 구독 버튼이 보이고 로딩 중에는 버튼 숨김
-            <Button
-              radius="full"
-              className="font-bold px-3 py-2"
-              color="primary"
-              variant={isSubscribed ? "bordered" : "solid"}
-              onClick={handleSubscribeToggle}
-            >
-              {isSubscribed ? "구독 취소" : "구독"}
-            </Button>
-          )
-        )}
-      </div>
-      <div className="relative left-4 top-[-40px] mb-1 h-10 flex flex-col">
+      <div className="relative pt-2 flex justify-between gap-2 z-10">
+        <div className=" left-4 top-[-40px] mb-1  flex flex-col">
         <div
-          className="relative left-4 top-[-40px] mb-1 h-10"
+          className=" left-4 top-[-40px] mb-1 "
           style={{
             transformOrigin: "bottom center",
           }}
@@ -197,28 +168,58 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
           </div>
         </div>
       </div>
+        {isMyChannel ? (
+          <div>
+            <DropdownNext />
+            <Link href="profile-edit">
+              <Button
+                radius="full"
+                variant="solid"
+                className="font-bold px-3 py-2"
+                color="primary"
+              >
+                프로필 수정
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          isLoggedIn &&
+          !isLoading && ( // 로그인한 상태에서만 구독 버튼이 보이고 로딩 중에는 버튼 숨김
+            <Button
+              radius="full"
+              className="font-bold px-3 py-2"
+              color="primary"
+              variant={isSubscribed ? "bordered" : "solid"}
+              onClick={handleSubscribeToggle}
+            >
+              {isSubscribed ? "구독 취소" : "구독"}
+            </Button>
+          )
+        )}
+      </div>
+      
       <div className="mt-2">
-        <p className="text-sm text-gray-800">
+        <div className="text-sm text-gray-800">
           {user.bio?.split("\n").map((line, index) => (
             <span key={index}>
               {line}
               <br />
             </span>
           ))}
-        </p>
+        </div>
         <div className="flex-wrap gap-3 mt-3">
           {user.location && <IconText icon={MapPinIcon} text={user.location} />}
           {user.website && (
             <IconText
               icon={LinkIcon}
               text={
-                <a
+                <Link
                   href={user.website}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   {user.website}
-                </a>
+                </Link>
               }
             />
           )}

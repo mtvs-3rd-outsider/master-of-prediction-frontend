@@ -75,9 +75,7 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({
                 name={
                   feed.user?.displayName || feed.guest?.guestId || "Unknown"
                 }
-                username={
-                  feed.user?.userName || feed.authorType || "Unknown"
-                }
+                username={feed.user?.userName || feed.authorType || "Unknown"}
                 date={new Date(feed.createdAt).toLocaleString()}
                 src={feed.user?.userImg || ""}
                 initials={(
@@ -107,11 +105,11 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({
             </div>
           ))
         : !isLoading && (
-            <div className="flex flex-col justify-center h-screen font-GangwonEduPowerExtraBoldA">
+            <div className="flex flex-col justify-center items-center mt-40 font-GangwonEduPowerExtraBoldA">
               <p className="text-center text-2xl">
                 게시글을 작성하지 않았습니다.
               </p>
-              <p className="text-center text-4xl">게시글을 작성해보세요!</p>
+              <p className="text-center  text-4xl">게시글을 작성해보세요!</p>
             </div>
           )}
       <div ref={ref}>{hasMore && isLoading && "Loading more..."}</div>

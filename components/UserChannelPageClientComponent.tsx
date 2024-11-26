@@ -34,23 +34,20 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user }
 
     
   return (
-    <div>
+    <>
       {/* MyChannel 컴포넌트에 서버에서 전달받은 유저 데이터를 전달 */}
-      <MyChannel user = {user} />
-
+      <MyChannel user={user} />
       {/* 탭 컴포넌트 */}
       <Tabs tabNames={tabNames} onTabChange={handleTabChange} />
-
       {/* 탭에 따라 표시할 콘텐츠 */}
-      <div className="tab-content">
-        {activeTab === 0 && <div>
-          <ChannelFeedList channelId={Number(user.userId)} channelType='mychannel'/>
-          </div>}
-        {activeTab === 1 &&  <div>
-             <BettingList/>
-             </div>}
-      </div>
-    </div>
+      {activeTab === 0 && (
+        <ChannelFeedList
+          channelId={Number(user.userId)}
+          channelType="mychannel"
+        />
+      )}
+      {activeTab === 1 && <BettingList />}
+    </>
   );
 };
 

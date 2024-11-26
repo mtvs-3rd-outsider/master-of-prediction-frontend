@@ -58,7 +58,7 @@ const BettingList: React.FC = () => {
       ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
       ) : data?.pages[0]?.content.length === 0 ? (
-        <div className="flex flex-col justify-center h-screen font-GangwonEduPowerExtraBoldA">
+        <div className="flex flex-col justify-center mt-40 font-GangwonEduPowerExtraBoldA">
           <p className="text-center text-2xl">베팅을 작성하지 않았습니다.</p>
           <p className="text-center text-4xl">베팅을 작성해보세요!</p>
         </div>
