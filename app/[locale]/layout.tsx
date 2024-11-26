@@ -11,7 +11,6 @@ export default async  function RootLayout({
   return (
     <>
         {/* 클라이언트 컴포넌트를 포함 */}
-        <ClientWrapper locale={locale}>{children}</ClientWrapper>
     </>
   );
 }
