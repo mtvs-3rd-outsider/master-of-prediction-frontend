@@ -645,7 +645,7 @@ useEffect(() => {
     return (
       <div className="flex flex-col h-screen mx-auto bg-white">
         {/* 그룹 아이콘 및 참여자 드롭다운 */}
-        <header className="fixed flex flex-row w-full justify-around items-center px-4 border-b border-gray-300 bg-gray-100 z-10">
+        <header className="flex  items-center p-4 border-b border-gray-300 bg-gray-100">
           <div className="top-0 left-0 p-4 flex justify-start w-full">
             <BackButton />
           </div>
