@@ -1,11 +1,15 @@
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
-import cx from 'classnames';
-import NavItem from '@ui/NavItem';
-import { TrashIcon, PencilSquareIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
-import axios from '@handler/fetch/axios';
-import { useState } from 'react';
-import GuestAuthModal from '@components/GuestAuthModal';
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import cx from "classnames";
+import NavItem from "@ui/NavItem";
+import {
+  TrashIcon,
+  PencilSquareIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import axios from "@handler/fetch/axios";
+import { useState } from "react";
+import GuestAuthModal from "@components/GuestAuthModal";
 
 interface DropdownMenuMyDemoProps {
   feedId: string | number;
@@ -13,13 +17,19 @@ interface DropdownMenuMyDemoProps {
   isGuest?: boolean;
 }
 
-const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit, isGuest }) => {
+const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({
+  feedId,
+  onEdit,
+  isGuest,
+}) => {
   const router = useRouter();
   const [isGuestAuthModalOpen, setIsGuestAuthModalOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'edit' | 'remove' | null>(null);
+  const [pendingAction, setPendingAction] = useState<"edit" | "remove" | null>(
+    null
+  );
 
   if (!feedId) {
-    console.error('feedId is undefined or null');
+    console.error("feedId is undefined or null");
     return null;
   }
 
@@ -32,32 +42,37 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit,
 
       if (response.status === 200) {
         setIsGuestAuthModalOpen(false);
-        
-        if (pendingAction === 'remove') {
+
+        if (pendingAction === "remove") {
           executeRemove(guestId, guestPassword);
         }
       }
     } catch (error) {
-      console.error('Error during guest authentication:', error);
-      const errorMessage = (error as any)?.response?.data?.message || '게스트 인증에 실패했습니다.';
+      console.error("Error during guest authentication:", error);
+      const errorMessage =
+        (error as any)?.response?.data?.message ||
+        "게스트 인증에 실패했습니다.";
       alert(errorMessage);
     }
   };
 
   const executeRemove = async (guestId?: string, guestPassword?: string) => {
-    if (window.confirm('피드를 삭제하시겠습니까?')) {
+    if (window.confirm("피드를 삭제하시겠습니까?")) {
       try {
-        const config = guestId && guestPassword ? {
-          data: { guestId, guestPassword }
-        } : {};
-        
+        const config =
+          guestId && guestPassword
+            ? {
+                data: { guestId, guestPassword },
+              }
+            : {};
+
         const response = await axios.delete(`/feeds/${feedId}`, config);
         if (response.status < 300) {
           window.location.reload();
         }
       } catch (error) {
-        console.error('Error deleting feed:', error);
-        alert('피드 삭제 중 오류가 발생했습니다.');
+        console.error("Error deleting feed:", error);
+        alert("피드 삭제 중 오류가 발생했습니다.");
       }
     }
   };
@@ -65,7 +80,7 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit,
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isGuest) {
-      setPendingAction('remove');
+      setPendingAction("remove");
       setIsGuestAuthModalOpen(true);
     } else {
       executeRemove();
@@ -77,6 +92,7 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit,
     if (onEdit) {
       onEdit(e);
     } else {
+      console.log("TEST");
       router.push(`/edit-feed/${feedId}`);
     }
   };
@@ -88,13 +104,13 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit,
 
   return (
     <>
-      <div onClick={handleModalClick}> 
+      <div onClick={handleModalClick}>
         <DropdownMenuPrimitive.Root>
           <DropdownMenuPrimitive.Trigger asChild>
             <button
               className="IconButton hover:bg-slate-200 rounded-full"
               aria-label="Customize options"
-              onClick={e => e.stopPropagation()} 
+              onClick={(e) => e.stopPropagation()}
             >
               <EllipsisHorizontalIcon className="h-6 w-6" />
             </button>
@@ -106,11 +122,11 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit,
               alignOffset={0}
               align="end"
               className={cx(
-                'DropdownMenuContent radix-side-top:animate-slide-up radix-side-bottom:animate-slide-down',
-                'rounded-lg shadow-2xl w-80 overflow-hidden',
-                'bg-white border border-slate-200',
+                "DropdownMenuContent radix-side-top:animate-slide-up radix-side-bottom:animate-slide-down",
+                "rounded-lg shadow-2xl w-80 overflow-hidden",
+                "bg-white border border-slate-200"
               )}
-              onClick={e => e.stopPropagation()}  
+              onClick={(e) => e.stopPropagation()}
             >
               <DropdownMenuPrimitive.Item className="focus:outline-none overflow-hidden">
                 <NavItem onClick={handleEdit} width="full" size="small">
@@ -133,7 +149,9 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({ feedId, onEdit,
         </DropdownMenuPrimitive.Root>
       </div>
 
-      <div onClick={handleModalClick}>  {/* 추가된 wrapper */}
+      <div onClick={handleModalClick}>
+        {" "}
+        {/* 추가된 wrapper */}
         <GuestAuthModal
           isOpen={isGuestAuthModalOpen}
           onClose={() => {

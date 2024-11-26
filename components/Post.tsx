@@ -16,7 +16,11 @@ import axios from "@handler/fetch/axios";
 import DropdownMenuMyDemo from "./radix/DropdownMyMenu";
 import ReuploadMenu from "./ReuploadMenu";
 import QuotePost from "./QuotePost";
-import { UserDTO, GuestDTO, ChannelDTO } from "@components/types/feedResponseDTO";
+import {
+  UserDTO,
+  GuestDTO,
+  ChannelDTO,
+} from "@components/types/feedResponseDTO";
 import GuestAuthModal from "@components/GuestAuthModal";
 import Avatar from "@rd/Avatar";
 import { Button } from "@nextui-org/button";
@@ -95,21 +99,21 @@ const Post: React.FC<PostItem> = ({
   const [isGuestAuthModalOpen, setIsGuestAuthModalOpen] = useState(false);
   const router = useRouter();
 
-    // Add function to handle avatar click
-    const handleAvatarClick = (e: React.MouseEvent) => {
-      e.stopPropagation(); // Prevent post click event from firing
-      // Navigate to user's channel if userId exists
-      if (userId) {
-        router.push(`/channel/${userId}`);
-      }
-    };
+  // Add function to handle avatar click
+  const handleAvatarClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent post click event from firing
+    // Navigate to user's channel if userId exists
+    if (userId) {
+      router.push(`/channel/${userId}`);
+    }
+  };
 
-    const handleCategoryClick = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (channel && channel.channelType === 'CATEGORYCHANNEL') {
-        router.push(`/category-channel/${channel.channelId}`);
-      }
-    };
+  const handleCategoryClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (channel && channel.channelType === "CATEGORYCHANNEL") {
+      router.push(`/category-channel/${channel.channelId}`);
+    }
+  };
 
   useEffect(() => {
     setIsLiked(isLike);
@@ -229,43 +233,46 @@ const Post: React.FC<PostItem> = ({
 
   return (
     <>
-<div className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer" onClick={onClick}>
-      <div 
-        className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity" 
-        onClick={handleAvatarClick}
+      <div
+        className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer"
+        onClick={onClick}
       >
-        <Avatar
-          src={src || undefined}
-          alt={username || "사용자"}
-          initials={username ? username[0].toUpperCase() : "U"}
-        />
-      </div>
-      <div className="flex flex-col flex-1">
-      {channel?.channelType === 'CATEGORYCHANNEL' && (
-  <div 
-    className="text-xs text-gray-500 border-2 border-gray-300 rounded-full px-3 py-1 w-fit cursor-pointer mb-1"
-    onClick={handleCategoryClick}
-  >
-    {channel.channelName}
-  </div>
-)}
-        <div className="flex flex-1">
-          <Userinfo
-            name={name}
-            username={username}
-            date={date}
-            tierName={tier?.name}
+        <div
+          className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={handleAvatarClick}
+        >
+          <Avatar
+            src={src || undefined}
+            alt={username || "사용자"}
+            initials={username ? username[0].toUpperCase() : "U"}
           />
+        </div>
+        <div className="flex flex-col flex-1">
+          {channel?.channelType === "CATEGORYCHANNEL" && (
+            <div
+              className="text-xs text-gray-500 border-2 border-gray-300 rounded-full px-3 py-1 w-fit cursor-pointer mb-1"
+              onClick={handleCategoryClick}
+            >
+              {channel.channelName}
+            </div>
+          )}
+          <div className="flex flex-1">
+            <Userinfo
+              name={name}
+              username={username}
+              date={date}
+              tierName={tier?.name}
+            />
             <div>
-{userInfo?.id === userId || guest ? (
-  <DropdownMenuMyDemo 
-    feedId={id} 
-    onEdit={handleEdit} 
-    isGuest={!!guest?.guestId} 
-  />
-) : (
-  <DropdownMenuDemo />
-)}
+              {userInfo?.id === userId || guest ? (
+                <DropdownMenuMyDemo
+                  feedId={id}
+                  onEdit={handleEdit}
+                  isGuest={!!guest?.guestId}
+                />
+              ) : (
+                <DropdownMenuDemo />
+              )}
             </div>
           </div>
 
