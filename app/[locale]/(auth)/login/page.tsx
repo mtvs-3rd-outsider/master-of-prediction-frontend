@@ -11,7 +11,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { NextApiRequest, NextApiResponse } from "next";
 import apiClient from "@handler/fetch/axios";
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 export default function LoginPage() {
   
   const [email, setEmail] = useState("");
@@ -25,31 +25,31 @@ export default function LoginPage() {
     setError(null);
 
     // 로그인 요청
-    const response = await apiClient.post("/auth/login", { email, password });
+    try {
+      const response = await apiClient.post("/auth/login", { email, password });
+      // 쿠키에서 액세스 토큰을 가져옴
+      const accessToken = response.data.token;
+      console.log("Login successful:", accessToken);
+      console.log("Login successful:", response.data);
 
-    // 쿠키에서 액세스 토큰을 가져옴
-    const accessToken = response.data.token;
-    console.log("Login successful:", accessToken);
-    console.log("Login successful:", response.data);
+      const { id } = response.data;
 
-    const { id } = response.data;
+      // // 사용자 정보 요청
 
-    
-    // // 사용자 정보 요청
+      // Zustand 스토어에 userInfo를 저장
+      const setUserInfo = useUserStore.getState().setUserInfo;
+      // const userInfoWithToken = {
+      //   ...userInfoResponse.data, // 기존 사용자 정보
+      //   token: accessToken, // 토큰 추가
+      // };
+      setUserInfo(response.data);
+
+      // 홈 페이지로 리다이렉트
+      router.push("/");
+    } catch {
+      toast.error("인증 실패했습니다");
+    }
  
-    // Zustand 스토어에 userInfo를 저장
-    const setUserInfo = useUserStore.getState().setUserInfo;
-    // const userInfoWithToken = {
-    //   ...userInfoResponse.data, // 기존 사용자 정보
-    //   token: accessToken, // 토큰 추가
-    // };
-    setUserInfo(response.data);
-
-
-
-
-    // 홈 페이지로 리다이렉트
-    router.push("/");
   };
 
    const handleGoogleLogin = () => {

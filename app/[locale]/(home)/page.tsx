@@ -28,7 +28,6 @@ const HomePage: React.FC = () => {
           setUserInfo({ ...userInfoResponse.data, token: accessToken });
         }
       } catch (error) {
-        console.error("Failed to fetch user info:", error);
         clearUserInfo(); // 상태 초기화
         router.push("/login"); // 로그인 페이지로 리디렉션
       }
