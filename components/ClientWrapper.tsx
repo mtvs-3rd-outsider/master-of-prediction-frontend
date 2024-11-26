@@ -47,7 +47,7 @@ export default function ClientWrapper({
         clientRef.current = null; // 클라이언트 초기화
       }
     };
-  }, [token, pathname]);
+  }, [hasHydrated, token, pathname]);
 
   useEffect(() => {
     // 비동기로 번역 메시지 가져오기
