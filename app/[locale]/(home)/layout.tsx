@@ -23,11 +23,11 @@ interface FabConfig {
 }
 
 const FAB_LABELS: Record<string, string> = {
-  "/category-channel": "移댄뀒怨좊━",
-  "/channel": "�뵾�뱶",
-  "/category-channel/regist": "梨꾨꼸",
-  "/hot-topic/create-feed": "�넗�뵿",
-  "/betting/add": "踰좏똿 異붽��",
+  "/category-channel": "카테고리",
+  "/channel": "피드",
+  "/category-channel/regist": "채널",
+  "/hot-topic/create-feed": "토픽",
+  "/betting/add": "베팅 추가",
 };
 
 export default function RootLayout({ children }: LayoutProps): ReactNode {
