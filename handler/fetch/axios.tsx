@@ -65,7 +65,7 @@ apiClient.interceptors.response.use(
     if (status >= 500 && status < 600) {
       toast.error(customMessage || messages['서버_내부_오류']);
     } else if (status === 401) {
-      toast.error(customMessage || messages['인증되지_않은_접근_로그인']);
+     
     } else if (status === 403) {
       // toast.error(customMessage ||messages['권한_없음']);
     } else {
