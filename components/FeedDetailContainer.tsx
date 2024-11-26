@@ -14,6 +14,7 @@ const FeedDetailContainer: React.FC<FeedDetailContainerProps> = ({ feedId }) => 
   const [feed, setFeed] = useState<FeedResponseDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     const loadFeed = async () => {
       try {

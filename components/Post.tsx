@@ -257,11 +257,15 @@ const Post: React.FC<PostItem> = ({
             tierName={tier?.name}
           />
             <div>
-              {userInfo?.id === userId || guest ? (
-                <DropdownMenuMyDemo feedId={id} onEdit={handleEdit} />
-              ) : (
-                <DropdownMenuDemo />
-              )}
+{userInfo?.id === userId || guest ? (
+  <DropdownMenuMyDemo 
+    feedId={id} 
+    onEdit={handleEdit} 
+    isGuest={!!guest?.guestId} 
+  />
+) : (
+  <DropdownMenuDemo />
+)}
             </div>
           </div>
 

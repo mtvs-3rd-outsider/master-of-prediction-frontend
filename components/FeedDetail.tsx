@@ -16,18 +16,20 @@ const FeedDetail: React.FC<{ feed: FeedResponseDTO }> = ({ feed }) => {
 
   const mediaFiles = feed.mediaFiles?.map(file => file.fileUrl) || [];
   const youtubeUrls = feed.youTubeVideos?.map(video => video.youtubeUrl) || [];
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <BackButton />
       <div className="my-4">
         <Post
+          key={`feed-${feed.id}`}
           id={feed.id.toString()}
           content={feed.content}
           name={feed.user?.displayName || feed.guest?.guestId || 'Unknown'}
-          username={feed.user?.userName || feed.guest?.guestId || 'Unknown'}
+          username={feed.user?.userName || feed.authorType || 'Unknown'}
           date={new Date(feed.createdAt).toLocaleString()}
           src={feed.user?.userImg || ''}
-          initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U').toUpperCase()}
+          initials={(feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || 'U')}
           description={""}
           followers=""
           following=""
