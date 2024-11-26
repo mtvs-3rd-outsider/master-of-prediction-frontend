@@ -92,7 +92,6 @@ const DropdownMenuMyDemo: React.FC<DropdownMenuMyDemoProps> = ({
     if (onEdit) {
       onEdit(e);
     } else {
-      console.log("TEST");
       router.push(`/edit-feed/${feedId}`);
     }
   };
