@@ -75,7 +75,7 @@ const Account = ({
           <p className="text-sm text-slate-600 font-medium">@{userName}</p>
         )}
       </div>
-      <p>· {formattedDate}</p>
+    { formattedDate &&  <p>· {formattedDate}</p>}
     </div>
   );
 };
