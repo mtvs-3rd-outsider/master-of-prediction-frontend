@@ -7,10 +7,13 @@ import React, { ReactNode } from 'react';
 
 interface Props {
   href?: string;
-  width: 'full' | 'inline' | 'mobile';
-  size: 'default' | 'small' | 'large';
+  width: "full" | "inline" | "mobile";
+  size: "small" | "default" | "large";
+  size2: "sm" | "md" | "lg" | undefined;
   children: ReactNode;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
+  onClick?: (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => void;
 }
 
 
@@ -37,9 +40,15 @@ const NavItemStyles = cva(
 );
 
 
-const NavItem = ({ href, children, width, size }: Props) => {
+const NavItem = ({ href, children, width, size, size2 }: Props) => {
   return (
-    <Button size="sm" variant='light' as="a" href={href} className={NavItemStyles({ width, size })}>
+    <Button
+      size={size2}
+      variant="light"
+      as="a"
+      href={href}
+      className={NavItemStyles({ width, size })}
+    >
       {children}
     </Button>
   );

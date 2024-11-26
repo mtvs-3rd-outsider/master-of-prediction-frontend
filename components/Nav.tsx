@@ -189,12 +189,13 @@ useEffect(() => {
             href={href}
             width="inline"
             size="default"
+            size2="sm"
           >
             {currentPath === href ? activeIcon : icon}
           </NavItem>
         ))}
         {!userInfo && (
-          <NavItem href="/login" width="inline" size="default">
+          <NavItem href="/login" width="inline" size="default" size2="sm">
             <UserIconOutline className="w-6 h-6" />
           </NavItem>
         )}
@@ -207,7 +208,7 @@ useEffect(() => {
       <header className="hidden sm:flex w-24 xl:col-span-2">
         <div className="flex flex-1 xl:w-60 flex-col fixed h-full">
           <div className="flex flex-col flex-1">
-            <NavItem href="/" width="inline" size="default">
+            <NavItem href="/" width="inline" size="default" size2="md">
               <Image
                 src="/images/logo.png"
                 alt="Logo"
@@ -221,7 +222,7 @@ useEffect(() => {
                 key={`header-${i}`}
                 className="rounded-lg focus:outline-none overflow-hidden"
               >
-                <NavItem href={href} width="inline" size="default">
+                <NavItem href={href} width="inline" size="default" size2="md">
                   {currentPath === href ? activeIcon : icon}
                   <div className="hidden xl:inline-flex flex-none text-lg font-medium">
                     {text}
