@@ -16,13 +16,14 @@ export default function ClientWrapper({
   locale: string;
 }) {
   const token = useUserStore((state) => state.userInfo?.token);
+  const hasHydrated = useUserStore((state) => state.hasHydrated);
 
   const clientRef = useRef<any>(null);
   const pathname = usePathname();
 
   useEffect(() => {
     const initializeRSocket = async () => {
-      if (!clientRef.current) {
+      if (hasHydrated && !clientRef.current) {
         console.log("Initializing RSocket connection...");
         const client = await RSocketClientSetup.init({
           token,
