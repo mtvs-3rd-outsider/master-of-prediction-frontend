@@ -28,7 +28,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { Button } from "@nextui-org/button";
 import useUserStore from "@store/useUserStore";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { RSocketClientSetup } from "@/hooks/useRSocketConnection";
 import { RoomInfo, useMessageStore } from "@store/useMessageStore";
 
@@ -48,10 +48,24 @@ const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
   const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
   const clientRef = useRef<any>(null);
-const hasHydrated = useUserStore((state) => state.hasHydrated);
-const userInfo = useUserStore((state) => state.userInfo);
-const token = useUserStore((state) => state.userInfo?.token);
-const userId = useUserStore((state) => state.userInfo?.id);
+  const hasHydrated = useUserStore((state) => state.hasHydrated);
+  const userInfo = useUserStore((state) => state.userInfo);
+  const token = useUserStore((state) => state.userInfo?.token);
+  const userId = useUserStore((state) => state.userInfo?.id);
+
+  const isWriteNave = () => {
+    const locale = pathname.split("/")[2];
+
+    if (locale === null || locale === undefined) {
+      return true;
+    }
+    if (locale.startsWith("betting")) {
+      return false;
+    }
+    return true;
+  };
+
+  console.log("isWriteNave", isWriteNave());
 
   const { unreadCount, setUnreadCount, setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
   const removeLocale = (path: string) => {
@@ -64,57 +78,56 @@ const userId = useUserStore((state) => state.userInfo?.id);
   };
 
   const currentPath = removeLocale(pathname);
-useEffect(() => {
-  if (!userInfo) {
-    console.warn("UserInfo is not available. Skipping RSocket setup.");
-    return;
-  }
+  useEffect(() => {
+    if (!userInfo) {
+      console.warn("UserInfo is not available. Skipping RSocket setup.");
+      return;
+    }
 
-  const setupRSocket = async () => {
-    try {
-      console.log("Initializing RSocket connection...");
+    const setupRSocket = async () => {
+      try {
+        console.log("Initializing RSocket connection...");
 
-      // `init2`로 RSocket 클라이언트 초기화
-      const rsocket = await RSocketClientSetup.init({
-        token,
-        streams: [
-          {
-            endpoint: `api.v1.messages.threadInfos/${userId}`,
-            onNext: (newMessageMap: Record<string, RoomInfo>) => {
-              const totalUnreadCount = Object.values(newMessageMap).reduce(
-                (acc, roomInfo) => acc + roomInfo.unreadMessageCount,
-                0
-              );
+        // `init2`로 RSocket 클라이언트 초기화
+        const rsocket = await RSocketClientSetup.init({
+          token,
+          streams: [
+            {
+              endpoint: `api.v1.messages.threadInfos/${userId}`,
+              onNext: (newMessageMap: Record<string, RoomInfo>) => {
+                const totalUnreadCount = Object.values(newMessageMap).reduce(
+                  (acc, roomInfo) => acc + roomInfo.unreadMessageCount,
+                  0
+                );
 
-
-              setMessageMap(newMessageMap);
-              setUnreadCount(totalUnreadCount);
+                setMessageMap(newMessageMap);
+                setUnreadCount(totalUnreadCount);
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
 
-      clientRef.current = rsocket; // RSocket 객체 저장
-      console.log("RSocket connection established");
-    } catch (error) {
-      console.error("Failed to establish RSocket connection:", error);
+        clientRef.current = rsocket; // RSocket 객체 저장
+        console.log("RSocket connection established");
+      } catch (error) {
+        console.error("Failed to establish RSocket connection:", error);
+      }
+    };
+
+    // RSocket 연결 설정
+    if (clientRef.current == null) {
+      setupRSocket();
     }
-  };
 
-  // RSocket 연결 설정
-  if (clientRef.current == null) {
-    setupRSocket();
-  }
-
-  // Cleanup: RSocket 연결 종료
-  return () => {
-    console.log("Unmounting component. Closing RSocket connection...");
-    if (clientRef.current) {
-      clientRef.current.close();
-      clientRef.current = null; // 상태 초기화
-    }
-  };
-}, [userInfo, userId, token, setMessageMap, setUnreadCount]);
+    // Cleanup: RSocket 연결 종료
+    return () => {
+      console.log("Unmounting component. Closing RSocket connection...");
+      if (clientRef.current) {
+        clientRef.current.close();
+        clientRef.current = null; // 상태 초기화
+      }
+    };
+  }, [userInfo, userId, token, setMessageMap, setUnreadCount]);
   const items: NavLinkItem[] = [
     {
       href: "/",
@@ -182,24 +195,26 @@ useEffect(() => {
   }, [hasHydrated, userInfo]);
   if (mobileOnly) {
     return (
-      <nav className="sm:hidden flex justify-between bg-white border-t border-gray-200 max-w-full overflow-hidden px-4">
-        {items.map(({ href, icon, activeIcon }, i) => (
-          <NavItem
-            key={`mobile-nav-${i}`}
-            href={href}
-            width="inline"
-            size="default"
-            size2="sm"
-          >
-            {currentPath === href ? activeIcon : icon}
-          </NavItem>
-        ))}
-        {!userInfo && (
-          <NavItem href="/login" width="inline" size="default" size2="sm">
-            <UserIconOutline className="w-6 h-6" />
-          </NavItem>
-        )}
-      </nav>
+      isWriteNave() && (
+        <nav className="sm:hidden flex justify-between bg-white border-t border-gray-200 max-w-full overflow-hidden px-4">
+          {items.map(({ href, icon, activeIcon }, i) => (
+            <NavItem
+              key={`mobile-nav-${i}`}
+              href={href}
+              width="inline"
+              size="default"
+              size2="sm"
+            >
+              {currentPath === href ? activeIcon : icon}
+            </NavItem>
+          ))}
+          {!userInfo && (
+            <NavItem href="/login" width="inline" size="default" size2="sm">
+              <UserIconOutline className="w-6 h-6" />
+            </NavItem>
+          )}
+        </nav>
+      )
     );
   }
 
