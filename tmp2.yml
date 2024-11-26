@@ -1,0 +1,63 @@
+name: CI/CD Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up JDK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      # 3. Build the JAR file using Gradle
+      - name: Build with Gradle
+        run: |
+          ./gradlew build --no-daemon
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.java-home }}
+
+      # 4. Set up Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # 5. Authenticate with AWS ECR
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 6. Build and push Docker image to ECR
+      - name: Build and push Docker image
+        env:
+          AWS_REGION: <AWS_REGION>
+          ECR_REPOSITORY: <ECR_REPOSITORY_NAME>
+        run: |
+          # Build Docker image
+          docker build -t $ECR_REPOSITORY:latest .
+
+          # Get ECR repository URI
+          REPO_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --region $AWS_REGION --query "repositories[0].repositoryUri" --output text)
+
+          # Tag and push the image
+          docker tag $ECR_REPOSITORY:latest $REPO_URI:latest
+          docker push $REPO_URI:latest
+
+      # 7. Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        env:
+          AWS_REGION: <AWS_REGION>
+        run: |
+          # Elastic Beanstalk 배포 실행
+          eb init -p docker <APPLICATION_NAME> --region $AWS_REGION
+          eb use <ENVIRONMENT_NAME>
+          eb deploy

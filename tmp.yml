@@ -1,0 +1,53 @@
+name: CI/CD Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Authenticate with AWS ECR
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 4. Build and push Docker images
+      - name: Build and push Docker images
+        env:
+          AWS_REGION: <AWS_REGION>
+          ECR_REPOSITORY_SERVER: <ECR_REPOSITORY_SERVER>
+        run: |
+          # Build server image
+          docker build -t $ECR_REPOSITORY_SERVER:latest -f ./server/Dockerfile .
+
+          # Get ECR repository URI
+          REPO_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY_SERVER --region $AWS_REGION --query "repositories[0].repositoryUri" --output text)
+
+          # Tag and push the image
+          docker tag $ECR_REPOSITORY_SERVER:latest $REPO_URI:latest
+          docker push $REPO_URI:latest
+
+      # 5. Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        env:
+          AWS_REGION: <AWS_REGION>
+        run: |
+          # Initialize Elastic Beanstalk CLI
+          eb init -p docker <APPLICATION_NAME> --region $AWS_REGION
+
+          # Use existing environment
+          eb use <ENVIRONMENT_NAME>
+
+          # Deploy application
+          eb deploy
