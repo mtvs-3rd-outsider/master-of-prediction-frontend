@@ -23,17 +23,17 @@ interface FabConfig {
 }
 
 const FAB_LABELS: Record<string, string> = {
-  "/category-channel": "카테고리",
-  "/channel": "피드",
-  "/category-channel/regist": "채널",
-  "/hot-topic/create-feed": "토픽",
-  "/betting/add": "베팅 추가",
+  "/category-channel": "移댄뀒怨좊━",
+  "/channel": "�뵾�뱶",
+  "/category-channel/regist": "梨꾨꼸",
+  "/hot-topic/create-feed": "�넗�뵿",
+  "/betting/add": "踰좏똿 異붽��",
 };
 
 export default function RootLayout({ children }: LayoutProps): ReactNode {
   const pathname = usePathname();
   const searchParams = useSearchParams();
- const userInfo = useUserStore((state) => state.userInfo);
+  const userInfo = useUserStore((state) => state.userInfo);
 
   const getFabConfig = (): FabConfig | null => {
     if (pathname.endsWith("/category-channel")) {
@@ -76,7 +76,6 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
     return null;
   };
 
-
   const getBettingFabConfig = (): FabConfig | null => {
     if (pathname.endsWith("/category-channel")) {
       return {
@@ -118,38 +117,41 @@ export default function RootLayout({ children }: LayoutProps): ReactNode {
     return null;
   };
 
-
   const fabConfig = getFabConfig();
   const fabBettingConfig = getBettingFabConfig();
-// layout.tsx
+  // layout.tsx
 
-return (
-  <NextUIProvider>
-    <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5 pb-[70px] lg:pb-0">
-      <Nav />
-      <TanstackQueryProvider>{children}</TanstackQueryProvider>
+  return (
+    <NextUIProvider>
+      <div className="min-h-screen flex max-w-7xl mx-auto xl:grid xl:grid-cols-10 gap-5 pb-[70px] lg:pb-0">
+        <Nav />
+        <TanstackQueryProvider>{children}</TanstackQueryProvider>
 
-      {pathname.endsWith("/category-channel") &&
-      !userInfo ? null : pathname.endsWith("/category-channel") ? (
-        <FloatingActionButton
-          href={fabConfig?.url || ""}
-          label={fabConfig?.label}
-        />
-      ) : pathname.includes("/category-channel") ||
-        pathname.includes("/channel") ? (
-        <FloatingPreActionButton
-          href={fabConfig?.url || ""}
-          label={fabConfig?.label}
-        />
-      ) : (
-        fabConfig && (
-          <FloatingActionButton href={fabConfig.url} label={fabConfig.label} />
-        )
-      )}
+        {pathname.endsWith("/category-channel") &&
+        !userInfo ? null : pathname.endsWith("/category-channel") ? (
+          <FloatingActionButton
+            href={fabConfig?.url || ""}
+            label={fabConfig?.label}
+          />
+        ) : pathname.includes("/category-channel") ||
+          pathname.includes("/channel") ? (
+          <FloatingPreActionButton
+            href={fabConfig?.url || ""}
+            label={fabConfig?.label}
+          />
+        ) : (
+          fabConfig && (
+            <FloatingActionButton
+              href={fabConfig.url}
+              label={fabConfig.label}
+            />
+          )
+        )}
 
-        <Nav mobileOnly />
-
-    </div>
-  </NextUIProvider>
-);
+        <footer className="sm:hidden z-10 fixed bottom-0 w-full bg-white border-t border-gray-200">
+          <Nav mobileOnly />
+        </footer>
+      </div>
+    </NextUIProvider>
+  );
 }
