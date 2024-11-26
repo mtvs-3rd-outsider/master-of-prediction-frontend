@@ -100,7 +100,7 @@ function BettingDetailPage() {
       {isNotFound && NotFound()}
       {!isNotFound && (
         <>
-          <main  className="col-span-5 w-full border-x border-slate-200">
+          <main className="col-span-5 w-full border-x border-slate-200">
             <BettingProductDetail
               user={bettingInfo?.user || ({} as BettingCreater)}
               product={bettingInfo?.product || ({} as BettingProduct)}
@@ -118,7 +118,7 @@ function BettingDetailPage() {
               />
             </div>
 
-           <ChatUI id={params.id}/>
+            <ChatUI id={params.id} />
           </aside>
 
           {/* 모바일 환경에서 주문하기 아이콘 */}
@@ -174,6 +174,5 @@ function BettingDetailPage() {
     </>
   );
 }
-
 
 export default BettingDetailPage;

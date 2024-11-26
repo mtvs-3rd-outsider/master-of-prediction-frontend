@@ -33,6 +33,7 @@ import {
 import PostStatsNav from "./PostStatsNav";
 import BettingAccount from "./BettingAccount";
 import { useSseStore } from "@/hooks/useSseStore";
+import BackButtonContainer from "./BackButton";
 
 function BettingProductDetail(props: BettingProductInfo) {
   const { user, product, productImages, options, optionsRatio, postStats } =
@@ -119,8 +120,11 @@ function BettingProductDetail(props: BettingProductInfo) {
 
   return (
     <>
-      <div className="px-6 pt-6">
+      <div className="sm:px-6 sm:pt-6 pt-2 px-2">
         <div className="flex flex-1 items-center gap-x-2">
+          <div className="sm:hidden">
+            <BackButtonContainer />
+          </div>
           {user && (
             <>
               {product.isBlind == false ? (
@@ -144,7 +148,7 @@ function BettingProductDetail(props: BettingProductInfo) {
                   <ClockIcon className="w-4 h-4" />
 
                   {/* 날짜와 툴팁 */}
-                  <span 
+                  <span
                     className="flex flex-1 relative cursor-pointer"
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
