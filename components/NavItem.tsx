@@ -39,7 +39,7 @@ const NavItemStyles = cva(
 
 const NavItem = ({ href, children, width, size }: Props) => {
   return (
-    <Button variant='light' as="a" href={href} className={NavItemStyles({ width, size })}>
+    <Button size="sm" variant='light' as="a" href={href} className={NavItemStyles({ width, size })}>
       {children}
     </Button>
   );
