@@ -142,7 +142,7 @@ function setupRequestStream(
         onNext: (e: any) => {
           try {
             const message = JSON.parse(e.data);
-            console.log("requestStream onNext", message);
+            // console.log("requestStream onNext", message);
             if(onNextMessage)
             {
                 onNextMessage(message);

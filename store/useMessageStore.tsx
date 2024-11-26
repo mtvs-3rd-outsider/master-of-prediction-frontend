@@ -1,16 +1,17 @@
-import { ParticipantDTO } from '@ui/ChatList';
-import {create} from 'zustand';
+import { ParticipantDTO } from "@ui/ChatList";
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface RoomInfo {
-    lastMessage: string;
-    lastMessageTime: string;
-    unreadMessageCount: number;
-    roomId: string;
-    roomName: string;
-    userId: string;
-    participants: ParticipantDTO[];  // 추가된 속성
-    isGroupThread: boolean;          // 추가된 속성
-  }
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadMessageCount: number;
+  roomId: string;
+  roomName: string;
+  userId: string;
+  participants: ParticipantDTO[]; // 추가된 속성
+  isGroupThread: boolean; // 추가된 속성
+}
 
 interface MessageStore {
   messageMap: Record<string, RoomInfo>;
@@ -19,24 +20,38 @@ interface MessageStore {
   setUnreadCount: (count: number) => void;
 }
 
-export const useMessageStore = create<MessageStore>((set) => ({
-  messageMap: {},
-  unreadCount: 0,
-  setMessageMap: (newMessageMap) => {
-    set((state) => {
-      // 기존 messageMap과 새로 전달된 messageMap을 병합
-      const updatedMessageMap = { ...state.messageMap };
+export const useMessageStore = create<MessageStore>()(
+  persist(
+    (set) => ({
+      messageMap: {},
+      unreadCount: 0,
+      setMessageMap: (newMessageMap) => {
+        set((state) => {
+          const updatedMessageMap = { ...state.messageMap }; // 기존 상태 복사
 
-      // 새로운 메시지 맵에서 변경된 항목만 업데이트
-      Object.entries(newMessageMap).forEach(([roomId, newRoomInfo]) => {
-        const prevRoomInfo = state.messageMap[roomId];
-        if (!prevRoomInfo || prevRoomInfo.unreadMessageCount !== newRoomInfo.unreadMessageCount) {
-          updatedMessageMap[roomId] = newRoomInfo;
-        }
-      });
+          Object.entries(newMessageMap).forEach(([roomId, newRoomInfo]) => {
+            const prevRoomInfo = state.messageMap[roomId];
 
-      return { messageMap: updatedMessageMap };
-    });
-  },
-  setUnreadCount: (count) => set({ unreadCount: count }),
-}));
+            // unreadMessageCount 또는 lastMessage가 다를 경우에만 갱신
+            if (
+              !prevRoomInfo || // 이전 정보가 없거나
+              prevRoomInfo.unreadMessageCount !==
+                newRoomInfo.unreadMessageCount || // 읽지 않은 메시지 수가 다르거나
+              prevRoomInfo.lastMessage !== newRoomInfo.lastMessage // 마지막 메시지가 다를 경우
+            ) {
+              updatedMessageMap[roomId] = newRoomInfo;
+            }
+          });
+
+          return { messageMap: updatedMessageMap };
+        });
+      },
+
+      setUnreadCount: (count) => set({ unreadCount: count }),
+    }),
+    {
+      name: "message-store", // 로컬 스토리지 키 이름
+      storage: createJSONStorage(() => localStorage), // 클라이언트 환경에서 localStorage 사용
+    }
+  )
+);
