@@ -24,7 +24,7 @@ import useOptimisticMutation from "@handler/useOptimisticMutation";
 import { MyChannelProps } from "@/app/[locale]/(home)/channel/[userId]/page";
 import DropdownNext from "./DropdownAccountNavItem";
 import { useTranslations } from "next-intl";
-import { tierLabels } from "./TierBadge";
+import TierBadge, { tierLabels } from "./TierBadge";
 
 
 // 구독 상태를 서버에서 가져오는 함수
@@ -157,7 +157,7 @@ const MyChannel: React.FC<UserChannelPageProps> = ({ user }) => {
         <div>
           <div className="inline-flex gap-1">
             {tierLabels[user.tier_name] && (
-              <TierIcon name={user.tier_name} size={35} className="px-2" />
+              <TierBadge name={user.tier_name}  />
             )}
             <h1 className="text-md m-auto font-bold">
               {user.display_name || user.user_name}
