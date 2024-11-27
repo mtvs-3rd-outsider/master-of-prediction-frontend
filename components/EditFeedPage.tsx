@@ -58,7 +58,8 @@ export default function EditFeedPage({ feedId }: EditFeedPageProps) {
         user: {
           userId: userInfo.id,
         },
-        mediaFiles: feedData.mediaFiles.map(file => file.fileUrl)
+        mediaFiles: feedData.mediaFiles.map(file => file.fileUrl),
+        youTubeVideos: youtubeUrls // 새로운 YouTube URLs 직접 사용
       };
 
       formData.append(
