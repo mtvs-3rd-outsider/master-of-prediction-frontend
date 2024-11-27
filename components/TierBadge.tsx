@@ -2,11 +2,11 @@ import React from "react";
 import TierIcon from "@ui/TierIcon";
 
 export const tierLabels: { [key: string]: { name: string; label: string } } = {
-  nostradamus: { name: "노스트라다무스", label: "노스트라다무스" },
-  novice: { name: "견습생", label: "견습생" },
-  oracle: { name: "오라클", label: "오라클" },
-  prophet: { name: "예언자", label: "예언자" },
-  seer: { name: "초보자", label: "초보자" },
+  NOSTRADAMUS: { name: "노스트라다무스", label: "노스트라다무스" },
+  NOVICE: { name: "견습생", label: "견습생" },
+  ORACLE: { name: "오라클", label: "오라클" },
+  PROPHET: { name: "예언자", label: "예언자" },
+  SEER: { name: "초보자", label: "초보자" },
 };
 
 interface TierBadgeProps {

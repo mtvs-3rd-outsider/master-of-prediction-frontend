@@ -49,9 +49,9 @@ const fetchIsOwner = async (channelId: string, userId: string) => {
 };
 
 const fetchIsManager = async (channelId: string, userId: string) => {
-  // const { data } = await apiClient.get(
-  //   `/category-channels/${channelId}/management?userId=${userId}`
-  // );
+  const { data } = await apiClient.get(
+    `/category-channels/${channelId}/management?userId=${userId}`
+  );
   return null;
 };
 
