@@ -8,10 +8,12 @@ type NotificationProductProps = {
   content: string;
   isRead: boolean;
   createdAt: string;
+  additionalData: Map<string,string>
   // onReadUpdate: (id: number) => void; // isRead 상태 업데이트를 위한 콜백
 };
 
-const NotificationProduct: React.FC<NotificationProductProps> = ({ id, title, content, isRead, createdAt }) => {
+const NotificationProduct: React.FC<NotificationProductProps> = ({ id, title, content, isRead, createdAt, additionalData }) => {
+  console.log(additionalData)
   const { ref, inView } = useInView({
     triggerOnce: true,  // 처음 화면에 보일 때만 trigger
     threshold: 0.5, // 10% 보일 때 트리거
@@ -35,11 +37,13 @@ const NotificationProduct: React.FC<NotificationProductProps> = ({ id, title, co
   return (
     <div
       ref={ref}
-      className={`p-4 ${isRead ? 'bg-gray-100' : 'bg-white'} cursor-pointer`}
+      className={`p-4 ${isRead ? "bg-gray-100" : "bg-white"} cursor-pointer`}
     >
       <h3 className="font-bold">{title}</h3>
       <p>{content}</p>
-      <p className="text-sm text-gray-500">{new Date(createdAt).toLocaleString()}</p>
+      <p className="text-sm text-gray-500">
+        {new Date(createdAt).toLocaleString()}
+      </p>
     </div>
   );
 };

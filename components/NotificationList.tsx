@@ -59,11 +59,9 @@ const NotificationList: React.FC = () => {
       ) : status === "error" ? (
         <p>Error: {infiniteError.message}</p>
       ) : noData ? (
-             <div className="flex flex-col   justify-center h-screen font-GangwonEduPowerExtraBoldA">
-            <p className="text-center text-2xl">
-              알림이 아직 없습니다.
-            </p>
-          </div>
+        <div className="flex flex-col   justify-center h-screen font-GangwonEduPowerExtraBoldA">
+          <p className="text-center text-2xl">알림이 아직 없습니다.</p>
+        </div>
       ) : (
         <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
           {data?.pages.map((page, pageIndex) => (
@@ -77,6 +75,7 @@ const NotificationList: React.FC = () => {
                         content={notification.content}
                         isRead={notification.isRead}
                         createdAt={notification.createdAt}
+                        additionalData={notification.additionalData}
                       />
                     </li>
                   ))

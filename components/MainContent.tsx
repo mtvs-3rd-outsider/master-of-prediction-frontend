@@ -62,7 +62,7 @@ const MainContent: React.FC = () => {
       {!isSearching && (
         <>
           <StickyTabsWrapper tabNames={["베팅", "게시글"]} onTabChange={setActiveTab} />
-          <div className="p-4">
+          <div className="pt-4">
             {activeTab === 0 && <BettingProducts />}
             {activeTab === 1 && <HotTopicFeedList sortBy={sortBy} />}
           </div>
