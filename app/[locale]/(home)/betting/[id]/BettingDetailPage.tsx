@@ -95,6 +95,7 @@ function BettingDetailPage() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
+
   return (
     <>
       {isNotFound && NotFound()}
@@ -108,6 +109,7 @@ function BettingDetailPage() {
               productImages={bettingInfo?.productImages || []}
               optionsRatio={optionsRatio}
               postStats={bettingInfo?.postStats || ({} as PostStatsNavState)}
+              isWriter={bettingInfo?.isWriter || false}
             />
           </main>
           <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">

@@ -33,6 +33,7 @@ export interface BettingProductInfo {
   options: BettingOptions[];
   optionsRatio: OptionsRatio[];
   postStats: PostStatsNavState;
+  isWriter: Boolean;
 }
 
 export interface BettingProductType {

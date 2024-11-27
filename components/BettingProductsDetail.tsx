@@ -36,8 +36,15 @@ import { useSseStore } from "@/hooks/useSseStore";
 import BackButtonContainer from "./BackButton";
 
 function BettingProductDetail(props: BettingProductInfo) {
-  const { user, product, productImages, options, optionsRatio, postStats } =
-    props;
+  const {
+    user,
+    product,
+    productImages,
+    options,
+    optionsRatio,
+    postStats,
+    isWriter,
+  } = props;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
   const connect = useSseStore((state) => state.connect);
@@ -92,7 +99,9 @@ function BettingProductDetail(props: BettingProductInfo) {
     );
     const currentDateTime = new Date();
 
-    return currentDateTime >= serverDateTime;
+    console.log("handleSettlementButton: ", isWriter);
+
+    return currentDateTime >= serverDateTime && isWriter;
   };
 
   console.log("postStats: ", postStats);
