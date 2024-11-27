@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BettingOptionList from "./BettingOptionList";
 import { ClockIcon } from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
 import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
@@ -35,12 +35,11 @@ function BettingProductDetail(props: BettingProductInfo) {
     postStats,
     isWriter,
   } = props;
-  const [isSettlement, setIsSettlement] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
   const connect = useSseStore((state) => state.connect);
   const close = useSseStore((state) => state.close);
   const { id: bettingId } = useParams();
-  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const eventSource = connect(
@@ -74,10 +73,9 @@ function BettingProductDetail(props: BettingProductInfo) {
 
   const handleSettlement = async () => {
     try {
-      await apiClient.post(
+      const response = await apiClient.post(
         `/betting-products/settlement?productId=${params.id}&optionId=${choiceOptionId}`
       );
-      window.location.reload();
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("Response data:", error.response?.data?.error); // 서버 응답 데이터
@@ -85,7 +83,7 @@ function BettingProductDetail(props: BettingProductInfo) {
     }
   };
 
-  const handleSettlementButtonView = () => {
+  const handleSettlementButton = () => {
     const serverDateTime = new Date(
       `${product.deadlineDate}T${product.deadlineTime}`
     );
@@ -94,9 +92,7 @@ function BettingProductDetail(props: BettingProductInfo) {
     return currentDateTime >= serverDateTime && isWriter;
   };
 
-  const handleSettlementButton = () => {
-    setIsSettlement(isSettlement ? false : true);
-  };
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // 날짜와 시간 포맷 변경
   const deadlineDateTime = new Date(
@@ -164,21 +160,18 @@ function BettingProductDetail(props: BettingProductInfo) {
               </div>
               {user.userID == product.userId &&
                 product.winningOption == null &&
-                handleSettlementButtonView() && (
+                handleSettlementButton() && (
                   <>
                     <Button
                       color="primary"
                       variant="solid"
                       radius="full"
                       className="py-2 px-2 bg-black"
-                      onPress={handleSettlementButton}
+                      onClick={onOpen}
                     >
                       정산하기
                     </Button>
-                    <Modal
-                      isOpen={isSettlement}
-                      onOpenChange={handleSettlementButton}
-                    >
+                    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                       <ModalContent>
                         {(onClose) => (
                           <>
@@ -237,12 +230,10 @@ function BettingProductDetail(props: BettingProductInfo) {
         </div>
         <div>
           <div className="product-container p-4 ">
-            {/* Title */}
             <div className="product-title text-lg font-bold text-gray-800 mb-2">
               {product.title}
             </div>
 
-            {/* Content */}
             <div className="product-content text-gray-600">
               {product.content}
             </div>
@@ -256,8 +247,6 @@ function BettingProductDetail(props: BettingProductInfo) {
               scroll-snap-type-x mandatory scroll-smooth
             "
           >
-            {/* TODO: 확대 미리보기 */}
-
             {productImages.map((url) => (
               <div
                 key={url}
@@ -279,7 +268,6 @@ function BettingProductDetail(props: BettingProductInfo) {
         </div>
         <div>
           <ul className="mt-4 mb-4 px-4 flex justify-between gap-x-10 xl:gap-x-14 text-xs text-slate-700  [&_li:first-child]:lg:flex [&_li]:flex [&_li]:items-center [&_li]:gap-x-2 [&_li:xl]:gap-x-3">
-            {/* 나머지 통계 정보 */}
             {postStats && Object.keys(postStats).length > 0 && (
               <PostStatsNav
                 viewCount={postStats.viewCount}
@@ -294,7 +282,6 @@ function BettingProductDetail(props: BettingProductInfo) {
           </ul>
         </div>
       </div>
-      {/* options={bettingInfo?.options || ({} as BettingOptions[])} */}
       <BettingOptionList
         options={options || []}
         optionsRatio={optionsRatio}
