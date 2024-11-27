@@ -58,6 +58,7 @@ export default function EditFeedPage({ feedId }: EditFeedPageProps) {
         user: {
           userId: userInfo.id,
         },
+        mediaFiles: feedData.mediaFiles.map(file => file.fileUrl)
       };
 
       formData.append(
