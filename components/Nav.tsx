@@ -65,8 +65,6 @@ const Nav: React.FC<NavProps> = ({ mobileOnly = false }) => {
     return true;
   };
 
-  console.log("isWriteNave", isWriteNave());
-
   const { unreadCount, setUnreadCount, setMessageMap } = useMessageStore(); // `unreadCount` 가져오기
   const removeLocale = (path: string) => {
     const parts = path.split("/");
