@@ -38,10 +38,7 @@ export default function EditFeedPage({ feedId }: EditFeedPageProps) {
     media: File[],
     youtubeUrls: string[]
   ) => {
-    if (!userInfo) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+
 
     if (!feedData) {
       alert("피드 정보가 없습니다.");
@@ -56,8 +53,10 @@ export default function EditFeedPage({ feedId }: EditFeedPageProps) {
         content,
         title: content.substring(0, 50),
         user: {
-          userId: userInfo.id,
+          userId: userInfo?.id,
         },
+        mediaFiles: feedData.mediaFiles.map(file => file.fileUrl),
+        youTubeVideos: youtubeUrls // 새로운 YouTube URLs 직접 사용
       };
 
       formData.append(
