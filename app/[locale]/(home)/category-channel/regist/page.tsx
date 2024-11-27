@@ -6,10 +6,11 @@ import { CameraIcon, MinusCircleIcon, TrashIcon } from "@heroicons/react/24/outl
 import axios from "axios";
 import apiClient from "@handler/fetch/axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 
 export default function Component() {
-  const router = useRouter()
+  const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -20,6 +21,7 @@ export default function Component() {
   const [description, setDescription] = useState("");
   const [rules, setRules] = useState<string[]>([]);
   const [ruleInput, setRuleInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // 추가된 상태
   const maxLines = 5;
 
   const handleDescriptionChange = (e: string) => {
@@ -31,7 +33,10 @@ export default function Component() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isBanner = false) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isBanner = false
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       if (isBanner) {
@@ -66,12 +71,13 @@ export default function Component() {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true); // 제출 시작
     const formData = new FormData();
-    
+
     formData.append("displayName", title);
     formData.append("description", description);
     formData.append("communityRule", JSON.stringify(rules));
-    
+
     if (selectedFile) {
       formData.append("representativeImage", selectedFile);
     }
@@ -81,16 +87,20 @@ export default function Component() {
     }
 
     try {
-      const response = await apiClient.post("/category-channels/register", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.post(
+        "/category-channels/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 200) {
         // 성공 처리
-        alert("채널 등록 신청이 완료되었습니다.");
-        router.push("/category-channel/")
+        toast.success("채널 등록 신청이 완료되었습니다.");
+        router.push("/category-channel/");
       } else {
         // 오류 처리
         alert("채널 등록 신청에 실패했습니다.");
@@ -98,6 +108,8 @@ export default function Component() {
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("서버 오류로 인해 채널 등록 신청에 실패했습니다.");
+    } finally {
+      setIsSubmitting(false); // 제출 완료
     }
   };
 
@@ -235,11 +247,15 @@ export default function Component() {
         <div className="flex justify-center">
           <Button
             // className="w-10 p-3"
+            disabled={isSubmitting} // 비활성화 상태 적용
             fullWidth
             color="primary"
             onClick={handleSubmit}
+            className={`transition-opacity ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            채널 등록 신청하기
+            {isSubmitting ? "등록 중..." : "채널 등록 신청하기"}
           </Button>
         </div>
       </div>

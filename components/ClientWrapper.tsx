@@ -16,13 +16,14 @@ export default function ClientWrapper({
   locale: string;
 }) {
   const token = useUserStore((state) => state.userInfo?.token);
+  const hasHydrated = useUserStore((state) => state.hasHydrated);
 
   const clientRef = useRef<any>(null);
   const pathname = usePathname();
 
   useEffect(() => {
     const initializeRSocket = async () => {
-      if (!clientRef.current) {
+      if (hasHydrated && !clientRef.current) {
         console.log("Initializing RSocket connection...");
         const client = await RSocketClientSetup.init({
           token,
@@ -34,16 +35,6 @@ export default function ClientWrapper({
         RSocketClientSetup.sendEvent(client, "api.v1.status.connect", {
           pagePath: pathname,
         });
-      } else {
-        console.log("Reusing existing RSocket connection...");
-        // 기존 클라이언트를 사용해 이벤트 전송
-        RSocketClientSetup.sendEvent(
-          clientRef.current,
-          "api.v1.status.connect",
-          {
-            pagePath: pathname,
-          }
-        );
       }
     };
 
@@ -56,7 +47,7 @@ export default function ClientWrapper({
         clientRef.current = null; // 클라이언트 초기화
       }
     };
-  }, [token, pathname]);
+  }, [hasHydrated, token, pathname]);
 
   useEffect(() => {
     // 비동기로 번역 메시지 가져오기

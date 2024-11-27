@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import {  ToastProvider } from "@/components/ui/toast";
 import Script from "next/script";
 import GoogleAdsense from "@ui/GoogleAdsense";
+import ClientWrapper from "@ui/ClientWrapper";
 const APP_NAME = "예측의 달인";
   const APP_DEFAULT_TITLE = "예측의 달인";
   const APP_TITLE_TEMPLATE = "%s ";
@@ -71,17 +72,14 @@ export default async  function RootLayout({
   return (
     <>
       <html suppressContentEditableWarning>
-        <body suppressHydrationWarning
-        
-        >
+        <body suppressHydrationWarning>
           <Head>
             <Script type="text/javascript" src="/service-worker-register.js" />
             <GoogleAdsense pId="2358632947348636" />
           </Head>
           <NextIntlClientProvider messages={messages}>
             <ToastProvider />
-
-            {children}
+            <ClientWrapper locale={locale}>{children}</ClientWrapper>
           </NextIntlClientProvider>
         </body>
       </html>
