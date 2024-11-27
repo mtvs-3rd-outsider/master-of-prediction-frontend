@@ -1,20 +1,10 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import Account from "./Account";
-import AccountNavItem from "./AccountNavItem";
-import Avatar from "./AvatarWithIcon";
 import BettingOptionList from "./BettingOptionList";
-import {
-  HeartIcon,
-  ArrowUpTrayIcon,
-  ChatBubbleOvalLeftIcon,
-  ArrowPathIcon,
-  ChartBarSquareIcon,
-  ClockIcon,
-} from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
+import { ClockIcon } from "@heroicons/react/24/outline"; // Heroicons에서 아이콘 가져오기
 import BettingCommentActivityTabs from "./BettingCommentActivityTabs";
-import { BettingOptions, BettingProductInfo } from "@/types/BettingTypes";
+import { BettingProductInfo } from "@/types/BettingTypes";
 import Image from "next/image";
 import apiClient from "@handler/fetch/axios";
 import { useParams } from "next/navigation";
@@ -45,11 +35,12 @@ function BettingProductDetail(props: BettingProductInfo) {
     postStats,
     isWriter,
   } = props;
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isSettlement, setIsSettlement] = useState(false);
   const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
   const connect = useSseStore((state) => state.connect);
   const close = useSseStore((state) => state.close);
   const { id: bettingId } = useParams();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const eventSource = connect(
@@ -83,9 +74,10 @@ function BettingProductDetail(props: BettingProductInfo) {
 
   const handleSettlement = async () => {
     try {
-      const response = await apiClient.post(
+      await apiClient.post(
         `/betting-products/settlement?productId=${params.id}&optionId=${choiceOptionId}`
       );
+      window.location.reload();
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("Response data:", error.response?.data?.error); // 서버 응답 데이터
@@ -93,19 +85,18 @@ function BettingProductDetail(props: BettingProductInfo) {
     }
   };
 
-  const handleSettlementButton = () => {
+  const handleSettlementButtonView = () => {
     const serverDateTime = new Date(
       `${product.deadlineDate}T${product.deadlineTime}`
     );
     const currentDateTime = new Date();
 
-    console.log("handleSettlementButton: ", isWriter);
-
     return currentDateTime >= serverDateTime && isWriter;
   };
 
-  console.log("postStats: ", postStats);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const handleSettlementButton = () => {
+    setIsSettlement(isSettlement ? false : true);
+  };
 
   // 날짜와 시간 포맷 변경
   const deadlineDateTime = new Date(
@@ -173,18 +164,21 @@ function BettingProductDetail(props: BettingProductInfo) {
               </div>
               {user.userID == product.userId &&
                 product.winningOption == null &&
-                handleSettlementButton() && (
+                handleSettlementButtonView() && (
                   <>
                     <Button
                       color="primary"
                       variant="solid"
                       radius="full"
                       className="py-2 px-2 bg-black"
-                      onPress={onOpen}
+                      onPress={handleSettlementButton}
                     >
                       정산하기
                     </Button>
-                    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                    <Modal
+                      isOpen={isSettlement}
+                      onOpenChange={handleSettlementButton}
+                    >
                       <ModalContent>
                         {(onClose) => (
                           <>
