@@ -50,9 +50,9 @@ const fetchIsOwner = async (channelId: string, userId: string) => {
 
 const fetchIsManager = async (channelId: string, userId: string) => {
   const { data } = await apiClient.get(
-    `/category-channels/${channelId}/management?userId=${userId}`
+    `/category-channels/${channelId}/is-manager?userId=${userId}`
   );
-  return null;
+  return data;
 };
 
 const CategoryChannel: React.FC<CategoryChannelProps> = ({ channel }) => {
