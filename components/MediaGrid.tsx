@@ -43,6 +43,10 @@ const MediaGrid: React.FC<MediaGridProps> = ({ mediaFiles, youtubeUrls, id, isQu
             <video
               src={file}
               controls
+              autoPlay
+              muted
+              loop
+              playsInline
               className={`w-full h-full object-cover rounded-lg ${isQuote ? 'max-h-[150px]' : ''}`}
               onError={(e) => console.error('Video load error:', e, file)}
             />
