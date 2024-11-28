@@ -40,6 +40,7 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user }
       {/* 탭 컴포넌트 */}
       <Tabs tabNames={tabNames} onTabChange={handleTabChange} />
       {/* 탭에 따라 표시할 콘텐츠 */}
+      <div className="pt-4">
       {activeTab === 0 && (
         <ChannelFeedList
           channelId={Number(user.userId)}
@@ -47,6 +48,7 @@ const UserChannelPageClientComponent: React.FC<UserChannelPageProps> = ({ user }
         />
       )}
       {activeTab === 1 && <BettingList />}
+      </div>
     </>
   );
 };

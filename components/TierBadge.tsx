@@ -16,10 +16,11 @@ interface TierBadgeProps {
 const TierBadge: React.FC<TierBadgeProps> = ({ name = "" }) => {
   const tier = tierLabels[name];
   return (
+    tier ? (
     <span className="text-xs bg-slate-200 rounded-full py-0 px-2 cursor-pointer inline-flex items-center justify-center hover:bg-slate-300">
-      {tier && <TierIcon name={tier.icon} size={15} />}
-      {tier ? tier.name : "UNRANKED"}
-    </span>
+       <TierIcon name={tier.icon} size={15} />
+      </span>
+    ) :<></>
   );
 };
 
