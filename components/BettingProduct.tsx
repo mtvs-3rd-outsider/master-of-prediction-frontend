@@ -5,10 +5,14 @@ import Account from "./Account";
 import Link from "next/link";
 import Image from "next/image";
 import PostStatsNav from "./PostStatsNav";
+import Avatar from "@rd/Avatar";
+import UserInfo from "./UserInfo";
+import { useRouter } from "next/navigation";
 
 // TODO: 현재는 title에만 배팅 상세 페이지로 이동하지만 빈 공간에 Link 주는 방법으로 교체해야함
 const BettingProduct = (props: BettingProductType) => {
   const {
+    userID,
     userName,
     displayName,
     userImg,
@@ -21,32 +25,57 @@ const BettingProduct = (props: BettingProductType) => {
     createdAt,
   } = props;
 
+  const router = useRouter();
+
+  const handleBettingClick = () => {
+    router.push(`/betting/` + bettingId);
+  };
+
+  const handleAvatarClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent post click event from firing
+    // Navigate to user's channel if userId exists
+    if (userID) {
+      router.push(`/channel/${userID}`);
+    }
+  };
+
   return (
     <>
-      <div>
-        <Link href={`/betting/` + bettingId}>
-          <div className="flex flex-1 items-center gap-x-2 px-4 py-4">
-            {blindName === null ? (
-              <Account
-                userName={userName}
-                avatarUrl={userImg}
-                displayName={displayName}
-                tier={tierName}
-                date={createdAt}
-              />
-            ) : (
-              <Account
-                userName={""}
-                avatarUrl={"/images/logo.png"}
-                displayName={blindName}
-                tier={""}
-                date={createdAt}
-              />
-            )}
-          </div>
-          {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
+      <div
+        className="flex flex-1 gap-x-4 mb-4 border-b border-gray-200 pb-4 px-4 cursor-pointer"
+        onClick={handleBettingClick}
+      >
+        <div
+          className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={handleAvatarClick}
+        >
+          {blindName === null ? (
+            <Avatar
+              src={userImg || undefined}
+              alt={userName || "사용자"}
+              initials={userName ? userName[0].toUpperCase() : "U"}
+            />
+          ) : (
+            <Avatar
+              src={"/images/logo.png"}
+              alt={blindName || "사용자"}
+              initials={blindName ? blindName[0].toUpperCase() : "U"}
+            />
+          )}
+        </div>
+        {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
+
+        <div>
           <div className="px-4">
-            <p className="text-5xl">{title}</p>
+            <div>
+              <UserInfo
+                name={userName}
+                username={displayName}
+                date={createdAt}
+                tierName={tierName}
+              />
+            </div>
+            <p>{title}</p>
             {/* <div className="flex w-full"> */}
             <div
               className="
@@ -91,7 +120,7 @@ const BettingProduct = (props: BettingProductType) => {
               )}
             </ul>
           </div>
-        </Link>
+        </div>
       </div>
     </>
   );
