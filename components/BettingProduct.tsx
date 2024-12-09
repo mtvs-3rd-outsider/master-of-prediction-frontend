@@ -67,12 +67,16 @@ const BettingProduct = (props: BettingProductType) => {
 
         <div className="w-full">
           <div>
-            <UserInfo
-              name={userName}
-              username={displayName}
-              date={new Date(createdAt).toLocaleString()}
-              tierName={tierName}
-            />
+            {blindName === null ? (
+              <UserInfo
+                name={userName}
+                username={displayName}
+                date={createdAt}
+                tierName={tierName}
+              />
+            ) : (
+              <UserInfo name={blindName} date={createdAt} />
+            )}
           </div>
           <p>{title}</p>
           {/* <div className="flex w-full"> */}
