@@ -86,7 +86,7 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
 
   console.log(feeds);
   return (
-    <div  >
+    <div>
       {feeds.length > 0 ? (
         feeds.map((feed) => (
           <div key={`feed-container-${feed.id}`}>
@@ -96,13 +96,11 @@ const HotTopicFeedList: React.FC<HotTopicFeedListProps> = ({ sortBy }) => {
               content={feed.content}
               name={feed.user?.displayName || feed.guest?.guestId || "Unknown"}
               username={feed.user?.userName || feed.authorType || "Unknown"}
-              date={new Date(feed.createdAt).toLocaleString()}
+              date={feed.createdAt}
               src={feed.user?.userImg || ""}
-              initials={(
-                feed.user?.userName?.[0] ||
-                feed.guest?.guestId?.[0] ||
-                "U"
-              )}
+              initials={
+                feed.user?.userName?.[0] || feed.guest?.guestId?.[0] || "U"
+              }
               description={""}
               followers={feed.likesCount.toString()}
               following={feed.commentsCount.toString()}

@@ -1,7 +1,6 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import BuyOrder from "./BuyOrder";
 import SellOrder from "./SellOrder";
 import { useEffect, useState } from "react";
@@ -76,11 +75,14 @@ export default function OrderForm({
     onOpenAlert("판매 확인", "이 옵션을 판매하시겠습니까?", confirmHandler);
   };
   useEffect(() => {
+    const userIdParam = userId || null;
     apiClient
-      .get(`/user-point/${userId}`)
+      .get(`/user-point/${userIdParam}`)
       .then((res) => setUserPoint(res.data));
     apiClient
-      .get(`/user/betting-products?userId=${userId}&bettingId=${bettingId}`)
+      .get(
+        `/user/betting-products?userId=${userIdParam}&bettingId=${bettingId}`
+      )
       .then((res) => {
         setOrderHistory(res.data);
       });

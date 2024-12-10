@@ -84,7 +84,7 @@ const BettingProducts = () => {
   return (
     <>
       <Suspense fallback={<Loading />}>
-        <ul className="[&_p:last-child]:text-slate-500 [&_p:first-child]:text-lg divide-y divide-slate-200">
+        <ul>
           {Array.isArray(bettings) &&
             bettings.map((node) => (
               <li key={node.bettingId}>

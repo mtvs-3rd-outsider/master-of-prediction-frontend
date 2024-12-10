@@ -3,10 +3,11 @@ import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import TierBadge from "@ui/TierBadge";
 import moment from "moment";
+// import moment from "moment-timezone";
 
 interface UserInfoProps {
   name: string;
-  username: string;
+  username?: string;
   date?: string; // 옵셔널로 변경
   tierName?: string; // 옵셔널로 변경
 }
@@ -21,13 +22,21 @@ const UserInfo: React.FC<UserInfoProps> = ({
 
   if (date) {
     try {
+      // 입력 시간을 Date 객체로 변환
       // Moment를 사용하여 문자열을 Date 객체로 변환
-      const parsedDate = moment(date, "YYYY. MM. DD. A hh:mm:ss").toDate();
+      // const parsedDate = moment(date, "YYYY. MM. DD. A hh:mm:ss").toDate();
 
-      // 현재 시간과 비교
+      const parsedDate = new Date(date);
+
+      // 유효한 날짜인지 확인
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Invalid date format");
+      }
+
+      // 현재 시간과 입력 시간 비교
       formattedDate = formatDistanceToNow(parsedDate, {
-        addSuffix: true,
-        locale: ko,
+        addSuffix: true, // "전" 또는 "후" 접미사 추가
+        locale: ko, // 한국어 로케일
       });
     } catch (error) {
       console.error("Date parsing error:", error);
@@ -37,7 +46,9 @@ const UserInfo: React.FC<UserInfoProps> = ({
   return (
     <div className="flex flex-1 gap-x-1 items-center text-xs sm:text-sm">
       <span className="text-slate-900 font-bold">{name}</span>
-      <span className="text-slate-600 font-medium">@{username}</span>
+      {username && (
+        <span className="text-slate-600 font-medium">@{username}</span>
+      )}
       {date && (
         <>
           <span className="text-slate-600 font-medium">·</span>

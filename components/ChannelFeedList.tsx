@@ -76,7 +76,7 @@ const ChannelFeedList: React.FC<ChannelFeedListProps> = ({
                   feed.user?.displayName || feed.guest?.guestId || "Unknown"
                 }
                 username={feed.user?.userName || feed.authorType || "Unknown"}
-                date={new Date(feed.createdAt).toLocaleString()}
+                date={feed.createdAt}
                 src={feed.user?.userImg || ""}
                 initials={(
                   feed.user?.userName?.[0] ||
