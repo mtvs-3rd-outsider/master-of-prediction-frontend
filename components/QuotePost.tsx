@@ -1,8 +1,8 @@
-import React from 'react';
-import { UserDTO, GuestDTO } from '@components/types/feedResponseDTO';
-import MediaGrid from '@components/MediaGrid';
-import HoverCard from '@rd/HoverCard';
-import Userinfo from '@components/UserInfo';
+import React from "react";
+import { UserDTO, GuestDTO } from "@components/types/feedResponseDTO";
+import MediaGrid from "@components/MediaGrid";
+import HoverCard from "@rd/HoverCard";
+import Userinfo from "@components/UserInfo";
 
 interface QuotePostProps {
   quoteId: number;
@@ -16,17 +16,17 @@ interface QuotePostProps {
 }
 
 const QuotePost: React.FC<QuotePostProps> = ({
-quoteId,
+  quoteId,
   quoteContent,
   quoteCreateAt,
   quoteUser,
   quoteGuest,
   mediaFileUrls,
   youtubeUrls,
-  onClick
+  onClick,
 }) => {
   return (
-    <div 
+    <div
       className="border border-gray-200 rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-50 transition-colors"
       onClick={(e) => {
         e.stopPropagation();
@@ -55,14 +55,14 @@ quoteId,
             </div>
           )}
         </div>
-        
+
         <div className="flex flex-col flex-1 min-w-0">
           <div className="flex items-center mb-2">
             {quoteUser && (
               <Userinfo
                 name={quoteUser.displayName}
                 username={quoteUser.userName}
-                date={new Date(quoteCreateAt).toLocaleString()}
+                date={quoteCreateAt}
                 tierName={quoteUser.tier.name}
               />
             )}
@@ -72,16 +72,16 @@ quoteId,
               </span>
             )}
           </div>
-          
+
           <div className="text-sm text-gray-600 mb-2">{quoteContent}</div>
-          
+
           {(mediaFileUrls?.length > 0 || youtubeUrls?.length > 0) && (
             <div className="mb-2">
-              <MediaGrid 
-                mediaFiles={mediaFileUrls} 
-                youtubeUrls={youtubeUrls} 
+              <MediaGrid
+                mediaFiles={mediaFileUrls}
+                youtubeUrls={youtubeUrls}
                 id={quoteId.toString()}
-                isQuote={true} 
+                isQuote={true}
               />
             </div>
           )}
@@ -120,7 +120,7 @@ export default QuotePost;
 //   onClick
 // }) => {
 //   return (
-//     <div 
+//     <div
 //       className="border border-gray-200 rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-50 transition-colors"
 //       onClick={(e) => {
 //         e.stopPropagation();
@@ -135,16 +135,16 @@ export default QuotePost;
 //             {new Date(quotedate).toLocaleString()}
 //           </span>
 //         </div>
-        
+
 //         <div className="text-sm text-gray-600">{quoteContent}</div>
-        
+
 //         {(mediaFileUrls?.length > 0 || youtubeUrls?.length > 0) && (
 //           <div>
-//             <MediaGrid 
-//               mediaFiles={mediaFileUrls} 
-//               youtubeUrls={youtubeUrls} 
+//             <MediaGrid
+//               mediaFiles={mediaFileUrls}
+//               youtubeUrls={youtubeUrls}
 //               id={quoteId.toString()}
-//               isQuote={true} 
+//               isQuote={true}
 //             />
 //           </div>
 //         )}

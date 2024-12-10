@@ -24,9 +24,9 @@ const UserInfo: React.FC<UserInfoProps> = ({
     try {
       // 입력 시간을 Date 객체로 변환
       // Moment를 사용하여 문자열을 Date 객체로 변환
-      const parsedDate = moment(date, "YYYY. MM. DD. A hh:mm:ss").toDate();
+      // const parsedDate = moment(date, "YYYY. MM. DD. A hh:mm:ss").toDate();
 
-      // const parsedDate = new Date(date);
+      const parsedDate = new Date(date);
 
       // 유효한 날짜인지 확인
       if (isNaN(parsedDate.getTime())) {
@@ -41,8 +41,6 @@ const UserInfo: React.FC<UserInfoProps> = ({
     } catch (error) {
       console.error("Date parsing error:", error);
     }
-
-    console.log("formattedDate: ", formattedDate);
   }
 
   return (
