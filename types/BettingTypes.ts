@@ -1,3 +1,5 @@
+import { ChannelDTO, ChannelType } from "@components/types/feedResponseDTO";
+
 export interface BettingCreater {
   userID: number;
   userName: string;
@@ -48,6 +50,7 @@ export interface BettingProductType {
   blindName: string | null;
   postStats: null | PostStatsNavState;
   createdAt: string;
+  channel?: ChannelDTO;
 }
 
 export interface OptionsRatio {

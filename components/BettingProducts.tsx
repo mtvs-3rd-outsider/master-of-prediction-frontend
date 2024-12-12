@@ -100,6 +100,7 @@ const BettingProducts = () => {
                   blindName={node.blindName}
                   postStats={node.postStats}
                   createdAt={node.createdAt}
+                  channel={node.channel}
                 />
               </li>
             ))}

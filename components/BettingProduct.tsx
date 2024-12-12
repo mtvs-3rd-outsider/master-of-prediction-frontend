@@ -8,8 +8,8 @@ import PostStatsNav from "./PostStatsNav";
 import Avatar from "@rd/Avatar";
 import UserInfo from "./UserInfo";
 import { useRouter } from "next/navigation";
+import { ChannelDTO } from "@components/types/feedResponseDTO";
 
-// TODO: 현재는 title에만 배팅 상세 페이지로 이동하지만 빈 공간에 Link 주는 방법으로 교체해야함
 const BettingProduct = (props: BettingProductType) => {
   const {
     userID,
@@ -23,6 +23,7 @@ const BettingProduct = (props: BettingProductType) => {
     blindName,
     postStats,
     createdAt,
+    channel,
   } = props;
 
   const router = useRouter();
@@ -36,6 +37,13 @@ const BettingProduct = (props: BettingProductType) => {
     // Navigate to user's channel if userId exists
     if (userID) {
       router.push(`/channel/${userID}`);
+    }
+  };
+
+  const handleCategoryClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (channel && channel.channelType === "CATEGORYCHANNEL") {
+      router.push(`/category-channel/${channel.channelId}`);
     }
   };
 
@@ -66,6 +74,14 @@ const BettingProduct = (props: BettingProductType) => {
         {/* <div className="flex flex-1 items-center gap-x-2 px-4"> */}
 
         <div className="w-full">
+          {channel?.channelType === "CATEGORYCHANNEL" && (
+            <div
+              className="text-xs text-gray-500 border-2 border-gray-300 rounded-full px-3 py-1 w-fit cursor-pointer mb-1"
+              onClick={handleCategoryClick}
+            >
+              {channel.channelName}
+            </div>
+          )}
           <div>
             {blindName === null ? (
               <UserInfo
