@@ -24,6 +24,7 @@ import PostStatsNav from "./PostStatsNav";
 import BettingAccount from "./BettingAccount";
 import { useSseStore } from "@/hooks/useSseStore";
 import BackButtonContainer from "./BackButton";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 function BettingProductDetail(props: BettingProductInfo) {
   const {
@@ -34,6 +35,7 @@ function BettingProductDetail(props: BettingProductInfo) {
     optionsRatio,
     postStats,
     isWriter,
+    isAdmin,
   } = props;
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [choiceOptionId, setChoiceOptionId] = useState<number>(0);
@@ -138,6 +140,7 @@ function BettingProductDetail(props: BettingProductInfo) {
                   avatarUrl={"/images/logo.png"}
                 />
               )}
+              {isAdmin && <CheckCircleIcon className="w-5 h-5 text-blue-400" />}
               <div className="flex flex-1 mt-0">
                 <div className="flex items-center space-x-2">
                   {/* 시간 아이콘 */}

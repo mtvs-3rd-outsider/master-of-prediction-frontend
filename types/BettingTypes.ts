@@ -6,6 +6,7 @@ export interface BettingCreater {
   displayName: string;
   tierName: string;
   userImg: string;
+  isAdmin?: boolean;
 }
 
 // 상품 정보 타입 정의
@@ -36,6 +37,7 @@ export interface BettingProductInfo {
   optionsRatio: OptionsRatio[];
   postStats: PostStatsNavState;
   isWriter: Boolean;
+  isAdmin: Boolean;
 }
 
 export interface BettingProductType {
@@ -51,6 +53,7 @@ export interface BettingProductType {
   postStats: null | PostStatsNavState;
   createdAt: string;
   channel?: ChannelDTO;
+  isAdmin: boolean;
 }
 
 export interface OptionsRatio {

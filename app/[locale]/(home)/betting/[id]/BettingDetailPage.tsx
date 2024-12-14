@@ -110,6 +110,7 @@ function BettingDetailPage() {
               optionsRatio={optionsRatio}
               postStats={bettingInfo?.postStats || ({} as PostStatsNavState)}
               isWriter={bettingInfo?.isWriter || false}
+              isAdmin={bettingInfo?.user?.isAdmin || false}
             />
           </main>
           <aside className="col-span-3 hidden xl:flex flex-col w-[350px]">

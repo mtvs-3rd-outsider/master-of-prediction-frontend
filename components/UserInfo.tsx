@@ -2,6 +2,7 @@ import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import TierBadge from "@ui/TierBadge";
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import moment from "moment";
 // import moment from "moment-timezone";
 
@@ -10,6 +11,7 @@ interface UserInfoProps {
   username?: string;
   date?: string; // 옵셔널로 변경
   tierName?: string; // 옵셔널로 변경
+  isAdmin?: boolean;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({
@@ -17,6 +19,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
   username,
   date,
   tierName,
+  isAdmin,
 }) => {
   let formattedDate = "";
 
@@ -47,7 +50,10 @@ const UserInfo: React.FC<UserInfoProps> = ({
     <div className="flex flex-1 gap-x-1 items-center text-xs sm:text-sm">
       <span className="text-slate-900 font-bold">{name}</span>
       {username && (
+        <>
         <span className="text-slate-600 font-medium">@{username}</span>
+        {isAdmin && <CheckCircleIcon className="w-6 h-6 text-blue-400" />}
+        </>
       )}
       {date && (
         <>

@@ -1,16 +1,17 @@
 "use client";
 
 import { BettingProductType } from "@/types/BettingTypes";
-import Account from "./Account";
-import Link from "next/link";
 import Image from "next/image";
 import PostStatsNav from "./PostStatsNav";
 import Avatar from "@rd/Avatar";
 import UserInfo from "./UserInfo";
 import { useRouter } from "next/navigation";
-import { ChannelDTO } from "@components/types/feedResponseDTO";
 
-const BettingProduct = (props: BettingProductType) => {
+interface BettingProductProps {
+  info: BettingProductType;
+}
+
+const BettingProduct = ({ info }: BettingProductProps) => {
   const {
     userID,
     userName,
@@ -24,8 +25,8 @@ const BettingProduct = (props: BettingProductType) => {
     postStats,
     createdAt,
     channel,
-  } = props;
-
+    isAdmin,
+  } = info;
   const router = useRouter();
 
   const handleBettingClick = () => {
@@ -89,6 +90,7 @@ const BettingProduct = (props: BettingProductType) => {
                 username={displayName}
                 date={createdAt}
                 tierName={tierName}
+                isAdmin={isAdmin}
               />
             ) : (
               <UserInfo name={blindName} date={createdAt} />

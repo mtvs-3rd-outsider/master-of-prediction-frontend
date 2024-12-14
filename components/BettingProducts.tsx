@@ -88,20 +88,7 @@ const BettingProducts = () => {
           {Array.isArray(bettings) &&
             bettings.map((node) => (
               <li key={node.bettingId}>
-                <BettingProduct
-                  userID={node.userID}
-                  userName={node.userName}
-                  displayName={node.displayName}
-                  tierName={node.tierName}
-                  userImg={node.userImg}
-                  title={node.title}
-                  imgUrls={node.imgUrls}
-                  bettingId={node.bettingId}
-                  blindName={node.blindName}
-                  postStats={node.postStats}
-                  createdAt={node.createdAt}
-                  channel={node.channel}
-                />
+                <BettingProduct info={node} />
               </li>
             ))}
         </ul>
