@@ -3,53 +3,39 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { Skeleton } from "@nextui-org/skeleton";
 import BettingProduct from "./BettingProduct";
-import apiClient from "@handler/fetch/axios";
+import { fetchBettingProducts, fetchFeedsForBettingProducts } from "@/lib/bettingService";
 import { BettingProductType } from "@/types/BettingTypes";
 
 const BettingProducts = () => {
-  const [bettings, setBettings] = useState<BettingProductType[]>([]);
+  const [bettingProducts, setBettingProducts] = useState<BettingProductType[]>([]);
   const [page, setPage] = useState(0);
   const [isLast, setIsLast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 데이터 로드 함수
-  const getBettings = useCallback(async () => {
+  const mergeFeedData = (bettingItems: BettingProductType[], feeds: any[]) => {
+    return bettingItems.map((item) => {
+      const feedMatch = feeds.find((feedItem: any) => feedItem.id === item.bettingId * -1);
+      return feedMatch ? { ...item, postStats: feedMatch } : item;
+    });
+  };
+
+  const getBettingProducts = useCallback(async () => {
     if (isLoading || isLast) return;
-
     setIsLoading(true);
+
     try {
-      const response = await apiClient.get("/betting-products", {
-        params: { page, size: 10 },
-      });
-      // 배팅 아이디에 맞춰서 feed에 재요청
+      const { content, last } = await fetchBettingProducts(page);
+      const bettingIds = content.map((item: BettingProductType) => item.bettingId * -1);
+      const feeds = await fetchFeedsForBettingProducts(bettingIds);
 
-      const bettingIds = response.data.content.map(
-        (item: BettingProductType) => item.bettingId * -1
-      );
+      const mergedContent = mergeFeedData(content, feeds);
 
-      const response_feeds = await apiClient.get("/feeds/betting", {
-        params: { ids: bettingIds.join(",") },
-      });
-
-      const { content, last } = response.data;
-      content.forEach((item: BettingProductType) => {
-        const feed = response_feeds.data.find(
-          (feedItem: any) => feedItem.id === item.bettingId * -1
-        );
-        if (feed) {
-          item.postStats = feed;
-        }
-      });
-
-      console.log("content: ", content);
-
-      // 중복 제거 후 상태 업데이트
-      setBettings((prev) => {
+      setBettingProducts((prev) => {
         const existingIds = new Set(prev.map((item) => item.bettingId));
-        const filteredContent = content.filter(
+        const newItems = mergedContent.filter(
           (item: BettingProductType) => !existingIds.has(item.bettingId)
         );
-        return [...prev, ...filteredContent];
+        return [...prev, ...newItems];
       });
 
       setIsLast(last);
@@ -60,12 +46,10 @@ const BettingProducts = () => {
     }
   }, [page, isLoading, isLast]);
 
-  // 페이지 초기 로드 및 페이지 번호 변경 시 데이터 요청
   useEffect(() => {
-    getBettings();
-  }, [page]);
+    getBettingProducts();
+  }, [page, getBettingProducts]);
 
-  // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
     const isBottomReached =
       window.innerHeight + document.documentElement.scrollTop >=
@@ -85,12 +69,11 @@ const BettingProducts = () => {
     <>
       <Suspense fallback={<Loading />}>
         <ul>
-          {Array.isArray(bettings) &&
-            bettings.map((node) => (
-              <li key={node.bettingId}>
-                <BettingProduct info={node} />
-              </li>
-            ))}
+          {bettingProducts.map((node) => (
+            <li key={node.bettingId}>
+              <BettingProduct info={node} />
+            </li>
+          ))}
         </ul>
       </Suspense>
       {isLoading && <Loading />}
