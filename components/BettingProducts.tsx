@@ -48,7 +48,7 @@ const BettingProducts = () => {
 
   useEffect(() => {
     getBettingProducts();
-  }, [page, getBettingProducts]);
+  }, [page]);
 
   const handleScroll = useCallback(() => {
     const isBottomReached =
