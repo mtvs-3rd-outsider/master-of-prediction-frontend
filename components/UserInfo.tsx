@@ -40,6 +40,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
       formattedDate = formatDistanceToNow(parsedDate, {
         addSuffix: true, // "전" 또는 "후" 접미사 추가
         locale: ko, // 한국어 로케일
+        includeSeconds: false,
       });
     } catch (error) {
       console.error("Date parsing error:", error);
