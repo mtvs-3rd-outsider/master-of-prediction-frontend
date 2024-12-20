@@ -42,18 +42,54 @@ function BettingProductDetail(props: BettingProductInfo) {
   const connect = useSseStore((state) => state.connect);
   const close = useSseStore((state) => state.close);
   const { id: bettingId } = useParams();
+  const [retryCount, setRetryCount] = useState(0);
+  const [retryTimeout, setRetryTimeout] = useState<NodeJS.Timeout>();
+  const MAX_RETRIES = 5; // 최대 재시도 횟수
+  const RETRY_DELAY = 10000; // 재연결 시도 간격 (3초)
 
   useEffect(() => {
-    const eventSource = connect(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/betting-products/connect/${bettingId}`
-    );
+    let eventSource: EventSource;
 
-    eventSource.onmessage = (event) => {
-      console.log("SSE event received: ", event.data);
+    const connectSSE = () => {
+      if (retryCount >= MAX_RETRIES) {
+        console.log('최대 재시도 횟수 초과');
+        return;
+      }
+
+      eventSource = connect(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/betting-products/connect/${bettingId}`
+      );
+
+      eventSource.onmessage = (event) => {
+        console.log("SSE event received: ", event.data);
+        setRetryCount(0); // 성공적인 연결 시 재시도 카운트 리셋
+      };
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        setRetryCount(prev => prev + 1);
+        
+        // 이전 타이머 제거
+        if (retryTimeout) {
+          clearTimeout(retryTimeout);
+        }
+
+        // 재연결 시도
+        const timeout = setTimeout(() => {
+          connectSSE();
+        }, RETRY_DELAY);
+        
+        setRetryTimeout(timeout);
+      };
     };
 
+    connectSSE();
+
     return () => {
-      close(); // 컴포넌트가 언마운트될 때 SSE 연결 종료
+      if (retryTimeout) {
+        clearTimeout(retryTimeout);
+      }
+      close();
     };
   }, [connect, close, bettingId]);
 
