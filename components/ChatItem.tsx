@@ -38,7 +38,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
 
   // 그룹 채팅이 아닌 경우, 현재 사용자를 제외한 상대방 프로필만 표시
   const filteredParticipants = participants.filter(
-    (participant) => participant.userId.toString() != userInfo?.id
+    (participant) => participant.userId && participant.userId.toString() != userInfo?.id
   );
  const t = useTranslations();
  
